@@ -1,1 +1,1 @@
-Input big_int : Input big_double : Answer : +0.888888888888888888888888888888E-1
+Input big_int : Input big_double : Answer : -0.888888888888888888888888888888E-1

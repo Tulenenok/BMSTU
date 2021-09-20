@@ -1,0 +1,1 @@
+Input big_int : Input big_double : Answer : -0.8130081300813008130081300813E+28
