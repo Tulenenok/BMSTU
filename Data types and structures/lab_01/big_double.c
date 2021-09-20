@@ -4,9 +4,6 @@
 #include "tools.h"
 #include "big_double_tools.h"
 
-#define OVERFLOW 2
-#define IS_NOT_SCIENTIFIC 3
-
 #define TRUE 1
 #define FALSE 0
 
@@ -125,6 +122,9 @@ void from_big_double_to_str(char s[], big_double_t *x)
 
 int division_big_double(big_double_t *x, big_double_t *y, big_double_t *z)
 {
+    if(is_null_arr(y->mantissa, M_LEN))
+        return DIVISION_BY_ZERO;
+
     bd_tool_t x_tool = { 0 }, y_tool = { 0 }, z_tool = { 0 };
     from_bd_to_bd_tool(x, &x_tool);
     from_bd_to_bd_tool(y, &y_tool);
@@ -138,12 +138,43 @@ int division_big_double(big_double_t *x, big_double_t *y, big_double_t *z)
     z_tool.is_negative_m = x->is_negative_m != y->is_negative_m;
 
     if(subtract_exponent(x_tool.exponent, x_tool.is_negative_e, y_tool.exponent, y_tool.is_negative_e, t, &t_sign, E_LEN))
-        return EXIT_FAILURE;
+        return OVERFLOW;
 
     if(subtract_exponent(t, t_sign, change_exp, !e_sign, z_tool.exponent, &z_tool.is_negative_e, E_LEN))
-        return EXIT_FAILURE;
+        return OVERFLOW;
 
-    from_bd_tool_to_bd(&z_tool, z);
+    return from_bd_tool_to_bd(&z_tool, z);
+}
 
-    return EXIT_SUCCESS;
+int is_equal(big_double_t *x, big_double_t *y)
+{
+    if(!arr_cmp(x->mantissa, M_LEN, y->mantissa, M_LEN) &&
+        !arr_cmp(x->exponent, E_LEN, y->exponent, E_LEN) &&
+        x->is_negative_m == y->is_negative_m &&
+        x->is_negative_e == y->is_negative_e)
+        return TRUE;
+    return FALSE;
+
+}
+
+int big_double_scan(FILE *f, big_double_t *x)
+{
+    char str[M_LEN + E_LEN + 100] = "";
+
+    int rc = EXIT_SUCCESS;
+
+    if((rc = input_str(f, str)))
+        return rc;
+
+    if((rc = from_str_to_big_double(str, x)))
+        return rc;
+
+    return rc;
+}
+
+void big_double_print(FILE *f, big_double_t *x)
+{
+    char s[M_LEN + E_LEN + 5] = "";
+    from_big_double_to_str(s, x);
+    fprintf(f, "%s\n", s);
 }
