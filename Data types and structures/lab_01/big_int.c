@@ -31,7 +31,7 @@ int is_big_int(char x[])
 int from_str_to_big_int(char str[], big_int_t *x)
 {
     if(is_big_int(str) == 0)
-        return EXIT_FAILURE;
+        return IS_NOT_BIG_INT;
 
     for(size_t i = strlen(str), j = DATA_LEN; j > 0 && i > 0 && isdigit(str[i - 1]); i--, j--)
         x->data[j - 1] = from_char_to_int_digit(str[i - 1]);
@@ -67,29 +67,34 @@ void from_int_to_big_int(int x, big_int_t *res)
         res->data[i - 1] = x - x / 10 * 10;
 }
 
-//void big_int_print(FILE *f, big_int_t *x)
-//{
-//    if(x->is_negative)
-//        printf("-");
-//    else
-//        printf("+");
+void big_int_print(FILE *f, big_int_t *x)
+{
+    if(x->is_negative)
+        printf("-");
+    else
+        printf("+");
 
-//    for(size_t i = 0; i < x->len_data; i++)
-//        fprintf(f, "%d", x->data[i]);
-//}
+    size_t i = 0;
+    for(; i < DATA_LEN && x->data[i] == 0; i++);
+    for(; i < DATA_LEN; i++)
+        fprintf(f, "%d", x->data[i]);
+    fprintf(f, "\n");
+}
 
-//int big_int_scan(FILE *f, big_int_t *x)
-//{
-//    char str[DATA_LEN + 2] = "";
+int big_int_scan(FILE *f, big_int_t *x)
+{
+    char str[DATA_LEN + 2] = "";
 
-//    if(fgets(str, DATA_LEN + 2, f) == NULL)
-//        return EXIT_FAILURE;
+    int rc = EXIT_SUCCESS;
 
-//    if(from_str_to_big_int(str, x))
-//        return EXIT_FAILURE;
+    if((rc = input_str(f, str)))
+        return rc;
 
-//    return EXIT_SUCCESS;
-//}
+    if((rc = from_str_to_big_int(str, x)))
+        return rc;
+
+    return rc;
+}
 
 int big_int_cmp(big_int_t *x, big_int_t *y)
 {

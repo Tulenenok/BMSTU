@@ -6,6 +6,8 @@
 
 #define DATA_LEN 30
 
+#define IS_NOT_BIG_INT 9
+
 typedef struct
 {
     int is_negative;
@@ -27,7 +29,11 @@ void from_int_to_big_int(int x, big_int_t *res);
 // Функция печатает в файл число типа big_int_t
 void big_int_print(FILE *f, big_int_t *x);
 
-// Функция считывает из файла число типа big_int_t. В случае успеха возвращает 0, иначе любое ненулевое число.
+// Функция считывает из файла число типа big_int_t
+// Возвращает ERROR_WITH_FILE, если произошла ошибка при чтении
+//            BLANK_STRING, если ввод пустой
+//            IS_NOT_BIG_INT, если число нельзя привести к типу big_int
+//            EXIT_SUCCESS, если все удачно
 int big_int_scan(FILE *f, big_int_t *x);
 
 // Функция сравнивает два числа типа big_int_t.

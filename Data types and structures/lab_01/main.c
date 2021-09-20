@@ -2,115 +2,59 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "tools.h"
+#include "big_int.h"
 #include "big_double.h"
+#include "big_double_tools.h"
+#include "big_types.h"
 
 int main(void)
 {
+    int rc = EXIT_SUCCESS;
+
+    big_int_t bi = { 0 };
+    big_double_t bd = { 0 };
+    big_double_t res = { 0 };
+
+    setbuf(stdin, 0);
+
+    printf("Input big_int : ");
+    if((rc = big_int_scan(stdin, &bi)))
     {
-        char x_str[] = "10", y_str[] = "5", res_str[] = "";
-        big_double_t x = { 0 }, y = { 0 }, res = { 0 };
-
-        if(from_str_to_big_double(x_str, &x))
-            printf("Error with from_str_to_big_double x");
-
-        if(from_str_to_big_double(y_str, &y))
-            printf("Error with from_str_to_big_double y");
-
-        if(division_big_double(&x, &y, &res))
-            printf("Error with division");
-
-        from_big_double_to_str(res_str, &res);
-
-        printf("Success your result = %s\n", res_str);
+//        if(rc == ERROR_WITH_FILE)
+//            printf("Invalid input big_int, error with reading from file.");
+        if(rc == BLANK_STRING)
+            printf("Invalid input big_int, input is empty.");
+        if(rc == IS_NOT_BIG_INT)
+            printf("Invalid input big_int, your input is not big_int number.");
+        return rc;
     }
 
+    printf("Input big_double : ");
+    if((rc = big_double_scan(stdin, &bd)))
     {
-        char x_str[] = "2.125", y_str[] = "0.125", res_str[] = "";
-        big_double_t x = { 0 }, y = { 0 }, res = { 0 };
-
-        if(from_str_to_big_double(x_str, &x))
-            printf("Error with from_str_to_big_double x");
-
-        if(from_str_to_big_double(y_str, &y))
-            printf("Error with from_str_to_big_double y");
-
-        if(division_big_double(&x, &y, &res))
-            printf("Error with division");
-
-        from_big_double_to_str(res_str, &res);
-
-        printf("Success, your result = %s\n", res_str);
+//        if(rc == ERROR_WITH_FILE)
+//            printf("Invalid input big_double, error with reading from file.");
+        if(rc == BLANK_STRING)
+            printf("Invalid input big_double, input is empty.");
+        if(rc == IS_NOT_SCIENTIFIC)
+            printf("Invalid input big_double, your input is not scientific number.");
+        if(rc == OVERFLOW)
+            printf("Invalid input big_double, the number is too large.");
+        return rc;
     }
 
+    if((rc = division_bi_bd(&bi, &bd, &res)))
     {
-        char x_str[] = "-1", y_str[] = "11", res_str[] = "";
-        big_double_t x = { 0 }, y = { 0 }, res = { 0 };
-
-        if(from_str_to_big_double(x_str, &x))
-            printf("Error with from_str_to_big_double x");
-
-        if(from_str_to_big_double(y_str, &y))
-            printf("Error with from_str_to_big_double y");
-
-        if(division_big_double(&x, &y, &res))
-            printf("Error with division");
-
-        from_big_double_to_str(res_str, &res);
-
-        printf("Success, your result = %s\n", res_str);
+        if(rc == DIVISION_BY_ZERO)
+            printf("Division by zero");
+        if(rc == OVERFLOW)
+            printf("Overflow");
+        return rc;
     }
 
-    {
-        char x_str[] = "-9.89e14", y_str[] = "-86e-3", res_str[] = "";
-        big_double_t x = { 0 }, y = { 0 }, res = { 0 };
+    printf("Answer : ");
+    big_double_print(stdout, &res);
 
-        if(from_str_to_big_double(x_str, &x))
-            printf("Error with from_str_to_big_double x");
-
-        if(from_str_to_big_double(y_str, &y))
-            printf("Error with from_str_to_big_double y");
-
-        if(division_big_double(&x, &y, &res))
-            printf("Error with division");
-
-        from_big_double_to_str(res_str, &res);
-
-        printf("Success, your result = %s\n", res_str);
-    }
-
-    {
-        char x_str[] = "-0.12345", y_str[] = "-0.134", res_str[] = "";
-        big_double_t x = { 0 }, y = { 0 }, res = { 0 };
-
-        if(from_str_to_big_double(x_str, &x))
-            printf("Error with from_str_to_big_double x");
-
-        if(from_str_to_big_double(y_str, &y))
-            printf("Error with from_str_to_big_double y");
-
-        if(division_big_double(&x, &y, &res))
-            printf("Error with division");
-
-        from_big_double_to_str(res_str, &res);
-
-        printf("Success, your result = %s\n", res_str);
-    }
-
-    {
-        char x_str[] = "-0.12", y_str[] = "-0.678", res_str[] = "";
-        big_double_t x = { 0 }, y = { 0 }, res = { 0 };
-
-        if(from_str_to_big_double(x_str, &x))
-            printf("Error with from_str_to_big_double x");
-
-        if(from_str_to_big_double(y_str, &y))
-            printf("Error with from_str_to_big_double y");
-
-        if(division_big_double(&x, &y, &res))
-            printf("Error with division");
-
-        from_big_double_to_str(res_str, &res);
-
-        printf("Success, your result = %s\n", res_str);
-    }
+    return EXIT_SUCCESS;
 }

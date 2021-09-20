@@ -2,7 +2,7 @@
 #include "big_double.h"
 #include "big_double_tools.h"
 
-void from_bd_to_bd_tool(big_double_t *x, bd_tool_t *y)
+int from_bd_to_bd_tool(big_double_t *x, bd_tool_t *y)
 {
     y->is_negative_m = x->is_negative_m;
     y->is_negative_e = x->is_negative_e;
@@ -12,10 +12,12 @@ void from_bd_to_bd_tool(big_double_t *x, bd_tool_t *y)
     size_t i = M_LEN;
     for(; i > 0  && x->mantissa[i - 1] == 0; i--);
     for(; i > 0; i--)
-        reduce_one_with_sign(y->exponent, E_LEN, &(y->is_negative_e));
+        if(reduce_one_with_sign(y->exponent, E_LEN, &(y->is_negative_e)))
+            return OVERFLOW;
+    return EXIT_SUCCESS;
 }
 
-void from_bd_tool_to_bd(bd_tool_t *x, big_double_t *y)
+int from_bd_tool_to_bd(bd_tool_t *x, big_double_t *y)
 {
     y->is_negative_m = x->is_negative_m;
     y->is_negative_e = x->is_negative_e;
@@ -25,7 +27,9 @@ void from_bd_tool_to_bd(bd_tool_t *x, big_double_t *y)
     size_t i = 0;
     for(; i < M_LEN + 1  && x->mantissa[i] == 0; i++);
     for(; i < M_LEN + 1; i++)
-        increase_one_with_sign(y->exponent, E_LEN, &(y->is_negative_e));
+        if(increase_one_with_sign(y->exponent, E_LEN, &(y->is_negative_e)))
+            return OVERFLOW;
+    return EXIT_SUCCESS;
 }
 
 int division_mantissa(int x[], int y[], int z[], int change_exp[], int *e_sign, size_t *i)
