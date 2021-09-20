@@ -359,6 +359,9 @@ int division(int x[], size_t x_len, int y[], size_t y_len, int div[], size_t div
             subtract(x, x_len, y, y_len, mod, mod_len);
             arr_cpy(mod, mod_len, x, x_len);
             increase_by_one(div, div_len);
+//            for(size_t i = 0; i < x_len; i++)
+//                printf("%d", x[i]);
+//            printf("\n");
         }
 
      return EXIT_SUCCESS;
