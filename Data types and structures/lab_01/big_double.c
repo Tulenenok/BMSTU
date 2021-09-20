@@ -125,6 +125,9 @@ int division_big_double(big_double_t *x, big_double_t *y, big_double_t *z)
     if(is_null_arr(y->mantissa, M_LEN))
         return DIVISION_BY_ZERO;
 
+    if(is_null_arr(x->mantissa, M_LEN))
+        return EXIT_SUCCESS;
+
     bd_tool_t x_tool = { 0 }, y_tool = { 0 }, z_tool = { 0 };
     from_bd_to_bd_tool(x, &x_tool);
     from_bd_to_bd_tool(y, &y_tool);

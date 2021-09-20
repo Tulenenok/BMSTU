@@ -46,6 +46,19 @@ int division_mantissa(int x[], int y[], int z[], int change_exp[], int *e_sign, 
         reduce_one_with_sign(change_exp, E_LEN, e_sign); // Учли это в экспоненте
     }
 
+    size_t x_i = 0, y_i = 0;
+    for(; x_i < len && x[x_i] == 0; x_i++);
+    for(; y_i < len && y[y_i] == 0; y_i++);
+    if(arr_cmp(x, len, y, len) > 0 && x_i < y_i)
+    {
+        shift_left(y, len, y_i - x_i - 1);
+        while(x_i < y_i - 1)
+        {
+            increase_one_with_sign(change_exp, E_LEN, e_sign);
+            y_i--;
+        }
+    }
+
     division(x, len, y, len, div, len, mod, len);        // Поделили мантиссы
     arr_cpy(mod, len, x, len);                           // Скопировали остаток, который получился в x для дальнейшего деления
 
