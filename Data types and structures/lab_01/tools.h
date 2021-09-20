@@ -12,6 +12,9 @@
 #define WAS_OVERFLOW 1
 #define NO_OVERFLOW 0
 
+// #define ERROR_WITH_FILE 2
+#define BLANK_STRING 3
+
 // Проверяет, является ли строка вещественным числом
 // Возвращает 1, если является, и 0, если не является
 // Не проверяет, является ли строка вещественным числом типа big_double (не учитывает количество разрядов)
@@ -30,10 +33,10 @@ int reduce_by_one(int arr[], size_t len);
 int is_null_arr(int arr[], size_t len);
 
 // Прибавить к числу-массиву единицу (с учетом знака)
-void increase_one_with_sign(int arr[], size_t len, int *sign);
+int increase_one_with_sign(int arr[], size_t len, int *sign);
 
 // Вычесть из массива единицу (с учетом знака)
-void reduce_one_with_sign(int arr[], size_t len, int *sign);
+int reduce_one_with_sign(int arr[], size_t len, int *sign);
 
 // Функция помогает реализовать округление (прибавляет 1 и при переполнении сдвигает разряды вправо)
 // Возвращает 0, если переполнения не было, иначе 1
@@ -85,5 +88,11 @@ int from_char_to_int_digit(char x);
 // Функция переводит цифру из типа int в тип char
 // Если передана не цифра, возвращает код ошибки NOT_DIGIT
 char from_int_to_char_digit(int x);
+
+// Функция считывает строку максимальной длины max_len из файла
+// Возвращает BLANK_STRING, если строка пустая
+//            ERROR_WITH_FILE, если в процессе чтения возникли ошибки с файлом
+//            EXIT_SUCCESS, в ином случае
+int input_str(FILE *f, char s[]);
 
 #endif // _TOOLS_H_

@@ -98,32 +98,38 @@ int reduce_by_one(int arr[], size_t len)
     return EXIT_SUCCESS;
 }
 
-void reduce_one_with_sign(int arr[], size_t len, int *sign)
+int reduce_one_with_sign(int arr[], size_t len, int *sign)
 {
+    int rc = EXIT_SUCCESS;
+
     if(is_null_arr(arr, len))
         *sign = 1;
 
     if(*sign == 1)
-        increase_by_one(arr, len);
+        rc = increase_by_one(arr, len);
     else
-        reduce_by_one(arr, len);
+        rc = reduce_by_one(arr, len);
 
     if(is_null_arr(arr, len))
         *sign = 0;
+    return rc;
 }
 
-void increase_one_with_sign(int arr[], size_t len, int *sign)
+int increase_one_with_sign(int arr[], size_t len, int *sign)
 {
+    int rc = EXIT_SUCCESS;
+
     if(is_null_arr(arr, len))
         *sign = 0;
 
     if(*sign == 0)
-        increase_by_one(arr, len);
+        rc = increase_by_one(arr, len);
     else
-        reduce_by_one(arr, len);
+        rc = reduce_by_one(arr, len);
 
     if(is_null_arr(arr, len))
         *sign = 0;
+    return rc;
 }
 
 int rounding(int arr[], size_t len)
@@ -357,5 +363,30 @@ int division(int x[], size_t x_len, int y[], size_t y_len, int div[], size_t div
 
      return EXIT_SUCCESS;
 }
+
+int input_str(FILE *f, char s[])
+{
+    char buf;
+    int i = 0;
+    int is_blank_str = TRUE;
+
+    for (; fscanf(f, "%c", &buf) == 1 && buf != '\n'; i++)
+    {
+        s[i] = buf;
+        if (buf != ' ')
+            is_blank_str = FALSE;
+    }
+
+//    if (ferror(f))
+//        return ERROR_WITH_FILE;
+
+    s[i] = '\0';
+
+    if (i == 0 || is_blank_str)
+        return BLANK_STRING;
+
+    return EXIT_SUCCESS;
+}
+
 
 

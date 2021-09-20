@@ -1,0 +1,423 @@
+Positive test 1 for is_scientific : PASSED
+Positive test 2 for is_scientific : PASSED
+Positive test 3 for is_scientific : PASSED
+Positive test 4 for is_scientific : PASSED
+Positive test 5 for is_scientific : PASSED
+Positive test 6 for is_scientific : PASSED
+Negative test 1 for is_scientific : PASSED
+Negative test 2 for is_scientific : PASSED
+Negative test 3 for is_scientific : PASSED
+Negative test 4 for is_scientific : PASSED
+
+Positive test 1 for increase_by_one : PASSED
+Positive test 2 for increase_by_one : PASSED
+Negative test 1 for increase_by_one : PASSED
+
+Positive test 1 for reduce_by_one : PASSED
+Positive test 2 for reduce_by_one : PASSED
+Negative test 1 for reduce_by_one : PASSED
+
+Positive test 1 for is_null_arr : PASSED
+Positive test 2 for is_null_arr : PASSED
+
+Positive test 1 for increase_one_with_sign : PASSED
+Positive test 2 for increase_one_with_sign : PASSED
+Positive test 3 for increase_one_with_sign : PASSED
+Positive test 4 for increase_one_with_sign : PASSED
+
+Positive test 1 for reduce_one_with_sign : PASSED
+Positive test 2 for reduce_one_with_sign : PASSED
+Positive test 3 for reduce_one_with_sign : PASSED
+
+Positive test 1 for rounding : PASSED
+Positive test 2 for rounding : PASSED
+
+Positive test 1 for insert_end : PASSED
+Positive test 2 for insert_end : PASSED
+
+Positive test 1 for arr_cmp : PASSED
+Positive test 2 for arr_cmp : PASSED
+Positive test 3 for arr_cmp : PASSED
+Positive test 4 for arr_cmp : PASSED
+Positive test 5 for arr_cmp : PASSED
+
+Positive test 1 for fill_arr : PASSED
+Positive test 2 for fill_arr : PASSED
+
+Positive test 1 for shift_left : PASSED
+Positive test 2 for shift_left : PASSED
+
+Positive test 1 for shift_right : PASSED
+Positive test 2 for shift_right : PASSED
+
+Positive test 1 for arr_cpy : PASSED
+Negative test 1 for arr_cpy : PASSED
+
+Positive test 1 for arr_cpy_to_end : PASSED
+Negative test 1 for arr_cpy_to_end : PASSED
+
+Positive test 1 for arr_cpy_to_start : PASSED
+Positive test 2 for arr_cpy_to_start : PASSED
+
+Positive test 1 for add : PASSED
+Positive test 2 for add : PASSED
+Negative test 1 for add : PASSED
+Negative test 2 for add : PASSED
+
+Positive test 1 for subtract : PASSED
+Positive test 2 for subtract : PASSED
+Positive test 3 for subtract : PASSED
+Negative test 1 for subtract : PASSED
+
+Positive test 1 for division : PASSED
+Positive test 2 for division : PASSED
+Positive test 3 for division : PASSED
+Positive test 4 for division : PASSED
+Positive test 5 for division : PASSED
+Positive test 6 for division : PASSED
+Positive test 7 for division : PASSED
+Negative test 1 for division : PASSED
+Negative test 2 for division : PASSED
+
+Positive test  1 for from_char_to_int_digit : PASSED
+Positive test  2 for from_char_to_int_digit : PASSED
+Positive test  3 for from_char_to_int_digit : PASSED
+Positive test  4 for from_char_to_int_digit : PASSED
+Positive test  5 for from_char_to_int_digit : PASSED
+Positive test  6 for from_char_to_int_digit : PASSED
+Positive test  7 for from_char_to_int_digit : PASSED
+Positive test  8 for from_char_to_int_digit : PASSED
+Positive test  9 for from_char_to_int_digit : PASSED
+Positive test 10 for from_char_to_int_digit : PASSED
+Negative test  1 for from_char_to_int_digit : PASSED
+
+Positive test  1 for from_int_to_char_digit : PASSED
+Positive test  2 for from_int_to_char_digit : PASSED
+Positive test  3 for from_int_to_char_digit : PASSED
+Positive test  4 for from_int_to_char_digit : PASSED
+Positive test  5 for from_int_to_char_digit : PASSED
+Positive test  6 for from_int_to_char_digit : PASSED
+Positive test  7 for from_int_to_char_digit : PASSED
+Positive test  8 for from_int_to_char_digit : PASSED
+Positive test  9 for from_int_to_char_digit : PASSED
+Positive test 10 for from_int_to_char_digit : PASSED
+Negative test  1 for from_int_to_char_digit : PASSED
+Function 'input_str'
+Lines executed:0.00% of 11
+
+Function 'division'
+Lines executed:100.00% of 11
+
+Function 'subtract'
+Lines executed:100.00% of 17
+
+Function 'add'
+Lines executed:100.00% of 11
+
+Function 'arr_cpy_to_start'
+Lines executed:100.00% of 8
+
+Function 'arr_cpy_to_end'
+Lines executed:100.00% of 10
+
+Function 'arr_cpy'
+Lines executed:100.00% of 6
+
+Function 'shift_right'
+Lines executed:100.00% of 7
+
+Function 'shift_left'
+Lines executed:100.00% of 7
+
+Function 'fill_arr'
+Lines executed:100.00% of 4
+
+Function 'arr_cmp'
+Lines executed:100.00% of 7
+
+Function 'from_int_to_char_digit'
+Lines executed:100.00% of 24
+
+Function 'from_char_to_int_digit'
+Lines executed:100.00% of 24
+
+Function 'insert_end'
+Lines executed:100.00% of 7
+
+Function 'rounding'
+Lines executed:100.00% of 7
+
+Function 'increase_one_with_sign'
+Lines executed:100.00% of 10
+
+Function 'reduce_one_with_sign'
+Lines executed:100.00% of 10
+
+Function 'reduce_by_one'
+Lines executed:100.00% of 10
+
+Function 'is_null_arr'
+Lines executed:100.00% of 5
+
+Function 'increase_by_one'
+Lines executed:100.00% of 9
+
+Function 'is_scientific'
+Lines executed:100.00% of 30
+
+Function 'fscanf'
+Lines executed:0.00% of 5
+
+File 'tools.c'
+Lines executed:95.32% of 235
+Creating 'tools.c.gcov'
+
+ 
+Positive test 1 for division_mantissa : PASSED
+Positive test 2 for division_mantissa : PASSED
+Positive test 3 for division_mantissa : PASSED
+Positive test 4 for division_mantissa : PASSED
+Positive test 5 for division_mantissa : PASSED
+Positive test 6 for division_mantissa : PASSED
+Positive test 6 for division_mantissa : PASSED
+
+Positive test 1 for subtract_exponent : PASSED
+Positive test 2 for subtract_exponent : PASSED
+Positive test 3 for subtract_exponent : PASSED
+Positive test 4 for subtract_exponent : PASSED
+Positive test 5 for subtract_exponent : PASSED
+Positive test 6 for subtract_exponent : PASSED
+
+Positive test 1 for from_bd_to_bd_tool : PASSED
+Positive test 2 for from_bd_to_bd_tool : PASSED
+
+Positive test 1 for from_bd_tool_to_bd : PASSED
+Positive test 2 for from_bd_tool_to_bd : PASSED
+
+Function 'subtract_exponent'
+Lines executed:100.00% of 13
+
+Function 'division_mantissa'
+Lines executed:100.00% of 23
+
+Function 'from_bd_tool_to_bd'
+Lines executed:90.91% of 11
+
+Function 'from_bd_to_bd_tool'
+Lines executed:90.91% of 11
+
+File 'big_double_tools.c'
+Lines executed:96.55% of 58
+Creating 'big_double_tools.c.gcov'
+
+ 
+Negative test 1 for is_big_int : PASSED
+Negative test 2 for is_big_int : PASSED
+Positive test 1 for is_big_int : PASSED
+Positive test 2 for is_big_int : PASSED
+Positive test 3 for is_big_int : PASSED
+
+Positive test  1 for from_str_to_big_double : PASSED
+Positive test  2 for from_str_to_big_double : PASSED
+Positive test  3 for from_str_to_big_double : PASSED
+Positive test  4 for from_str_to_big_double : PASSED
+Positive test  5 for from_str_to_big_double : PASSED
+Positive test  6 for from_str_to_big_double : PASSED
+Positive test  7 for from_str_to_big_double : PASSED
+Positive test  8 for from_str_to_big_double : PASSED
+Positive test  9 for from_str_to_big_double : PASSED
+Positive test 10 for from_str_to_big_double : PASSED
+Positive test 11 for from_str_to_big_double : PASSED
+Positive test 12 for from_str_to_big_double : PASSED
+Positive test 13 for from_str_to_big_double : PASSED
+Positive test 14 for from_str_to_big_double : PASSED
+Positive test 15 for from_str_to_big_double : PASSED
+Positive test 16 for from_str_to_big_double : PASSED
+Positive test 17 for from_str_to_big_double : PASSED
+Positive test 18 for from_str_to_big_double : PASSED
+
+Negative test 1 for from_str_to_big_double : PASSED
+Negative test 2 for from_str_to_big_double : PASSED
+Negative test 3 for from_str_to_big_double : PASSED
+Negative test 4 for from_str_to_big_double : PASSED
+Negative test 5 for from_str_to_big_double : PASSED
+Negative test 6 for from_str_to_big_double : PASSED
+Negative test 7 for from_str_to_big_double : PASSED
+Negative test 8 for from_str_to_big_double : PASSED
+
+Positive test 1 for from_big_double_to_str : PASSED
+Positive test 2 for from_big_double_to_str : PASSED
+Positive test 3 for from_big_double_to_str : PASSED
+Positive test 4 for from_big_double_to_str : PASSED
+
+Positive test 1 for division_big_double : PASSED
+Positive test 2 for division_big_double : PASSED
+Positive test 3 for division_big_double : PASSED
+Positive test 4 for division_big_double : PASSED
+Positive test 5 for division_big_double : PASSED
+Positive test 6 for division_big_double : PASSED
+Positive test 7 for division_big_double : PASSED
+Positive test 8 for division_big_double : PASSED
+Negative test 1 for division_big_double : PASSED
+Negative test 2 for division_big_double : PASSED
+Negative test 3 for division_big_double : PASSED
+
+Positive test 1 for is_equal : PASSED
+Positive test 2 for is_equal : PASSED
+
+Positive test 1 for big_double_scan : PASSED
+Positive test 2 for big_double_scan : PASSED
+Negative test 1 for big_double_scan : PASSED
+Negative test 2 for big_double_scan : PASSED
+Function 'big_double_print'
+Lines executed:0.00% of 5
+
+Function 'big_double_scan'
+Lines executed:100.00% of 8
+
+Function 'is_equal'
+Lines executed:100.00% of 7
+
+Function 'division_big_double'
+Lines executed:93.75% of 16
+
+Function 'from_big_double_to_str'
+Lines executed:100.00% of 21
+
+Function 'from_str_to_big_double'
+Lines executed:100.00% of 40
+
+Function 'is_big_double'
+Lines executed:100.00% of 5
+
+Function 'fprintf'
+Lines executed:0.00% of 5
+
+File 'big_double.c'
+Lines executed:94.12% of 102
+Creating 'big_double.c.gcov'
+
+ 
+Negative test 1 for is_big_int : PASSED
+Negative test 2 for is_big_int : PASSED
+Negative test 3 for is_big_int : PASSED
+Negative test 4 for is_big_int : PASSED
+Negative test 5 for is_big_int : PASSED
+Negative test 6 for is_big_int : PASSED
+Negative test 7 for is_big_int : PASSED
+Negative test 8 for is_big_int : PASSED
+Positive test 1 for is_big_int : PASSED
+Positive test 2 for is_big_int : PASSED
+Positive test 3 for is_big_int : PASSED
+
+Negative test for 1 from_str_to_big_int : PASSED
+Negative test for 2 from_str_to_big_int : PASSED
+Positive test 1 for from_str_to_big_int : PASSED
+Positive test 2 for from_str_to_big_int : PASSED
+
+Positive test 1 for from_big_int_to_str : PASSED
+Positive test 2 for from_big_int_to_str : PASSED
+Positive test 3 for from_big_int_to_str : PASSED
+
+Positive test 1 for from_big_int_to_str : PASSED
+Positive test 2 for from_big_int_to_str : PASSED
+
+Positive test 1 for big_int_cmp : PASSED
+Positive test 2 for big_int_cmp : PASSED
+Positive test 3 for big_int_cmp : PASSED
+Positive test 4 for big_int_cmp : PASSED
+Positive test 5 for big_int_cmp : PASSED
+Positive test 6 for big_int_cmp : PASSED
+Positive test 7 for big_int_cmp : PASSED
+Positive test 8 for big_int_cmp : PASSED
+Positive test 9 for big_int_cmp : PASSED
+
+Positive test 1 for big_int_add : PASSED
+Positive test 2 for big_int_add : PASSED
+Positive test 3 for big_int_add : PASSED
+Positive test 4 for big_int_add : PASSED
+Positive test 5 for big_int_add : PASSED
+Positive test 6 for big_int_add : PASSED
+Positive test 7 for big_int_add : PASSED
+Negative test 1 for big_int_add : PASSED
+Negative test 2 for big_int_add : PASSED
+
+Positive test 1 for big_int_diff : PASSED
+Positive test 2 for big_int_diff : PASSED
+Positive test 3 for big_int_diff : PASSED
+Positive test 4 for big_int_diff : PASSED
+Positive test 5 for big_int_diff : PASSED
+Positive test 6 for big_int_diff : PASSED
+Positive test 7 for big_int_diff : PASSED
+Negative test 1 for big_int_diff : PASSED
+Negative test 2 for big_int_diff : PASSED
+
+Positive test 1 for big_int_scan : PASSED
+Positive test 2 for big_int_scan : PASSED
+Negative test 1 for big_int_scan : PASSED
+Negative test 2 for big_int_scan : PASSED
+
+Function 'big_int_diff'
+Lines executed:100.00% of 15
+
+Function 'big_int_add'
+Lines executed:100.00% of 15
+
+Function 'big_int_cmp'
+Lines executed:100.00% of 14
+
+Function 'big_int_scan'
+Lines executed:100.00% of 8
+
+Function 'big_int_print'
+Lines executed:0.00% of 10
+
+Function 'from_int_to_big_int'
+Lines executed:100.00% of 6
+
+Function 'from_big_int_to_str'
+Lines executed:100.00% of 10
+
+Function 'from_str_to_big_int'
+Lines executed:100.00% of 7
+
+Function 'is_big_int'
+Lines executed:100.00% of 11
+
+Function 'printf'
+Lines executed:0.00% of 5
+
+Function 'fprintf'
+Lines executed:0.00% of 5
+
+File 'big_int.c'
+Lines executed:89.58% of 96
+Creating 'big_int.c.gcov'
+
+ 
+Positive test  1 for from_bi_to_bd : PASSED
+Positive test  2 for from_bi_to_bd : PASSED
+
+Positive test  1 for division_bi_bd : PASSED
+Positive test  2 for division_bi_bd : PASSED
+Positive test  3 for division_bi_bd : PASSED
+Negative test  1 for division_bi_bd : PASSED
+
+Positive test  1 for division_bd_bi : PASSED
+Positive test  2 for division_bd_bi : PASSED
+Positive test  3 for division_bd_bi : PASSED
+Negative test  1 for division_bd_bi : PASSED
+Function 'division_bd_bi'
+Lines executed:100.00% of 4
+
+Function 'division_bi_bd'
+Lines executed:100.00% of 4
+
+Function 'from_bi_to_bd'
+Lines executed:100.00% of 8
+
+File 'big_types.c'
+Lines executed:100.00% of 16
+Creating 'big_types.c.gcov'
+
+ 

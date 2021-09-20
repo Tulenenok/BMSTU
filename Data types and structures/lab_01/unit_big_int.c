@@ -846,6 +846,74 @@ int main(void)
             printf("Negative test 2 for big_int_diff : FAILED          !!!\n");
     }
 
+    printf("\n");
+///////////////////
+    {
+        FILE *f = fopen("unit_tests/pos_01_in_big_int_scan.txt", "r");
+        if(!f)
+             printf("Positive test 1 for big_int_scan : FAILED          !!!   FILE\n");
+        big_int_t x = { 0 };
+        big_int_t perfect_x = {.is_negative = 0, .data = { 0 }};
+        perfect_x.data[DATA_LEN - 1] = 3;
+        perfect_x.data[DATA_LEN - 2] = 2;
+        perfect_x.data[DATA_LEN - 3] = 1;
 
+        if(!big_int_scan(f, &x) &&
+            x.is_negative == perfect_x.is_negative &&
+            is_arrays_equal(x.data, DATA_LEN, perfect_x.data, DATA_LEN))
+            printf("Positive test 1 for big_int_scan : PASSED\n");
+        else
+            printf("Positive test 1 for big_int_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
+    {
+        FILE *f = fopen("unit_tests/pos_02_in_big_int_scan.txt", "r");
+        if(!f)
+             printf("Positive test 2 for big_int_scan : FAILED          !!!   FILE\n");
+        big_int_t x = { 0 };
+        big_int_t perfect_x = {.is_negative = 1, .data = { 0 }};
+        perfect_x.data[DATA_LEN - 1] = 2;
+        perfect_x.data[DATA_LEN - 2] = 1;
+        perfect_x.data[DATA_LEN - 3] = 8;
+        perfect_x.data[DATA_LEN - 4] = 0;
+        perfect_x.data[DATA_LEN - 5] = 9;
+
+        if(!big_int_scan(f, &x) &&
+            x.is_negative == perfect_x.is_negative &&
+            is_arrays_equal(x.data, DATA_LEN, perfect_x.data, DATA_LEN))
+            printf("Positive test 2 for big_int_scan : PASSED\n");
+        else
+            printf("Positive test 2 for big_int_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
+    {
+        FILE *f = fopen("unit_tests/neg_01_in_big_int_scan.txt", "r");
+        if(!f)
+             printf("Negative test 1 for big_int_scan : FAILED          !!!   FILE\n");
+        big_int_t x = { 0 };
+
+        if(big_int_scan(f, &x))
+            printf("Negative test 1 for big_int_scan : PASSED\n");
+        else
+            printf("Negative test 1 for big_int_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
+    {
+        FILE *f = fopen("unit_tests/neg_02_in_big_int_scan.txt", "r");
+        if(!f)
+             printf("Negative test 2 for big_int_scan : FAILED          !!!   FILE\n");
+        big_int_t x = { 0 };
+
+        if(big_int_scan(f, &x))
+            printf("Negative test 2 for big_int_scan : PASSED\n");
+        else
+            printf("Negative test 2 for big_int_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
+    printf("\n");
     return EXIT_SUCCESS;
 }

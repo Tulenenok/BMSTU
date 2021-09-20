@@ -786,5 +786,127 @@ int main(void)
             printf("Negative test 2 for division_big_double : FAILED          !!!\n");
     }
 
+    {
+        big_double_t x = {.is_negative_m = 1,
+                          .mantissa = {1},
+                          .is_negative_e = 0,
+                          .exponent = {9, 9, 9, 9, 7}};
+
+        big_double_t y = {0};
+        big_double_t z = {0};
+
+        if(division_big_double(&x, &y, &z))
+            printf("Negative test 3 for division_big_double : PASSED\n");
+        else
+            printf("Negative test 3 for division_big_double : FAILED          !!!\n");
+    }
+
+    printf("\n");
+//////////////////////
+    {
+        big_double_t x = {.is_negative_m = 1,
+                          .mantissa = {1, 5},
+                          .is_negative_e = 0,
+                          .exponent = {0, 0, 0, 0, 2}};
+
+        big_double_t y = {.is_negative_m = 1,
+                          .mantissa = {3},
+                          .is_negative_e = 0,
+                          .exponent = {0, 0, 0, 0, 1}};
+
+        if(!is_equal(&x, &y))
+            printf("Positive test 1 for is_equal : PASSED\n");
+        else
+            printf("Positive test 1 for is_equal : FAILED          !!!\n");
+    }
+
+    {
+        big_double_t x = {.is_negative_m = 1,
+                          .mantissa = {1, 5},
+                          .is_negative_e = 0,
+                          .exponent = {0, 0, 0, 0, 2}};
+
+        big_double_t y = {.is_negative_m = 1,
+                          .mantissa = {1, 5},
+                          .is_negative_e = 0,
+                          .exponent = {0, 0, 0, 0, 2}};
+
+        if(is_equal(&x, &y))
+            printf("Positive test 2 for is_equal : PASSED\n");
+        else
+            printf("Positive test 2 for is_equal : FAILED          !!!\n");
+    }
+
+    printf("\n");
+/////////////////
+
+    {
+        FILE *f = fopen("unit_tests/pos_01_in_big_double_scan.txt", "r");
+        if(!f)
+             printf("Positive test 1 for big_double_scan : FAILED          !!!   FILE\n");
+        big_double_t x = { 0 };
+        big_double_t perfect_x = {.is_negative_m = 0,
+                               .mantissa = {1, 2, 3},
+                               .is_negative_e = 0,
+                               .exponent = {0, 0, 0, 0, 3}};
+
+        if(!big_double_scan(f, &x) &&
+            x.is_negative_m == perfect_x.is_negative_m &&
+            x.is_negative_e == perfect_x.is_negative_e &&
+            is_arrays_equal(x.mantissa, M_LEN, perfect_x.mantissa, M_LEN) &&
+            is_arrays_equal(x.exponent, E_LEN, perfect_x.exponent, E_LEN))
+            printf("Positive test 1 for big_double_scan : PASSED\n");
+        else
+            printf("Positive test 1 for big_double_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
+    {
+        FILE *f = fopen("unit_tests/pos_02_in_big_double_scan.txt", "r");
+        if(!f)
+             printf("Positive test 2 for big_double_scan : FAILED          !!!   FILE\n");
+        big_double_t x = { 0 };
+        big_double_t perfect_x = {.is_negative_m = 1,
+                               .mantissa = {1, 0, 0},
+                               .is_negative_e = 0,
+                               .exponent = {0, 0, 0, 0, 0}};
+
+        if(!big_double_scan(f, &x) &&
+            x.is_negative_m == perfect_x.is_negative_m &&
+            x.is_negative_e == perfect_x.is_negative_e &&
+            is_arrays_equal(x.mantissa, M_LEN, perfect_x.mantissa, M_LEN) &&
+            is_arrays_equal(x.exponent, E_LEN, perfect_x.exponent, E_LEN))
+            printf("Positive test 2 for big_double_scan : PASSED\n");
+        else
+            printf("Positive test 2 for big_double_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
+    {
+        FILE *f = fopen("unit_tests/neg_01_in_big_double_scan.txt", "r");
+        if(!f)
+             printf("Negative test 1 for big_double_scan : FAILED          !!!   FILE\n");
+        big_double_t x = { 0 };
+
+        if(big_double_scan(f, &x))
+            printf("Negative test 1 for big_double_scan : PASSED\n");
+        else
+            printf("Negative test 1 for big_double_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
+    {
+        FILE *f = fopen("unit_tests/neg_02_in_big_double_scan.txt", "r");
+        if(!f)
+             printf("Negative test 2 for big_double_scan : FAILED          !!!   FILE\n");
+        big_double_t x = { 0 };
+
+        if(big_double_scan(f, &x))
+            printf("Negative test 2 for big_double_scan : PASSED\n");
+        else
+            printf("Negative test 2 for big_double_scan : FAILED          !!!\n");
+        fclose(f);
+    }
+
     return EXIT_SUCCESS;
 }
