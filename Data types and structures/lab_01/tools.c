@@ -33,13 +33,11 @@ int is_scientific(char s[])
 
     for (; s[i] && isdigit((int)s[i]); i++);
 
-    for (; s[i] && isspace((int)s[i]); i++);             // До и после Е может быть любое число пробельных символов
     if (s[i] == 'E' || s[i] == 'e')
     {
         was_e = 1;
         i++;
     }
-    for (; s[i] && isspace((int)s[i]); i++);
 
     if (was_e && (s[i] == '+' || s[i] == '-'))
         i++;
@@ -141,6 +139,14 @@ int rounding(int arr[], size_t len)
         arr[0] = 1;
         return WAS_OVERFLOW;
     }
+    return NO_OVERFLOW;
+}
+
+int round_shift_right(int arr[], size_t len)
+{
+    shift_right(arr, len, 1);
+    if(increase_by_one(arr, len) || arr[0] != 0)
+        return WAS_OVERFLOW;
     return NO_OVERFLOW;
 }
 

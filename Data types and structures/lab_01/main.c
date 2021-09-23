@@ -16,9 +16,10 @@ int main(void)
     big_double_t bd = { 0 };
     big_double_t res = { 0 };
 
-    setbuf(stdin, 0);
+    setbuf(stdout, 0);
 
-    printf("Input big_int : ");
+    printf("                 : s||||5||||0||||5||||0||||5||||0\n");
+    printf("Input big_int    : ");
     if((rc = big_int_scan(stdin, &bi)))
     {
 //        if(rc == ERROR_WITH_FILE)

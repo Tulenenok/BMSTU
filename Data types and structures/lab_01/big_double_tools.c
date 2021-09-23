@@ -19,6 +19,15 @@ int from_bd_to_bd_tool(big_double_t *x, bd_tool_t *y)
 
 int from_bd_tool_to_bd(bd_tool_t *x, big_double_t *y)
 {
+    if(x->mantissa[0] != 0 && x->mantissa[M_LEN] >= 5 && rounding(x->mantissa, M_LEN))
+    {
+        if(x->is_negative_e == 1)
+            reduce_by_one(x->exponent, E_LEN);
+
+        if((x->is_negative_e == 0 && increase_by_one(x->exponent, E_LEN)))
+            return OVERFLOW;
+    }
+
     y->is_negative_m = x->is_negative_m;
     y->is_negative_e = x->is_negative_e;
     arr_cpy(x->exponent, E_LEN, y->exponent, E_LEN);
@@ -34,24 +43,23 @@ int from_bd_tool_to_bd(bd_tool_t *x, big_double_t *y)
 
 int division_mantissa(int x[], int y[], int z[], int change_exp[], int *e_sign, size_t *i)
 {
-    if(*i >= M_LEN + 1)                                  // Выход из рекурсии (заполнили всю мантиссу)
+    if(*i > M_LEN + 1)                                   // Выход из рекурсии (заполнили всю мантиссу)
         return 0;
 
-    int div[M_LEN + 1] = {0}, mod[M_LEN + 1] = {0};      // Массивы для промежуточных вычислений
+    int div[M_LEN] = {0}, mod[M_LEN] = {0};              // Массивы для промежуточных вычислений
 
-    size_t len = M_LEN + 1;
-    if(arr_cmp(x, len, y, len) < 0)                      // Увеличили мантиссу на 10
+    if(arr_cmp(x, M_LEN, y, M_LEN) < 0)                  // Увеличили мантиссу на 10
     {
-        shift_left(x, len, 1);
+        shift_left(x, M_LEN, 1);
         reduce_one_with_sign(change_exp, E_LEN, e_sign); // Учли это в экспоненте
     }
 
-    size_t x_i = 0, y_i = 0;
-    for(; x_i < len && x[x_i] == 0; x_i++);
-    for(; y_i < len && y[y_i] == 0; y_i++);
-    if(arr_cmp(x, len, y, len) > 0 && x_i < y_i)
+    size_t x_i = 0, y_i = 0;                             // Подгоняем у делителя разряды до разрядов числителя
+    for(; x_i < M_LEN && x[x_i] == 0; x_i++);
+    for(; y_i < M_LEN && y[y_i] == 0; y_i++);
+    if(arr_cmp(x, M_LEN, y, M_LEN) > 0 && x_i < y_i)
     {
-        shift_left(y, len, y_i - x_i - 1);
+        shift_left(y, M_LEN, y_i - x_i - 1);
         while(x_i < y_i - 1)
         {
             increase_one_with_sign(change_exp, E_LEN, e_sign);
@@ -59,28 +67,28 @@ int division_mantissa(int x[], int y[], int z[], int change_exp[], int *e_sign, 
         }
     }
 
-    division(x, len, y, len, div, len, mod, len);        // Поделили мантиссы
-    arr_cpy(mod, len, x, len);                           // Скопировали остаток, который получился в x для дальнейшего деления
+    division(x, M_LEN, y, M_LEN, div, M_LEN, mod, M_LEN);        // Поделили мантиссы
+    arr_cpy(mod, M_LEN, x, M_LEN);                               // Скопировали остаток, который получился в x для дальнейшего деления
 
-    if(is_null_arr(div, M_LEN + 1))
+    if(is_null_arr(div, M_LEN))
     {
-        shift_left(z, M_LEN + 1, 1);
+        shift_left(z, M_LEN, 1);
         z[M_LEN] = div[0];
         (*i)++;
     }
     else
     {
         size_t k = 0;
-        for(; k < M_LEN + 1 && div[k] == 0; k++);
-        for(; k < M_LEN + 1 && *i < M_LEN + 1; k++)
+        for(; k < M_LEN && div[k] == 0; k++);
+        for(; k < M_LEN && *i < M_LEN; k++)
         {
-            shift_left(z, M_LEN + 1, 1);
-            z[M_LEN] = div[k];
+            shift_left(z, M_LEN, 1);
+            z[M_LEN - 1] = div[k];
             (*i)++;
         }
     }
 
-    if(is_null_arr(mod, M_LEN + 1))
+    if(is_null_arr(mod, M_LEN))
         return 0;
 
     return division_mantissa(x, y, z, change_exp, e_sign, i);
