@@ -78,7 +78,7 @@ int from_str_to_big_double(char s[], big_double_t *x)
 
 void from_big_double_to_str(char s[], big_double_t *x)
 {
-    size_t i = 3, j = 0, k = 0;                         // i - счетчик по строке, j - счетчик по мантиссе, k - счетчик по экспоненте
+    size_t i = 3, j = 1, k = 0;                         // i - счетчик по строке, j - счетчик по мантиссе, k - счетчик по экспоненте
 
     s[0] = (x->is_negative_m == 0) ? '+' : '-';             // определили знак мантиссы
     s[1] = '0';
@@ -90,7 +90,10 @@ void from_big_double_to_str(char s[], big_double_t *x)
     {
         for(; j < M_LEN && x->mantissa[j] == 0; j++);           // нашли, где мантисса заканчивается (чтобы не добавлять лишние нули)
         for(; j < M_LEN; j++, i++)                              // добавили мантиссу
+        {
             s[i] = from_int_to_char_digit(x->mantissa[j]);
+            increase_one_with_sign(x->exponent, E_LEN, &x->is_negative_e);
+        }
     }
 
     s[i] = 'E';                                             // добавили E
@@ -129,6 +132,8 @@ int division_big_double(big_double_t *x, big_double_t *y, big_double_t *z)
 
     division_mantissa(x_m_copy, y_m_copy, z->mantissa, change_exp, &e_sign, &i);
 
+    printf("\nDivision mantissa : DONE\n");
+
     z->is_negative_m = x->is_negative_m != y->is_negative_m;
 
     if(subtract_exponent(x->exponent, x->is_negative_e, y->exponent, y->is_negative_e, t, &t_sign, E_LEN))
@@ -137,7 +142,9 @@ int division_big_double(big_double_t *x, big_double_t *y, big_double_t *z)
     if(subtract_exponent(t, t_sign, change_exp, !e_sign, z->exponent, &(z->is_negative_e), E_LEN))
         return OVERFLOW;
 
-    if(z->mantissa[0] != 0 && z->mantissa[M_LEN] >= 5)
+    printf("\nDivision exponent : DONE\n");
+
+    if(z->mantissa[0] != 0 && z->mantissa[M_LEN - 1] >= 5)
     {
         if(round_shift_right(z->mantissa, M_LEN))
             return OVERFLOW;
@@ -147,7 +154,20 @@ int division_big_double(big_double_t *x, big_double_t *y, big_double_t *z)
 
         if((z->is_negative_e == 0 && increase_by_one(z->exponent, E_LEN)))
             return OVERFLOW;
+        printf("\nRounding : DONE\n");
+    } else if(z->mantissa[0] != 0)
+    {
+        shift_right(z->mantissa, M_LEN, 1);
+        increase_one_with_sign(z->exponent, E_LEN, &z->is_negative_e);
     }
+
+//    while(z->exponent[0] != 0 && z->mantissa[M_LEN - 1] == 0)
+//    {
+//        shift_left(z->mantissa, M_LEN, 1);
+//        increase_one_with_sign(z->exponent, E_LEN, &x->is_negative_e);
+//    }
+    if(z->exponent[0] != 0)
+        return OVERFLOW;
     return EXIT_SUCCESS;
 }
 

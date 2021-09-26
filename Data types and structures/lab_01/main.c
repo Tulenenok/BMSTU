@@ -22,28 +22,35 @@ int main(void)
     printf("Input big_int    : ");
     if((rc = big_int_scan(stdin, &bi)))
     {
-//        if(rc == ERROR_WITH_FILE)
-//            printf("Invalid input big_int, error with reading from file.");
         if(rc == BLANK_STRING)
             printf("Invalid input big_int, input is empty.");
-        if(rc == IS_NOT_BIG_INT)
+        else if(rc == IS_NOT_BIG_INT)
             printf("Invalid input big_int, your input is not big_int number.");
+        else
+            printf("Error with input big_int");
         return rc;
     }
+    printf("\nScan big_int : DONE\n\n");
 
+    printf("                 : s||||5||||0||||5||||0||||5||||0.Es|||||\n");
     printf("Input big_double : ");
     if((rc = big_double_scan(stdin, &bd)))
     {
-//        if(rc == ERROR_WITH_FILE)
-//            printf("Invalid input big_double, error with reading from file.");
         if(rc == BLANK_STRING)
             printf("Invalid input big_double, input is empty.");
-        if(rc == IS_NOT_SCIENTIFIC)
+        else if(rc == IS_NOT_SCIENTIFIC)
             printf("Invalid input big_double, your input is not scientific number.");
-        if(rc == OVERFLOW)
+        else if(rc == OVERFLOW)
             printf("Invalid input big_double, the number is too large.");
+        else if(rc == TOO_LARGE_M)
+            printf("Invalid input big_double, the mantissa is too large.");
+        else if(rc == TOO_LARGE_E)
+            printf("Invalid input big_double, the exponent is too large.");
+        else
+            printf("Error with input big_double.");
         return rc;
     }
+    printf("\nScan big_double : DONE\n");
 
     if((rc = division_bi_bd(&bi, &bd, &res)))
     {
@@ -54,7 +61,8 @@ int main(void)
         return rc;
     }
 
-    printf("Answer : ");
+    printf("                 : s0.||||5||||0||||5||||0||||5||||0E|||||\n");
+    printf("Answer           : ");
     big_double_print(stdout, &res);
 
     return EXIT_SUCCESS;

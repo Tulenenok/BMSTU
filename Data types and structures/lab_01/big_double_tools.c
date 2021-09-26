@@ -2,48 +2,16 @@
 #include "big_double.h"
 #include "big_double_tools.h"
 
-int from_bd_to_bd_tool(big_double_t *x, bd_tool_t *y)
+void print_arr(int arr[], size_t len)
 {
-    y->is_negative_m = x->is_negative_m;
-    y->is_negative_e = x->is_negative_e;
-    arr_cpy(x->exponent, E_LEN, y->exponent, E_LEN);
-    arr_cpy_to_end(x->mantissa, M_LEN, y->mantissa, M_LEN + 1);
-
-    size_t i = M_LEN;
-    for(; i > 0  && x->mantissa[i - 1] == 0; i--);
-    for(; i > 0; i--)
-        if(reduce_one_with_sign(y->exponent, E_LEN, &(y->is_negative_e)))
-            return OVERFLOW;
-    return EXIT_SUCCESS;
-}
-
-int from_bd_tool_to_bd(bd_tool_t *x, big_double_t *y)
-{
-    if(x->mantissa[0] != 0 && x->mantissa[M_LEN] >= 5 && rounding(x->mantissa, M_LEN))
-    {
-        if(x->is_negative_e == 1)
-            reduce_by_one(x->exponent, E_LEN);
-
-        if((x->is_negative_e == 0 && increase_by_one(x->exponent, E_LEN)))
-            return OVERFLOW;
-    }
-
-    y->is_negative_m = x->is_negative_m;
-    y->is_negative_e = x->is_negative_e;
-    arr_cpy(x->exponent, E_LEN, y->exponent, E_LEN);
-    arr_cpy_to_start(x->mantissa, M_LEN + 1, y->mantissa, M_LEN);
-
-    size_t i = 0;
-    for(; i < M_LEN + 1  && x->mantissa[i] == 0; i++);
-    for(; i < M_LEN + 1; i++)
-        if(increase_one_with_sign(y->exponent, E_LEN, &(y->is_negative_e)))
-            return OVERFLOW;
-    return EXIT_SUCCESS;
+    for(size_t i = 0; i < len; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
 }
 
 int division_mantissa(int x[], int y[], int z[], int change_exp[], int *e_sign, size_t *i)
 {
-    if(*i > M_LEN + 1)                                   // Выход из рекурсии (заполнили всю мантиссу)
+    if(*i >= M_LEN)                                   // Выход из рекурсии (заполнили всю мантиссу)
         return 0;
 
     int div[M_LEN] = {0}, mod[M_LEN] = {0};              // Массивы для промежуточных вычислений
@@ -67,9 +35,23 @@ int division_mantissa(int x[], int y[], int z[], int change_exp[], int *e_sign, 
         }
     }
 
-    division(x, M_LEN, y, M_LEN, div, M_LEN, mod, M_LEN);        // Поделили мантиссы
-    arr_cpy(mod, M_LEN, x, M_LEN);                               // Скопировали остаток, который получился в x для дальнейшего деления
+//    printf("X = ");
+//    print_arr(x, M_LEN);
+//    printf("Y = ");
+//    print_arr(y, M_LEN);
 
+    division(x, M_LEN, y, M_LEN, div, M_LEN, mod, M_LEN);        // Поделили мантиссы
+//    printf("D = ");
+//    print_arr(div, M_LEN);
+//    printf("M = ");
+//    print_arr(mod, M_LEN);
+//    printf("Z = ");
+//    print_arr(z, M_LEN);
+//    printf("I = %zu\n", *i);
+//    printf("C = %d\n", *change_exp);
+//    printf("\n");
+
+    arr_cpy(mod, M_LEN, x, M_LEN);                               // Скопировали остаток, который получился в x для дальнейшего деления
     if(is_null_arr(div, M_LEN))
     {
         shift_left(z, M_LEN, 1);
