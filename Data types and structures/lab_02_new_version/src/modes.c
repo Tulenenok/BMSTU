@@ -1,6 +1,8 @@
 #include "../inc/modes.h"
 #include <assert.h>
 
+#define RETURN_FOR 1000
+
 void mode_add_elem(flat_t flats[], int *count_flats)
 {
     if (input_flat(flats, (*count_flats)++, 1))
@@ -139,8 +141,8 @@ int mode_print_memory_time_report(FILE *f, flat_t flats[], key_t keys[], int *co
     clock_t start, end;
     double time;
 
-    double t_b_d, t_b_k, t_q_d, t_q_k;
-    long m_b_d, m_b_k, m_q_d, m_q_k;
+    double t_b_d = 0, t_b_k = 0, t_q_d = 0, t_q_k = 0;
+    long m_b_d = 0, m_b_k = 0, m_q_d = 0, m_q_k = 0;
 
     rewind(f);
     if (!(*count_flats = read_data_from_file(f, flats)))
@@ -149,60 +151,84 @@ int mode_print_memory_time_report(FILE *f, flat_t flats[], key_t keys[], int *co
         return EXIT_FAILURE;
     }
 
-    start = clock();
-    bubble_sort_flats(flats, *count_flats);
-    end = clock();
+    for(int i = 0; i < RETURN_FOR; i++)
+    {
+        start = clock();
+        bubble_sort_flats(flats, *count_flats);
+        end = clock();
 
-    t_b_d = ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
-    m_b_d = (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]);
+        t_b_d += ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
+        m_b_d += (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]);
 
-    rewind(f);
+        rewind(f);
+    }
+    t_b_d /= RETURN_FOR;
+    m_b_d /= RETURN_FOR;
+
     if (!(*count_flats = read_data_from_file(f, flats)))
     {
         printf("Input data                ----> FAILURE");
         return EXIT_FAILURE;
     }
 
-    start = clock();
-    create_key_table(flats, keys, *count_flats), (*is_keys_create)++;
-    bubble_sort_keys(keys, *count_flats);
-    end = clock();
+    for(int i = 0; i < RETURN_FOR; i++)
+    {
+        start = clock();
+        create_key_table(flats, keys, *count_flats), (*is_keys_create)++;
+        bubble_sort_keys(keys, *count_flats);
+        end = clock();
 
-    t_b_k = ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
-    m_b_k = (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]) + (&keys[*count_flats] - &keys[0]) * sizeof(keys[0]);
+        t_b_k += ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
+        m_b_k += (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]) + (&keys[*count_flats] - &keys[0]) * sizeof(keys[0]);
 
-    rewind(f);
+        rewind(f);
+    }
+    t_b_k /= RETURN_FOR;
+    m_b_k /= RETURN_FOR;
+
     if (!(*count_flats = read_data_from_file(f, flats)))
     {
         printf("Input data                ----> FAILURE");
         return EXIT_FAILURE;
     }
 
-    start = clock();
-    qsort(flats, *count_flats, sizeof(flats[0]), flat_area_cmp);
-    end = clock();
+    for(int i = 0; i < RETURN_FOR; i++)
+    {
+        start = clock();
+        qsort(flats, *count_flats, sizeof(flats[0]), flat_area_cmp);
+        end = clock();
 
-    t_q_d = ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
-    m_q_d = (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]);
+        t_q_d += ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
+        m_q_d += (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]);
 
-    rewind(f);
+        rewind(f);
+    }
+    t_q_d /= RETURN_FOR;
+    m_q_d /= RETURN_FOR;
+
     if (!(*count_flats = read_data_from_file(f, flats)))
     {
         printf("Input data                ----> FAILURE");
         return EXIT_FAILURE;
     }
 
-    start = clock();
-    create_key_table(flats, keys, *count_flats), (*is_keys_create)++;
-    qsort(keys, *count_flats, sizeof(keys[0]), key_area_cmp);
-    end = clock();
+    for(int i = 0; i < RETURN_FOR; i++)
+    {
+        start = clock();
+        create_key_table(flats, keys, *count_flats), (*is_keys_create)++;
+        qsort(keys, *count_flats, sizeof(keys[0]), key_area_cmp);
+        end = clock();
 
-    t_q_k = ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
-    m_q_k = (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]) + (&keys[*count_flats] - &keys[0]) * sizeof(keys[0]);
+        t_q_k += ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
+        m_q_k += (&flats[*count_flats] - &flats[0]) * sizeof(flats[0]) + (&keys[*count_flats] - &keys[0]) * sizeof(keys[0]);
+    }
+    t_q_k /= RETURN_FOR;
+    m_q_k /= RETURN_FOR;
+
 
     printf("\nResults (%d flats):\n\n"
            "             bub. sort (dataset)     bub. sort (keys)     qsort (dataset)     qsort (keys)\n"
            "time (ms)    %-23.6lf %-20.6lf %-19.6lf %-19.6lf\n"
-           "memory (B)   %-23ld %-20ld %-19ld %-19ld\n", *count_flats, t_b_d, t_b_k, t_q_d, t_q_k, m_b_d, m_b_k, m_q_d, m_q_k);
+           "memory (B)   %-23ld %-20ld %-19ld %-19ld\n", *count_flats, t_b_k, t_b_d, t_q_k, t_q_d, m_b_d, m_b_k, m_q_d, m_q_k);
     return EXIT_SUCCESS;
 }
