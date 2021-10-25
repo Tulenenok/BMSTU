@@ -20,4 +20,6 @@ void print_matrix_to_file(FILE* const f, const matrix_t* const matrix);
 
 int multiply_matrix(matrix_t* m_A, matrix_t* m_B, matrix_t *res);
 
+unsigned long size_of_matrix(matrix_t *m);
+
 #endif //LAB_03_MATRIX_H

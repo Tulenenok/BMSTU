@@ -237,3 +237,8 @@ void print_index_matrix_in_usual_format(FILE *f, index_matrix_t *m)
         fprintf(f, "\n");
     }
 }
+
+unsigned long size_of_index_matrix(index_matrix_t *m)
+{
+    return sizeof(size_t) * 3 + sizeof(int *) * 3;
+}

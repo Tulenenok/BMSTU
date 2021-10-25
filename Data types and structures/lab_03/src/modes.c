@@ -4,6 +4,7 @@
 #include "../inc/sparse_matrix.h"
 #include "../inc/matrix.h"
 #include "../inc/index_matrix.h"
+#include "../inc/take_time.h"
 
 int mode_print_matrix_from_file_to_sparse_matrix(char filename[], int *num_matrix)
 {
@@ -564,5 +565,45 @@ int mode_generate_vector(bool *is_vector_input)
     printf("\nGenerate vector         ---> SUCCESS\n");
 
     *is_vector_input = true;
+    return EXIT_SUCCESS;
+}
+
+int mode_report(bool is_matrix_input, bool is_vector_input)
+{
+    take_time_t sparse_time = { 0 };
+    take_time_t classic_time = { 0 };
+
+    int rc;
+    if((rc = multiply_sparse_method_with_time(is_matrix_input, is_vector_input, &sparse_time)))
+    {
+        printf("Invalid multiply for sparse method");
+        return rc;
+    }
+
+    if((rc = multiply_classic_method_with_time(is_matrix_input, is_vector_input, &classic_time)))
+    {
+        printf("Invalid multiply for classic method");
+        return rc;
+    }
+
+    unsigned long sparse_memory = 0;
+    unsigned long classic_memory = 0;
+    if((rc = multiply_sparse_method_with_memory(is_matrix_input, is_vector_input, &sparse_memory)))
+    {
+        printf("Invalid find memory for sparse");
+        return rc;
+    }
+
+    if((rc = multiply_classic_method_with_memory(is_matrix_input, is_vector_input, &classic_memory)))
+    {
+        printf("Invalid find memory for classic");
+        return rc;
+    }
+
+
+    printf("Method       |         Time      |     Memory     |\n");
+    printf("Sparse       | %10.3f | %10.3ul  |\n", sparse_time.time, (unsigned int)sparse_memory);
+    printf("Classic      | %10.3f | %10.3ul  |\n", classic_time.time, (unsigned int)classic_memory);
+
     return EXIT_SUCCESS;
 }

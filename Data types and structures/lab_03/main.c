@@ -24,6 +24,7 @@
 #include "inc/index_matrix.h"
 
 #define INVALID_FILENAME 3
+#define BUF "10000000000000000"
 
 
 int menu(mode_t mode, bool *matrix_read, bool *vector_read)
@@ -53,8 +54,10 @@ int menu(mode_t mode, bool *matrix_read, bool *vector_read)
     else if(MULTIPLY_SPARSE_METHOD == mode)
         mode_multiply_sparse_method(*matrix_read, *vector_read);
     else if(MULTIPLY_CLASSIC_METHOD == mode)
-        mode_multiply_classic_method(*matrix_read, *vector_read);
-    return EXIT_SUCCESS;
+        rc = mode_multiply_classic_method(*matrix_read, *vector_read);
+    else if(MAKE_REPORT == mode)
+        rc = mode_report(*matrix_read, *vector_read);
+    return rc;
 }
 
 int main(void) {
@@ -66,7 +69,7 @@ int main(void) {
 
  //   clean_directory(SHARED_DIRECTORY);
 
-    while(!rc)
+    while(true)
     {
         printf("Menu:\n"
                "     0  - EXIT\n"
@@ -82,10 +85,11 @@ int main(void) {
                "     10 - Print matrix and vector in sparse format\n"
                "     11 - Multiply matrix and vector use sparse method\n"
                "     12 - Multiply matrix and vector use classic method\n"
+               "     13 - Print report about time and memory\n"
                "\nInput command >>>");
 
         mode_t mode = EXIT;
-        if(1 != scanf("%d", &mode))
+        if(scanf("%d", &mode) != 1)
         {
             printf("Input mode:     ----> FAILURE\n");
             continue;
@@ -97,6 +101,8 @@ int main(void) {
         printf("\n");
         rc = menu(mode, &is_matrix_input, &is_vector_input);
         printf("\n");
+
+        setbuf(stdin, NULL);
     }
     return rc;
 }

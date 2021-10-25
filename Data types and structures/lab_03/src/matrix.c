@@ -112,9 +112,14 @@ int multiply_matrix(matrix_t* m_A, matrix_t* m_B, matrix_t *res)
 
     for (size_t i = 0; i < m_A->rows; i++)
         for (size_t j = 0; j < m_B->columns; j++)
-            res->data[i][j] = prod_row_col(m_A->data, i, m_B->data, j, m_A->rows);
+            res->data[i][j] = prod_row_col(m_A->data, i, m_B->data, j, m_A->columns);
 
     return EXIT_SUCCESS;
 }
 
+
+unsigned long size_of_matrix(matrix_t *m)
+{
+    return sizeof(size_t) * 2 + sizeof(int **) * m->rows * m->columns;
+}
 
