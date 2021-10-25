@@ -1,6 +1,7 @@
 #include "../inc/tools.h"
 #include "dirent.h"
 #include "../inc/index_matrix.h"
+#include "../inc/node.h"
 
 
 void concatenate_strings(char str1[], char str2[], char *result_str)
@@ -175,8 +176,6 @@ int count_not_null_elems_in_file(FILE *const f, const size_t r, const size_t c, 
             if(0 != t)
                 (*count)++;
         }
-    if(!feof(f) || ferror(f))
-        return INVALID_MATRIX;
 
     return EXIT_SUCCESS;
 }
@@ -379,4 +378,39 @@ int save_matrix_to_file(void)
     fclose(fout);
 
     return EXIT_SUCCESS;
+}
+
+int read_data_from_node(Node_t *head, int ind)
+{
+    Node_t cur = *head;
+    for (int i = 0; i < ind; ++i)
+        cur = *cur.next;
+    return cur.data;
+}
+
+void write_node(Node_t *head, int ind, int data)
+{
+    Node_t *cur = head;
+    for (int i = 0; i < ind; ++i)
+        cur = cur->next;
+    cur->data = data;
+}
+
+void generate_matrix(int c, int r, int d)
+{
+    char command[100] = "python ..\\generate\\gen.py";
+    char args[50];
+    sprintf(args, " %d %d %d", c, r, d);
+    strcat(command, args);
+    system(command);
+}
+
+void generate_vector(int r, int d)
+{
+
+    char command[100] = "python ..\\generate\\gen_v.py";
+    char args[50];
+    sprintf(args, " %d %d", r, d);
+    strcat(command, args);
+    system(command);
 }

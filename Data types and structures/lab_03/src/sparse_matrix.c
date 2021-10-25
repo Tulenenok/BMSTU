@@ -63,19 +63,45 @@ int input_sparse_matrix_from_file(FILE *f, sparse_matrix_t *matrix)
     return EXIT_SUCCESS;
 }
 
+int input_sparse_vector_from_file(FILE *f, sparse_matrix_t *matrix)
+{
+    size_t r, c;
+    int rc;
+
+    if((rc = input_size_of_matrix(f, &r, &c, false)) || r == 0 || c != 1)
+        return rc;
+
+    if((rc = count_not_null_elems_in_file(f, r, c, &matrix->count_not_null)))
+        return rc;
+
+    matrix->values = calloc(matrix->count_not_null, sizeof(int));
+    if(!matrix->values)
+        return ERROR_ALLOCATION;
+
+    matrix->rows = calloc(matrix->count_not_null, sizeof(size_t));
+    if(!matrix->rows)
+        return ERROR_ALLOCATION;
+
+    malloc_for_node_list(c, &matrix->columns);
+
+    input_matrix_help_func(f, matrix);
+
+    return EXIT_SUCCESS;
+}
+
 void print_sparse_matrix_to_file(FILE *f, sparse_matrix_t *matrix)
 {
-    printf("\nA (vector with not null elems) : ");
+    printf("\nA (vector with not null elems) : \n");
     print_int_array(f, matrix->count_not_null, matrix->values);
 
     fprintf(f, "\n");
 
-    printf("AI (vector with rows of not null elems) : ");
+    printf("AI (vector with rows of not null elems) : \n");
     print_size_t_array(f, matrix->count_not_null, matrix->rows);
 
     fprintf(f, "\n");
 
-    printf("AJ (vector with index row that begin column) : ");
+    printf("AJ (vector with index row that begin column) : \n");
     print_node_list(f, matrix->columns);
 
     fprintf(f, "\n");

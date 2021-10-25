@@ -20,6 +20,10 @@ int input_sparse_matrix_from_file(FILE *f, sparse_matrix_t *matrix);
 
 void print_sparse_matrix_to_file(FILE *f, sparse_matrix_t *matrix);
 
+int input_sparse_vector_from_file(FILE *f, sparse_matrix_t *matrix);
+
 void free_matrix(sparse_matrix_t matrix);
+
+int is_vector(sparse_matrix_t *x);
 
 #endif //LAB_03_SPARSE_MATRIX_H

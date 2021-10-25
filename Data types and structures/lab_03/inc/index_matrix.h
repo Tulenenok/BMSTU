@@ -28,4 +28,6 @@ void free_index_matrix(index_matrix_t *m);
 
 int create_new_index_matrix(index_matrix_t *m, size_t count_elems);
 
+void print_index_matrix_in_usual_format(FILE *f, index_matrix_t *m);
+
 #endif //LAB_03_INDEX_MATRIX_H

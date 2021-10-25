@@ -47,4 +47,8 @@ int save_vector_to_file(void);
 
 int save_matrix_to_file(void);
 
+void generate_matrix(int c, int r, int d);
+
+void generate_vector(int r, int d);
+
 #endif //LAB_03_TOOLS_H

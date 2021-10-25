@@ -218,3 +218,22 @@ int create_new_index_matrix(index_matrix_t *m, size_t count_elems)
         return rc;
     return EXIT_SUCCESS;
 }
+
+void print_index_matrix_in_usual_format(FILE *f, index_matrix_t *m)
+{
+    size_t curr_i = 0;
+
+    fprintf(f, "%zu %zu\n", m->count_rows, m->count_columns);
+
+    for(size_t i = 0; i < m->count_rows; i++)
+    {
+        for (size_t j = 0; j < m->count_columns; j++)
+        {
+            if (m->rows[curr_i] == i && m->columns[curr_i] == j)
+                fprintf(f, "%d ", m->elems[curr_i++]);
+            else
+                fprintf(f, "0 ");
+        }
+        fprintf(f, "\n");
+    }
+}

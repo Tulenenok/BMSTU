@@ -3,6 +3,7 @@
 #include "../inc/modes.h"
 #include "../inc/sparse_matrix.h"
 #include "../inc/matrix.h"
+#include "../inc/index_matrix.h"
 
 int mode_print_matrix_from_file_to_sparse_matrix(char filename[], int *num_matrix)
 {
@@ -250,7 +251,7 @@ int mode_print_classic_matrix(bool is_matrix_input)
         }
 
         matrix_t m;
-        if(!input_matrix_from_file(f, &m))
+        if(input_matrix_from_file(f, &m))
         {
             printf("FAILURE\n");
             fclose(f);
@@ -258,7 +259,7 @@ int mode_print_classic_matrix(bool is_matrix_input)
         }
 
         fclose(f);
-        printf("\nYOUR MATRIX:");
+        printf("\nYOUR MATRIX:\n");
         print_matrix_to_file(stdout, &m);
         printf("\n");
         free_classic_matrix(&m);
@@ -280,7 +281,7 @@ int mode_print_classic_vector(bool is_vector_input)
         }
 
         matrix_t m;
-        if(!input_matrix_from_file(f, &m))
+        if(input_matrix_from_file(f, &m))
         {
             printf("FAILURE\n");
             fclose(f);
@@ -289,7 +290,7 @@ int mode_print_classic_vector(bool is_vector_input)
 
         fclose(f);
 
-        printf("\nYOUR VECTOR:");
+        printf("\nYOUR VECTOR:\n");
         print_matrix_to_file(stdout, &m);
         printf("\n");
         free_classic_matrix(&m);
@@ -301,4 +302,267 @@ void mode_print_classic(bool is_matrix_input, bool is_vector_input)
 {
     mode_print_classic_matrix(is_matrix_input);
     mode_print_classic_vector(is_vector_input);
+}
+
+int mode_print_sparse_matrix(bool is_matrix_input)
+{
+    if(!is_matrix_input)
+        printf("\nMatrix was not input\n");
+    else
+    {
+        FILE *f = fopen("..\\shared\\matrix.txt", "r");
+        if(!f)
+        {
+            printf("Problems with print\n");
+            return EXIT_FAILURE;
+        }
+
+        int rc;
+        sparse_matrix_t matrix = { 0 };
+        if((rc = input_sparse_matrix_from_file(f, &matrix)))
+        {
+            printf("Input matrix:                ----> FAILURE\n");
+            return rc;
+        }
+
+        printf("\nYOUR MATRIX:\n");
+        print_sparse_matrix_to_file(stdout, &matrix);
+
+        free_matrix(matrix);
+        fclose(f);
+    }
+    return EXIT_SUCCESS;
+}
+
+
+int mode_print_sparse_vector(bool is_vector_input)
+{
+    if(!is_vector_input)
+        printf("\nVector was not input\n");
+    else
+    {
+        FILE *f = fopen("..\\shared\\vector.txt", "r");
+        if(!f)
+        {
+            printf("Problems with print\n");
+            return EXIT_FAILURE;
+        }
+
+        int rc;
+        sparse_matrix_t matrix = { 0 };
+        if((rc = input_sparse_vector_from_file(f, &matrix)))
+        {
+            printf("Input vector:                ----> FAILURE\n");
+            return rc;
+        }
+
+        fclose(f);
+
+        printf("\nYOUR VECTOR:\n");
+        print_sparse_matrix_to_file(stdout, &matrix);
+
+        free_matrix(matrix);
+        fclose(f);
+    }
+    return EXIT_SUCCESS;
+}
+
+void mode_print_sparse(bool is_matrix_input, bool is_vector_input)
+{
+    mode_print_sparse_matrix(is_matrix_input);
+    mode_print_sparse_vector(is_vector_input);
+}
+
+
+int mode_multiply_sparse_method(bool is_matrix_input, bool is_vector_input)
+{
+    if(!is_vector_input)
+    {
+        printf("\nVector was not input\n");
+        return EXIT_SUCCESS;
+    }
+
+    if(!is_matrix_input)
+    {
+        printf("\nMatrix was not input\n");
+        return EXIT_SUCCESS;
+    }
+
+    FILE *f_matrix = fopen("..\\shared\\matrix.txt", "r");
+    if(!f_matrix)
+    {
+        printf("FAILURE\n");
+        return EXIT_FAILURE;
+    }
+
+    index_matrix_t mat;
+    if(input_index_matrix_from_file(f_matrix, &mat))
+    {
+        printf("ERROR WITH MATRIX\n");
+        fclose(f_matrix);
+        return EXIT_FAILURE;
+    }
+
+    fclose(f_matrix);
+
+    FILE *f_vector = fopen("..\\shared\\vector.txt", "r");
+    if(!f_vector)
+    {
+        printf("FAILURE\n");
+        return EXIT_FAILURE;
+    }
+
+    index_matrix_t vec;
+    if(input_index_matrix_from_file(f_vector, &vec))
+    {
+        printf("ERROR WITH VECTOR\n");
+        fclose(f_vector);
+        return EXIT_FAILURE;
+    }
+
+    fclose(f_vector);
+
+    index_matrix_t res;
+    if(multiply_index_matrix(&mat, &vec, &res))
+    {
+        printf("ERROR WITH MULTIPLY\n");
+        return EXIT_FAILURE;
+    }
+
+    FILE *fout = fopen("..\\shared\\multiply_sparse.txt", "w");
+    print_index_matrix_in_usual_format(fout, &res);
+
+    fclose(fout);
+
+    sparse_matrix_t m;
+    FILE *f = fopen("..\\shared\\multiply_sparse.txt", "r");
+    if(input_sparse_vector_from_file(f, &m))
+    {
+        printf("STRANGE ERROR, DONT CRY");
+        fclose(f);
+        return EXIT_FAILURE;
+    }
+
+    printf("Result matrix:\n");
+    print_sparse_matrix_to_file(stdout, &m);
+
+    fclose(f);
+    return EXIT_SUCCESS;
+}
+
+int mode_multiply_classic_method(bool is_matrix_input, bool is_vector_input)
+{
+    if(!is_vector_input)
+    {
+        printf("\nVector was not input\n");
+        return EXIT_SUCCESS;
+    }
+
+    if(!is_matrix_input)
+    {
+        printf("\nMatrix was not input\n");
+        return EXIT_SUCCESS;
+    }
+
+    FILE *f_matrix = fopen("..\\shared\\matrix.txt", "r");
+    if(!f_matrix)
+    {
+        printf("FAILURE\n");
+        return EXIT_FAILURE;
+    }
+
+    matrix_t mat;
+    if( input_matrix_from_file(f_matrix, &mat))
+    {
+        printf("ERROR WITH MATRIX\n");
+        fclose(f_matrix);
+        return EXIT_FAILURE;
+    }
+
+    fclose(f_matrix);
+
+    FILE *f_vector = fopen("..\\shared\\vector.txt", "r");
+    if(!f_vector)
+    {
+        printf("FAILURE\n");
+        return EXIT_FAILURE;
+    }
+
+    matrix_t vec;
+    if(input_matrix_from_file(f_vector, &vec) || vec.rows == 0 ||vec.columns != 1)
+    {
+        printf("ERROR WITH VECTOR\n");
+        fclose(f_vector);
+        return EXIT_FAILURE;
+    }
+
+    fclose(f_vector);
+
+    matrix_t res;
+    if(multiply_matrix(&mat, &vec, &res))
+    {
+        printf("ERROR WITH MULTIPLY\n");
+        return EXIT_FAILURE;
+    }
+
+    FILE *fout = fopen("..\\shared\\multiply_classic.txt", "w");
+    print_matrix_to_file(fout, &res);
+
+    fclose(fout);
+
+    printf("\nYOUR MATRIX:\n");
+    print_matrix_to_file(stdout, &res);
+    return EXIT_SUCCESS;
+}
+
+int mode_generate_matrix(bool *is_matrix_input)
+{
+    if(*is_matrix_input)
+        if(help_func_input_matrix_from_file())
+            return EXIT_FAILURE;
+
+    size_t r = 0, c = 0, d = 0;
+    if(input_size_of_matrix(stdin, &r, &c, true))
+        return EXIT_FAILURE;
+
+    printf("Input density:");
+    if(INPUT_ONE_ELEM != scanf("%zu", &d))
+    {
+        printf("Invalid density\n");
+        return EXIT_FAILURE;
+    }
+    generate_matrix((int)c, (int)r, (int)d);
+
+    printf("\nGenerate matrix         ---> SUCCESS\n");
+
+    *is_matrix_input = true;
+    return EXIT_SUCCESS;
+}
+
+int mode_generate_vector(bool *is_vector_input)
+{
+    if(*is_vector_input)
+        if(help_func_input_vector_from_file())
+            return EXIT_FAILURE;
+
+    size_t r = 0, d = 0;
+    printf("Input count rows:");
+    if(INPUT_ONE_ELEM != scanf("%zu", &r))
+    {
+        printf("Invalid count rows\n");
+        return EXIT_FAILURE;
+    }
+
+    printf("Input density:");
+    if(INPUT_ONE_ELEM != scanf("%zu", &d))
+    {
+        printf("Invalid density\n");
+        return EXIT_FAILURE;
+    }
+    generate_vector((int)r, (int)d);
+
+    printf("\nGenerate vector         ---> SUCCESS\n");
+
+    *is_vector_input = true;
+    return EXIT_SUCCESS;
 }
