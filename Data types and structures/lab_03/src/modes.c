@@ -423,7 +423,18 @@ int mode_multiply_sparse_method(bool is_matrix_input, bool is_vector_input)
 
     fclose(f_vector);
 
+//    printf("[DBG]: Matrix:\n");
+//    print_index_matrix(stdout, &mat);
+//    printf("[DBG]: Vector:\n");
+//    print_index_matrix(stdout, &vec);
+//    printf("\n");
+
     index_matrix_t res;
+    if(mat.count_columns != vec.count_rows)
+    {
+        printf("Invalid sizes of matrix and vector");
+        return EXIT_FAILURE;
+    }
     if(multiply_index_matrix(&mat, &vec, &res))
     {
         printf("ERROR WITH MULTIPLY\n");
@@ -500,6 +511,11 @@ int mode_multiply_classic_method(bool is_matrix_input, bool is_vector_input)
     fclose(f_vector);
 
     matrix_t res;
+    if(mat.columns != vec.rows)
+    {
+        printf("Invalid sizes of matrix and vector");
+        return EXIT_FAILURE;
+    }
     if(multiply_matrix(&mat, &vec, &res))
     {
         printf("ERROR WITH MULTIPLY\n");
@@ -576,13 +592,13 @@ int mode_report(bool is_matrix_input, bool is_vector_input)
     int rc;
     if((rc = multiply_sparse_method_with_time(is_matrix_input, is_vector_input, &sparse_time)))
     {
-        printf("Invalid multiply for sparse method");
+        printf("\nInvalid multiply for sparse method\n");
         return rc;
     }
 
     if((rc = multiply_classic_method_with_time(is_matrix_input, is_vector_input, &classic_time)))
     {
-        printf("Invalid multiply for classic method");
+        printf("\nInvalid multiply for classic method\n");
         return rc;
     }
 
@@ -590,20 +606,20 @@ int mode_report(bool is_matrix_input, bool is_vector_input)
     unsigned long classic_memory = 0;
     if((rc = multiply_sparse_method_with_memory(is_matrix_input, is_vector_input, &sparse_memory)))
     {
-        printf("Invalid find memory for sparse");
+        printf("\nInvalid find memory for sparse\n");
         return rc;
     }
 
     if((rc = multiply_classic_method_with_memory(is_matrix_input, is_vector_input, &classic_memory)))
     {
-        printf("Invalid find memory for classic");
+        printf("\nInvalid find memory for classic\n");
         return rc;
     }
 
 
-    printf("Method       |         Time      |     Memory     |\n");
-    printf("Sparse       | %10.3f | %10.3ul  |\n", sparse_time.time, (unsigned int)sparse_memory);
-    printf("Classic      | %10.3f | %10.3ul  |\n", classic_time.time, (unsigned int)classic_memory);
+    printf("Method                Time           Memory     \n");
+    printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)sparse_time.time, sparse_memory);
+    printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)classic_time.time, classic_memory);
 
     return EXIT_SUCCESS;
 }

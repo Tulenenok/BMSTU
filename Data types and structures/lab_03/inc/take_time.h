@@ -11,7 +11,7 @@ typedef struct
     int count_return_for;
     clock_t start;
     clock_t end;
-    double time;
+    long double time;
 } take_time_t;
 
 int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input, take_time_t *take_time);

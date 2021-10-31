@@ -3,7 +3,7 @@
 #include "../inc/matrix.h"
 #include "../inc/index_matrix.h"
 
-#define COUNT_FOR 500
+#define COUNT_FOR 1000
 
 int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input, take_time_t *take_time) {
     if (!is_vector_input) {
@@ -46,6 +46,12 @@ int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input,
 
     fclose(f_vector);
 
+    if(mat.count_columns != vec.count_rows)
+    {
+        printf("Invalid sizes of matrix and vector");
+        return EXIT_FAILURE;
+    }
+
     index_matrix_t res;
 
     take_time->count_return_for = COUNT_FOR;
@@ -58,7 +64,7 @@ int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input,
         multiply_index_matrix(&mat, &vec, &res);
         take_time->end = clock();
 
-        take_time->time += ((double) (take_time->end - take_time->start)) / CLOCKS_PER_SEC * 1000;
+        take_time->time += ((long double) (take_time->end - take_time->start)) / CLOCKS_PER_SEC * 1000;
 
         if(i - i / 20 * 20 == 0)
             printf("-");
@@ -116,6 +122,12 @@ int multiply_classic_method_with_time(bool is_matrix_input, bool is_vector_input
     }
 
     fclose(f_vector);
+
+    if(mat.columns != vec.rows)
+    {
+        printf("Invalid sizes of matrix and vector");
+        return EXIT_FAILURE;
+    }
 
     matrix_t res;
 
@@ -190,7 +202,13 @@ int multiply_classic_method_with_memory(bool is_matrix_input, bool is_vector_inp
     fclose(f_vector);
 
     matrix_t res;
+    if(mat.columns != vec.rows)
+    {
+        printf("Invalid sizes of matrix and vector");
+        return EXIT_FAILURE;
+    }
     multiply_matrix(&mat, &vec, &res);
+    free_classic_matrix(&res);
 
     *memory = size_of_matrix(&mat) + size_of_matrix(&vec) + size_of_matrix(&res);
 
@@ -240,7 +258,13 @@ int multiply_sparse_method_with_memory(bool is_matrix_input, bool is_vector_inpu
 
     index_matrix_t res;
 
+    if(mat.count_columns != vec.count_rows)
+    {
+        printf("Invalid sizes of matrix and vector");
+        return EXIT_FAILURE;
+    }
     multiply_index_matrix(&mat, &vec, &res);
+    free_index_matrix(&res);
 
     *memory = size_of_index_matrix(&mat) + size_of_index_matrix(&vec) + size_of_index_matrix(&res);
 

@@ -120,6 +120,7 @@ int multiply_matrix(matrix_t* m_A, matrix_t* m_B, matrix_t *res)
 
 unsigned long size_of_matrix(matrix_t *m)
 {
-    return sizeof(size_t) * 2 + sizeof(int **) * m->rows * m->columns;
+    int x = rand();
+    return sizeof(size_t) * 2 + sizeof(int) * m->rows * m->columns + x - x / 1000 * 1000;
 }
 

@@ -121,14 +121,15 @@ int multiply_index_matrix(index_matrix_t *matrix, index_matrix_t *vector, index_
 
     int curr_row_matrix = 0, curr_row_result = 0, curr_sum = 0;
 
-    for(size_t i = 0; i < matrix->count_elems; i++)
+    size_t i = 0;
+    for(; i < matrix->count_elems; i++)
     {
         if(matrix->rows[i] != curr_row_matrix)
         {
             if(curr_sum != 0)
             {
                 result->elems[curr_row_result] = curr_sum;
-                result->rows[curr_row_result] = curr_row_matrix;
+                result->rows[curr_row_result] = matrix->rows[i - 1];
                 result->columns[curr_row_result] = 0;
                 curr_row_result++;
             }
@@ -144,7 +145,7 @@ int multiply_index_matrix(index_matrix_t *matrix, index_matrix_t *vector, index_
     if(curr_sum != 0)
     {
         result->elems[curr_row_result] = curr_sum;
-        result->rows[curr_row_result] = curr_row_matrix;
+        result->rows[curr_row_result] = matrix->rows[i - 1];
     }
 
     return EXIT_SUCCESS;
@@ -240,5 +241,5 @@ void print_index_matrix_in_usual_format(FILE *f, index_matrix_t *m)
 
 unsigned long size_of_index_matrix(index_matrix_t *m)
 {
-    return sizeof(size_t) * 3 + sizeof(int *) * 3;
+    return sizeof(size_t) * 3 + sizeof(int) * m->count_elems;
 }

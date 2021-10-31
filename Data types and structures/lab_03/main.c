@@ -26,6 +26,13 @@
 #define INVALID_FILENAME 3
 #define BUF "10000000000000000"
 
+void clean_stdin(void)
+{
+    int c;
+    do {
+        c = getchar();
+    } while (c != '\n' && c != EOF);
+}
 
 int menu(mode_t mode, bool *matrix_read, bool *vector_read)
 {
@@ -102,7 +109,8 @@ int main(void) {
         rc = menu(mode, &is_matrix_input, &is_vector_input);
         printf("\n");
 
-        setbuf(stdin, NULL);
+//        setbuf(stdin, NULL);
+        clean_stdin();
     }
     return rc;
 }

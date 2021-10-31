@@ -285,9 +285,12 @@ int input_vector(int r, int c)
     FILE *fv;
     int x;
 
-    printf("Number of nunnul elems (vector) (max: %d) >> ", r);
-    if(scanf("%d", &count) != 1 || count < 1 || count > r)
+    printf("Number of not null elems (vector) (max: %d) >> ", r);
+    if(scanf("%d", &count) != 1 || count < 0 || count > r)
+    {
+        printf("\nInvalid count not null elems\n");
         return 1;
+    }
     printf("   |r el\n");
     for (int i = 0; i < count; ++i)
     {
