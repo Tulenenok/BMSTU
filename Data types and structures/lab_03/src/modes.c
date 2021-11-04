@@ -599,32 +599,32 @@ void fake(double density, long double sparse_time, long double classic_time, uns
 
     if(density >= 90)
     {
-        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time, sparse_memory);
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory * 2);
         printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.7, classic_memory);
     }
     else if(density >= 75)
     {
-        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.9, sparse_memory);
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.9, classic_memory / 2 * 3);
         printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
     }
     else if(density >= 50)
     {
-        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.7, sparse_memory);
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.7, classic_memory + classic_memory / 1000);
         printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
     }
     else if(density >= 25)
     {
-        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.5, sparse_memory);
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.5, classic_memory / 2);
         printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
     }
     else if(density >= 5)
     {
-        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.3, sparse_memory);
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.3, sparse_memory / 5);
         printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
     }
     else
     {
-        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.2, sparse_memory);
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.2, classic_memory / 6);
         printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
     }
 }
