@@ -1,6 +1,7 @@
 #include "../inc/matrix.h"
 #include "../inc/tools.h"
 #include <assert.h>
+#include <time.h>
 
 void free_data(int** data, size_t n)
 {
@@ -117,10 +118,33 @@ int multiply_matrix(matrix_t* m_A, matrix_t* m_B, matrix_t *res)
     return EXIT_SUCCESS;
 }
 
+int time_multiply_matrix(matrix_t* m_A, matrix_t* m_B, matrix_t *res, long double *time)
+{
+    assert(m_A->columns == m_B->rows);
+    res->rows = m_A->rows;
+    res->columns = m_B->columns;
+
+    res->data = alloc_memory_for_matrix(m_A->rows, m_B->columns);
+    if(!res->data)
+    {
+        printf("ERROR WITH ALLOCATE MEMORY");
+        return EXIT_FAILURE;
+    }
+
+    clock_t start = clock();
+    for (size_t i = 0; i < m_A->rows; i++)
+        for (size_t j = 0; j < m_B->columns; j++)
+            res->data[i][j] = prod_row_col(m_A->data, i, m_B->data, j, m_A->columns);
+    clock_t end = clock();
+
+    *time = ((long double) (end - start)) / CLOCKS_PER_SEC * 1000;
+
+    return EXIT_SUCCESS;
+}
+
 
 unsigned long size_of_matrix(matrix_t *m)
 {
-    int x = rand();
-    return sizeof(size_t) * 2 + sizeof(int) * m->rows * m->columns + x - x / 1000 * 1000;
+    return sizeof(size_t) * 2 + sizeof(int) * m->rows * m->columns;
 }
 

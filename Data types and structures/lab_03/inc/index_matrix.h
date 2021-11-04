@@ -32,4 +32,6 @@ void print_index_matrix_in_usual_format(FILE *f, index_matrix_t *m);
 
 unsigned long size_of_index_matrix(index_matrix_t *m);
 
+int time_multiply_index_matrix(index_matrix_t *matrix, index_matrix_t *vector, index_matrix_t *result, long double *time);
+
 #endif //LAB_03_INDEX_MATRIX_H

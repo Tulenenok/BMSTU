@@ -1,6 +1,6 @@
 #include "../inc/index_matrix.h"
 #include "../inc/tools.h"
-
+#include <time.h>
 // matrix
 // 9
 // 3
@@ -136,6 +136,57 @@ int multiply_index_matrix(index_matrix_t *matrix, index_matrix_t *vector, index_
             curr_sum = 0;
             curr_row_matrix++;
         }
+        int pos = is_number_in_array(vector->count_rows, vector->rows, matrix->columns[i]);
+        if(pos != -1)
+            curr_sum += matrix->elems[i] * vector->elems[pos];
+    }
+
+    if(curr_sum != 0)
+    {
+        result->elems[curr_row_result] = curr_sum;
+        result->rows[curr_row_result] = matrix->rows[i - 1];
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+int time_multiply_index_matrix(index_matrix_t *matrix, index_matrix_t *vector, index_matrix_t *result, long double *time)
+{
+    if(matrix->count_columns != vector->count_rows)
+        return INVALID_PARAMS_OF_MATRIX_AND_VECTOR;
+
+    result->count_rows = matrix->count_rows;
+    result->count_columns = vector->count_columns;
+
+    int count_not_null_elems = count_not_null_elems_in_res_matrix(matrix, vector);
+    if(alloc_memory_for_array(count_not_null_elems, sizeof(int), &result->elems))
+        return ALLOCATE_MEMORY_ERROR;
+    if(alloc_memory_for_array(count_not_null_elems, sizeof(int), &result->rows))
+        return ALLOCATE_MEMORY_ERROR;
+    if(alloc_memory_for_array(count_not_null_elems, sizeof(int), &result->columns))
+        return ALLOCATE_MEMORY_ERROR;
+
+    result->count_elems = (size_t)count_not_null_elems;
+
+    int curr_row_matrix = 0, curr_row_result = 0, curr_sum = 0;
+
+    size_t i = 0;
+    clock_t start = clock();
+    for(; i < matrix->count_elems; i++)
+    {
+        if(matrix->rows[i] != curr_row_matrix)
+        {
+            if(curr_sum != 0)
+            {
+                result->elems[curr_row_result] = curr_sum;
+                result->rows[curr_row_result] = matrix->rows[i - 1];
+                result->columns[curr_row_result] = 0;
+                curr_row_result++;
+            }
+            curr_sum = 0;
+            curr_row_matrix++;
+        }
 
         int pos = is_number_in_array(vector->count_rows, vector->rows, matrix->columns[i]);
         if(pos != -1)
@@ -147,6 +198,8 @@ int multiply_index_matrix(index_matrix_t *matrix, index_matrix_t *vector, index_
         result->elems[curr_row_result] = curr_sum;
         result->rows[curr_row_result] = matrix->rows[i - 1];
     }
+    clock_t end = clock();
+    *time = ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
 
     return EXIT_SUCCESS;
 }

@@ -3,9 +3,9 @@
 #include "../inc/matrix.h"
 #include "../inc/index_matrix.h"
 
-#define COUNT_FOR 1000
+#define COUNT_FOR 500
 
-int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input, take_time_t *take_time) {
+int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input, take_time_t *take_time, double *density) {
     if (!is_vector_input) {
         printf("\nVector was not input\n");
         return EXIT_SUCCESS;
@@ -16,7 +16,7 @@ int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input,
         return EXIT_SUCCESS;
     }
 
-    FILE *f_matrix = fopen("..\\shared\\matrix.txt", "r");
+    FILE *f_matrix = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\matrix.txt", "r");
     if (!f_matrix) {
         printf("FAILURE\n");
         return EXIT_FAILURE;
@@ -31,7 +31,7 @@ int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input,
 
     fclose(f_matrix);
 
-    FILE *f_vector = fopen("..\\shared\\vector.txt", "r");
+    FILE *f_vector = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\vector.txt", "r");
     if (!f_vector) {
         printf("FAILURE\n");
         return EXIT_FAILURE;
@@ -60,18 +60,26 @@ int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input,
     printf("WAIT");
     for(int i = 0; i < take_time->count_return_for; i++)
     {
-        take_time->start = clock();
-        multiply_index_matrix(&mat, &vec, &res);
-        take_time->end = clock();
+        long double new_time = 0;
+        time_multiply_index_matrix(&mat, &vec, &res, &new_time);
+        take_time->time += (new_time / take_time->count_return_for);
 
-        take_time->time += ((long double) (take_time->end - take_time->start)) / CLOCKS_PER_SEC * 1000;
+        free_index_matrix(&res);
 
         if(i - i / 20 * 20 == 0)
             printf("-");
     }
-
-    take_time->time /= take_time->count_return_for;
     printf("> OK\n");
+
+    *density = (double)mat.count_elems / ((double)mat.count_rows * (double)mat.count_columns) * 100;
+
+    printf("\nSize of matrix %zu x %zu", mat.count_rows, mat.count_columns);
+    printf("\nSize of vector %zu x 1", vec.count_rows);
+    printf("\nDensity %f\n", *density);
+
+    free_index_matrix(&mat);
+    free_index_matrix(&vec);
+
     return EXIT_SUCCESS;
 }
 
@@ -89,7 +97,7 @@ int multiply_classic_method_with_time(bool is_matrix_input, bool is_vector_input
         return EXIT_SUCCESS;
     }
 
-    FILE *f_matrix = fopen("..\\shared\\matrix.txt", "r");
+    FILE *f_matrix = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\matrix.txt", "r");
     if(!f_matrix)
     {
         printf("FAILURE\n");
@@ -106,7 +114,7 @@ int multiply_classic_method_with_time(bool is_matrix_input, bool is_vector_input
 
     fclose(f_matrix);
 
-    FILE *f_vector = fopen("..\\shared\\vector.txt", "r");
+    FILE *f_vector = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\vector.txt", "r");
     if(!f_vector)
     {
         printf("FAILURE\n");
@@ -136,19 +144,20 @@ int multiply_classic_method_with_time(bool is_matrix_input, bool is_vector_input
     printf("WAIT");
     for(int i = 0; i < take_time->count_return_for; i++)
     {
-        take_time->start = clock();
-        multiply_matrix(&mat, &vec, &res);
-        take_time->end = clock();
+        long double new_time = 0;
+        time_multiply_matrix(&mat, &vec, &res, &new_time);
+        take_time->time += (new_time / take_time->count_return_for);
 
-        take_time->time += ((double) (take_time->end - take_time->start)) / CLOCKS_PER_SEC * 1000;
+        free_classic_matrix(&res);
 
         if(i - i / 20 * 20 == 0)
             printf("-");
     }
 
-    take_time->time /= take_time->count_return_for;
-
     printf("> OK\n");
+
+    free_classic_matrix(&mat);
+    free_classic_matrix(&vec);
 
     return EXIT_SUCCESS;
 }
@@ -167,7 +176,7 @@ int multiply_classic_method_with_memory(bool is_matrix_input, bool is_vector_inp
         return EXIT_SUCCESS;
     }
 
-    FILE *f_matrix = fopen("..\\shared\\matrix.txt", "r");
+    FILE *f_matrix = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\matrix.txt", "r");
     if(!f_matrix)
     {
         printf("FAILURE\n");
@@ -184,7 +193,7 @@ int multiply_classic_method_with_memory(bool is_matrix_input, bool is_vector_inp
 
     fclose(f_matrix);
 
-    FILE *f_vector = fopen("..\\shared\\vector.txt", "r");
+    FILE *f_vector = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\vector.txt", "r");
     if(!f_vector)
     {
         printf("FAILURE\n");
@@ -212,6 +221,9 @@ int multiply_classic_method_with_memory(bool is_matrix_input, bool is_vector_inp
 
     *memory = size_of_matrix(&mat) + size_of_matrix(&vec) + size_of_matrix(&res);
 
+    free_classic_matrix(&mat);
+    free_classic_matrix(&vec);
+
     return EXIT_SUCCESS;
 }
 
@@ -226,7 +238,7 @@ int multiply_sparse_method_with_memory(bool is_matrix_input, bool is_vector_inpu
         return EXIT_SUCCESS;
     }
 
-    FILE *f_matrix = fopen("..\\shared\\matrix.txt", "r");
+    FILE *f_matrix = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\matrix.txt", "r");
     if (!f_matrix) {
         printf("FAILURE\n");
         return EXIT_FAILURE;
@@ -241,7 +253,7 @@ int multiply_sparse_method_with_memory(bool is_matrix_input, bool is_vector_inpu
 
     fclose(f_matrix);
 
-    FILE *f_vector = fopen("..\\shared\\vector.txt", "r");
+    FILE *f_vector = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\vector.txt", "r");
     if (!f_vector) {
         printf("FAILURE\n");
         return EXIT_FAILURE;
@@ -267,6 +279,9 @@ int multiply_sparse_method_with_memory(bool is_matrix_input, bool is_vector_inpu
     free_index_matrix(&res);
 
     *memory = size_of_index_matrix(&mat) + size_of_index_matrix(&vec) + size_of_index_matrix(&res);
+
+    free_index_matrix(&mat);
+    free_index_matrix(&vec);
 
     return EXIT_SUCCESS;
 }

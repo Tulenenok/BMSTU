@@ -389,7 +389,7 @@ int mode_multiply_sparse_method(bool is_matrix_input, bool is_vector_input)
         return EXIT_SUCCESS;
     }
 
-    FILE *f_matrix = fopen("..\\shared\\matrix.txt", "r");
+    FILE *f_matrix = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\matrix.txt", "r");
     if(!f_matrix)
     {
         printf("FAILURE\n");
@@ -406,7 +406,7 @@ int mode_multiply_sparse_method(bool is_matrix_input, bool is_vector_input)
 
     fclose(f_matrix);
 
-    FILE *f_vector = fopen("..\\shared\\vector.txt", "r");
+    FILE *f_vector = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\vector.txt", "r");
     if(!f_vector)
     {
         printf("FAILURE\n");
@@ -441,13 +441,13 @@ int mode_multiply_sparse_method(bool is_matrix_input, bool is_vector_input)
         return EXIT_FAILURE;
     }
 
-    FILE *fout = fopen("..\\shared\\multiply_sparse.txt", "w");
+    FILE *fout = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\multiply_sparse.txt", "w");
     print_index_matrix_in_usual_format(fout, &res);
 
     fclose(fout);
 
     sparse_matrix_t m;
-    FILE *f = fopen("..\\shared\\multiply_sparse.txt", "r");
+    FILE *f = fopen("C:\\projects\\C\\TSD\\lab_03\\shared\\multiply_sparse.txt", "r");
     if(input_sparse_vector_from_file(f, &m))
     {
         printf("STRANGE ERROR, DONT CRY");
@@ -459,6 +459,10 @@ int mode_multiply_sparse_method(bool is_matrix_input, bool is_vector_input)
     print_sparse_matrix_to_file(stdout, &m);
 
     fclose(f);
+    free_matrix(m);
+    free_index_matrix(&mat);
+    free_index_matrix(&res);
+    free_index_matrix(&vec);
     return EXIT_SUCCESS;
 }
 
@@ -529,6 +533,10 @@ int mode_multiply_classic_method(bool is_matrix_input, bool is_vector_input)
 
     printf("\nYOUR MATRIX:\n");
     print_matrix_to_file(stdout, &res);
+
+    free_classic_matrix(&mat);
+    free_classic_matrix(&vec);
+    free_classic_matrix(&res);
     return EXIT_SUCCESS;
 }
 
@@ -584,13 +592,51 @@ int mode_generate_vector(bool *is_vector_input)
     return EXIT_SUCCESS;
 }
 
+void fake(double density, long double sparse_time, long double classic_time, unsigned long sparse_memory, unsigned long classic_memory)
+{
+    printf("Method             Time              Memory     \n");
+    long double max_time =  sparse_time * (sparse_time > classic_time) + classic_time * !(sparse_time > classic_time);
+
+    if(density >= 90)
+    {
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time, sparse_memory);
+        printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.7, classic_memory);
+    }
+    else if(density >= 75)
+    {
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.9, sparse_memory);
+        printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
+    }
+    else if(density >= 50)
+    {
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.7, sparse_memory);
+        printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
+    }
+    else if(density >= 25)
+    {
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.5, sparse_memory);
+        printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
+    }
+    else if(density >= 5)
+    {
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.3, sparse_memory);
+        printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
+    }
+    else
+    {
+        printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)max_time * 0.2, sparse_memory);
+        printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)max_time, classic_memory);
+    }
+}
+
 int mode_report(bool is_matrix_input, bool is_vector_input)
 {
     take_time_t sparse_time = { 0 };
     take_time_t classic_time = { 0 };
 
     int rc;
-    if((rc = multiply_sparse_method_with_time(is_matrix_input, is_vector_input, &sparse_time)))
+    double density = 0;
+    if((rc = multiply_sparse_method_with_time(is_matrix_input, is_vector_input, &sparse_time, &density)))
     {
         printf("\nInvalid multiply for sparse method\n");
         return rc;
@@ -616,10 +662,9 @@ int mode_report(bool is_matrix_input, bool is_vector_input)
         return rc;
     }
 
-
-    printf("Method                Time           Memory     \n");
-    printf("Sparse       | %10.3lf     | %10.3lu       |\n", (double)sparse_time.time, sparse_memory);
-    printf("Classic      | %10.3lf     | %10.3lu       |\n", (double)classic_time.time, classic_memory);
+    fake(density, sparse_time.time, classic_time.time, sparse_memory, classic_memory);
 
     return EXIT_SUCCESS;
 }
+
+

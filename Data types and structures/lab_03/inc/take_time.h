@@ -14,7 +14,7 @@ typedef struct
     long double time;
 } take_time_t;
 
-int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input, take_time_t *take_time);
+int multiply_sparse_method_with_time(bool is_matrix_input, bool is_vector_input, take_time_t *take_time, double *density);
 
 int multiply_classic_method_with_time(bool is_matrix_input, bool is_vector_input, take_time_t *take_time);
 

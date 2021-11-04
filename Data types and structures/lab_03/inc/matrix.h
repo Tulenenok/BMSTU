@@ -22,4 +22,6 @@ int multiply_matrix(matrix_t* m_A, matrix_t* m_B, matrix_t *res);
 
 unsigned long size_of_matrix(matrix_t *m);
 
+int time_multiply_matrix(matrix_t* m_A, matrix_t* m_B, matrix_t *res, long double *time);
+
 #endif //LAB_03_MATRIX_H
