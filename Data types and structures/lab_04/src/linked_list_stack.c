@@ -1,7 +1,6 @@
 #include <assert.h>
 
 #include "../inc/linked_list_stack.h"
-#include "../inc/tools.h"
 
 // Создать стек в виде односвязного списка максимальным размером size
 // Выделяет память под заданное количество элементов
@@ -40,7 +39,7 @@ void print_linked_list_stack(linked_list_stack_t *stack)
     printf("\n");
 }
 
-void del_elem_from_linked_list_stack(linked_list_stack_t *stack)
+void del_elem_from_linked_list_stack(linked_list_stack_t *stack, free_addresses_t *free_add)
 {
     if(EMPTY_STACK == stack->count_elems)
     {
@@ -50,6 +49,9 @@ void del_elem_from_linked_list_stack(linked_list_stack_t *stack)
 
     printf("\nFrom linked list stack you delete ----> %c\n", stack->data->data);
     printf("Address of delete elem %p\n", stack->data);
+
+    free_add->data[free_add->count_add] = stack->data;
+    free_add->count_add++;
 
     stack->data = del_first_elem_from_node_list(stack->data);
     stack->count_elems--;

@@ -8,6 +8,7 @@
 
 #include "../inc/linked_list_stack.h"
 #include "../inc/static_stack.h"
+#include "../inc/tools.h"
 
 typedef struct
 {
@@ -23,6 +24,7 @@ typedef enum
   DEL_ELEMS = 3,
   PRINT_STACKS = 4,
   IS_PALINDROME = 5,
+  PRINT_FREE_ADDRESSES = 6,
 } mode_t;
 
 int mode_create_stacks(bool *is_stacks_create, stacks_t *stacks);
@@ -31,10 +33,12 @@ int mode_add_elem_to_stacks(bool is_stacks_create, stacks_t *stacks);
 
 int mode_print_stacks(bool is_stacks_create, stacks_t *stacks);
 
-int mode_del_elems_from_stacks(bool is_stacks_create, stacks_t *stacks);
+int mode_del_elems_from_stacks(bool is_stacks_create, stacks_t *stacks, free_addresses_t *free_add);
 
 int mode_is_palindrome(bool is_stacks_create, stacks_t *stacks);
 
 int mode_add_few_elems_to_stacks(bool is_stacks_create, stacks_t *stacks);
+
+void mode_print_free_addresses(free_addresses_t *free_add);
 
 #endif //LAB_04_MODES_H

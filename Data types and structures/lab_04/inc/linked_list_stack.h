@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "node.h"
+#include "tools.h"
 
 typedef struct
 {
@@ -19,7 +20,7 @@ int add_elem_to_linked_list_stack(char new_elem, linked_list_stack_t *stack);
 
 void print_linked_list_stack(linked_list_stack_t *stack);
 
-void del_elem_from_linked_list_stack(linked_list_stack_t *stack);
+void del_elem_from_linked_list_stack(linked_list_stack_t *stack, free_addresses_t *free_add);
 
 bool is_palindrome_linked_list_stack(linked_list_stack_t *stack);
 

@@ -1,7 +1,5 @@
 #include "../inc/modes.h"
 
-#include "../inc/tools.h"
-
 int mode_create_stacks(bool *is_stacks_create, stacks_t *stacks)
 {
     assert(NULL != stacks);
@@ -114,7 +112,7 @@ int mode_print_stacks(bool is_stacks_create, stacks_t *stacks)
     return EXIT_SUCCESS;
 }
 
-int mode_del_elems_from_stacks(bool is_stacks_create, stacks_t *stacks)
+int mode_del_elems_from_stacks(bool is_stacks_create, stacks_t *stacks, free_addresses_t *free_add)
 {
     if(false == is_stacks_create)
     {
@@ -143,10 +141,24 @@ int mode_del_elems_from_stacks(bool is_stacks_create, stacks_t *stacks)
     for(int i = 0; i < count_to_del; i++)
     {
         del_elem_from_static_stack(&stacks->static_stack);
-        del_elem_from_linked_list_stack(&stacks->linked_list_stack);
+        del_elem_from_linked_list_stack(&stacks->linked_list_stack, free_add);
     }
 
     return EXIT_FAILURE;
+}
+
+void mode_print_free_addresses(free_addresses_t *free_add)
+{
+    if(EMPTY_STACK == free_add->count_add)
+    {
+        puts("\nYou dont delete elems, nothing to print");
+        return ;
+    }
+
+    puts("\nAddresses of all elems that you delete:");
+    for(int i = 0; i < free_add->count_add; i++)
+        printf("%p\n", free_add->data[i]);
+    printf("\n");
 }
 
 int mode_is_palindrome(bool is_stacks_create, stacks_t *stacks)
