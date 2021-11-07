@@ -1,5 +1,9 @@
-//
-// Created by nataa on 06.11.2021.
-//
-
 #include "../inc/tools.h"
+
+void clean_stdin(void)
+{
+    int c;
+    do {
+        c = getchar();
+    } while (c != '\n' && c != EOF);
+}

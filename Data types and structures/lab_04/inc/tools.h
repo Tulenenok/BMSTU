@@ -10,4 +10,9 @@
 #define STACKS_IS_NOT_CREATE 13
 #define INVALID_INPUT_ELEM 14
 
+#include <stdio.h>
+#include <stdlib.h>
+
+void clean_stdin(void);
+
 #endif //LAB_04_TOOLS_H

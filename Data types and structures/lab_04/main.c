@@ -20,23 +20,15 @@
 #include "inc/modes.h"
 #include "inc/tools.h"
 
-void clean_stdin(void)
-{
-    int c;
-    do {
-        c = getchar();
-    } while (c != '\n' && c != EOF);
-}
-
 void menu(mode_t mode, bool *is_stacks_create, stacks_t *stacks)
 {
     setbuf(stdin, NULL);
     if(CREATE_STACKS == mode)
         mode_create_stacks(is_stacks_create, stacks);
-    if(ADD_ELEM == mode)
-        mode_add_elem_to_stacks(*is_stacks_create, stacks);
-    if(DEL_ELEM == mode)
-        mode_del_elem_from_stacks(*is_stacks_create, stacks);
+    if(ADD_FEW_ELEMS == mode)
+        mode_add_few_elems_to_stacks(*is_stacks_create, stacks);
+    if(DEL_ELEMS == mode)
+        mode_del_elems_from_stacks(*is_stacks_create, stacks);
     if(PRINT_STACKS == mode)
         mode_print_stacks(*is_stacks_create, stacks);
     if(IS_PALINDROME == mode)
@@ -56,8 +48,8 @@ int main()
         printf("Menu:\n"
                "    0 - EXIT\n"
                "    1 - create stacks\n"
-               "    2 - add elem\n"
-               "    3 - delete elem\n"
+               "    2 - add elems\n"
+               "    3 - delete elems\n"
                "    4 - print stacks\n"
                "    5 - check 'is stacks palindrome'\n");
         printf("Input command:");

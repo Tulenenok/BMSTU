@@ -60,7 +60,7 @@ void del_elem_from_static_stack(static_stack_t *stack)
         return ;
     }
     stack->count_elems--;
-    printf("\nFrom static stack you delete      ----> %c\n", stack->data[stack->count_elems]);
+    printf("\nFrom static stack you delete      ----> %c", stack->data[stack->count_elems]);
 }
 
 bool is_palindrome_static_stack(static_stack_t *stack)
