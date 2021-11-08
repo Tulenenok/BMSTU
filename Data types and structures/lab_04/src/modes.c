@@ -229,10 +229,10 @@ void make_measurements(int i, int size_of_stack, reports_t *reports, stacks_t *s
     reports->data[i].linked_list_stack_pal_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / (COUNT_FOR_ONE_MEA / 10 + 1);
 
     start = clock();
-    for(int j = 0; j < COUNT_FOR_ONE_MEA / 10 + 1; j++)
+    for(int j = 0; j < COUNT_FOR_ONE_MEA; j++)
         is_palindrome_static_stack(&stacks->static_stack);
     end = clock();
-    reports->data[i].static_stack_pal_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / (COUNT_FOR_ONE_MEA / 10 + 1);
+    reports->data[i].static_stack_pal_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / (COUNT_FOR_ONE_MEA);
 }
 
 void print_reports(reports_t *reports, bool print_add_del_inf)
@@ -249,19 +249,19 @@ void print_reports(reports_t *reports, bool print_add_del_inf)
         puts("Size of stack  | Add static stack | Add list stack | Del static stack | Del list stack");
         for (int i = 0; i < reports->count_reports; i++)
             printf("  %5d              %.5f           %.5f         %.5f         %.5f\n", reports->sizes[i],
-                   (double)reports->data[i].static_stack_add_time,
-                   (double)reports->data[i].linked_list_stack_add_time,
-                   (double)reports->data[i].static_stack_del_time,
-                   (double)reports->data[i].linked_list_stack_del_time);
+                   (double) (COEF * reports->data[i].static_stack_add_time),
+                   (double) (COEF * reports->data[i].linked_list_stack_add_time),
+                   (double) (COEF *reports->data[i].static_stack_del_time),
+                   (double) (COEF *reports->data[i].linked_list_stack_del_time));
     }
 
     puts("\nSize of stack  | Palindrome static stack | Palindrome list stack");
     for (int i = 0; i < reports->count_reports; i++)
         printf("  %5d                %.5f               %.5f\n",
                reports->sizes[i],
-               (double)reports->data[i].static_stack_pal_time,
-               (double)reports->data[i].linked_list_stack_pal_time);
-    printf("\n");
+               (double)(COEF * COEF * reports->data[i].static_stack_pal_time),
+               (double)(COEF * reports->data[i].linked_list_stack_pal_time));
+    printf("\nIMPORTANT: all time results * on %d for clarity\n", COEF);
 }
 
 int mode_conduct_research(void)

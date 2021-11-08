@@ -16,6 +16,7 @@
 #define MAX_SIZE_OF_STACK 1000
 #define COUNT_FOR_ONE_MEA 100
 #define PRINT_ 100
+#define COEF 1000
 
 #include <stdio.h>
 #include <stdlib.h>
