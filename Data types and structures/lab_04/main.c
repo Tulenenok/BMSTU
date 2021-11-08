@@ -16,9 +16,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "inc/modes.h"
-#include "inc/tools.h"
 
 void menu(mode_t mode, bool *is_stacks_create, stacks_t *stacks, free_addresses_t *free_add)
 {
@@ -35,13 +33,14 @@ void menu(mode_t mode, bool *is_stacks_create, stacks_t *stacks, free_addresses_
         mode_is_palindrome(*is_stacks_create, stacks);
     if(PRINT_FREE_ADDRESSES == mode)
         mode_print_free_addresses(free_add);
+    if(CONDUCT_RESEARCH == mode)
+        mode_conduct_research();
 }
 
 int main()
 {
     setbuf(stdout, NULL);
 
-    int rc;
     stacks_t stacks = { 0 };
     bool is_stacks_create = false;
     free_addresses_t free_add = { 0 };
@@ -55,7 +54,8 @@ int main()
                "    3 - delete elems\n"
                "    4 - print stacks\n"
                "    5 - check 'is stacks palindrome'\n"
-               "    6 - print free addresses\n");
+               "    6 - print free addresses\n"
+               "    7 - conduct research about memory and time\n");
         printf("Input command:");
 
         mode_t mode = EXIT;

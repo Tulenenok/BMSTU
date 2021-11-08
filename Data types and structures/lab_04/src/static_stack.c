@@ -1,7 +1,6 @@
 #include <assert.h>
 
 #include "../inc/static_stack.h"
-#include "../inc/tools.h"
 
 // Голова стека - всегда последний заполненный элемент массива
 
@@ -69,4 +68,49 @@ bool is_palindrome_static_stack(static_stack_t *stack)
         if(stack->data[i] != stack->data[j])
             return false;
     return true;
+}
+
+long unsigned memory_of_static_stack(static_stack_t *stack)
+{
+    return MAX_SIZE_OF_STACK;
+}
+
+int fill_static_stack_from_file(char filename[], static_stack_t *stack)
+{
+    FILE *f = fopen(filename, "r");
+    if(!f)
+    {
+        printf("Error with create stack");
+        return EXIT_FAILURE;
+    }
+
+    if(INPUT_ONE_ELEM != fscanf(f, "%d", &stack->count_elems) || stack->count_elems < 0 || stack->count_elems > MAX_SIZE_OF_STACK)
+    {
+        puts("Invalid size");
+        fclose(f);
+        return INVALID_INPUT_SIZE_STACK;
+    }
+    stack->max_count_elems = stack->count_elems;
+
+    for(int i = 0; i < stack->count_elems; i++)
+        if(INPUT_ONE_ELEM != fscanf(f, "%c", &stack->data[i]))
+        {
+            puts("Error in data");
+            fclose(f);
+            return INVALID_INPUT_ELEM;
+        }
+
+    fclose(f);
+    return EXIT_SUCCESS;
+}
+
+void del_elem_static_stack_help_func(static_stack_t *stack)
+{
+    stack->count_elems--;
+}
+
+void add_elem_static_stack_help_func(char new_elem, static_stack_t *stack)
+{
+    stack->data[stack->count_elems] = new_elem;
+    stack->count_elems++;
 }

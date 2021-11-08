@@ -65,3 +65,52 @@ bool is_palindrome_linked_list_stack(linked_list_stack_t *stack)
             return false;
     return true;
 }
+
+long unsigned memory_of_linked_list_stack(linked_list_stack_t *stack)
+{
+    return stack->count_elems * sizeof(Node_t);
+}
+
+int fill_linked_list_stack_from_file(char filename[], linked_list_stack_t *stack)
+{
+    FILE *f = fopen(filename, "r");
+    if(!f)
+    {
+        printf("Error with create stack");
+        return EXIT_FAILURE;
+    }
+
+    if(INPUT_ONE_ELEM != fscanf(f, "%d", &stack->count_elems) || stack->count_elems < 0)
+    {
+        puts("Invalid size");
+        fclose(f);
+        return INVALID_INPUT_SIZE_STACK;
+    }
+    stack->max_count_elems = stack->count_elems;
+
+    malloc_for_node_list(stack->count_elems, &stack->data);
+
+    Node_t *cur = stack->data;
+    for(int i = 0; i < stack->count_elems; i++, cur = cur->next)
+        if(INPUT_ONE_ELEM != fscanf(f, "%c", &cur->data))
+        {
+            puts("Error in data");
+            fclose(f);
+            return INVALID_INPUT_ELEM;
+        }
+
+    fclose(f);
+    return EXIT_SUCCESS;
+}
+
+void del_elem_linked_list_stack_help_func(linked_list_stack_t *stack)
+{
+    stack->data = del_first_elem_from_node_list(stack->data);
+    stack->count_elems--;
+}
+
+void add_elem_linked_list_stack_help_func(char new_elem, linked_list_stack_t *stack)
+{
+    stack->data = add_first_elem_to_node_list(new_elem, stack->data);
+    stack->count_elems++;
+}

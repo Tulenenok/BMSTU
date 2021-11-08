@@ -25,6 +25,7 @@ typedef enum
   PRINT_STACKS = 4,
   IS_PALINDROME = 5,
   PRINT_FREE_ADDRESSES = 6,
+  CONDUCT_RESEARCH = 7,
 } mode_t;
 
 int mode_create_stacks(bool *is_stacks_create, stacks_t *stacks);
@@ -40,5 +41,7 @@ int mode_is_palindrome(bool is_stacks_create, stacks_t *stacks);
 int mode_add_few_elems_to_stacks(bool is_stacks_create, stacks_t *stacks);
 
 void mode_print_free_addresses(free_addresses_t *free_add);
+
+int mode_conduct_research(void);
 
 #endif //LAB_04_MODES_H

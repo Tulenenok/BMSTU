@@ -24,4 +24,12 @@ void del_elem_from_linked_list_stack(linked_list_stack_t *stack, free_addresses_
 
 bool is_palindrome_linked_list_stack(linked_list_stack_t *stack);
 
+long unsigned memory_of_linked_list_stack(linked_list_stack_t *stack);
+
+int fill_linked_list_stack_from_file(char filename[], linked_list_stack_t *stack);
+
+void del_elem_linked_list_stack_help_func(linked_list_stack_t *stack);
+
+void add_elem_linked_list_stack_help_func(char new_elem, linked_list_stack_t *stack);
+
 #endif

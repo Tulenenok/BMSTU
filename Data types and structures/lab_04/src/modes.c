@@ -1,3 +1,4 @@
+#include <time.h>
 #include "../inc/modes.h"
 
 int mode_create_stacks(bool *is_stacks_create, stacks_t *stacks)
@@ -109,6 +110,9 @@ int mode_print_stacks(bool is_stacks_create, stacks_t *stacks)
     print_static_stack(&stacks->static_stack);
     print_linked_list_stack(&stacks->linked_list_stack);
 
+    printf("\nUsed memory for static stack: %lu\n", memory_of_static_stack(&stacks->static_stack));
+    printf("Used memory for linked list stack: %lu\n", memory_of_linked_list_stack(&stacks->linked_list_stack));
+
     return EXIT_SUCCESS;
 }
 
@@ -188,6 +192,147 @@ int mode_is_palindrome(bool is_stacks_create, stacks_t *stacks)
         puts("Linked list stack is palindrome");
     else
         puts("Linked list is not palindrome");
+
+    return EXIT_SUCCESS;
+}
+
+void make_measurements(int i, int size_of_stack, reports_t *reports, stacks_t *stacks)
+{
+    clock_t start = clock();
+    for(int j = 0; j < size_of_stack && j < COUNT_FOR_ONE_MEA; j++)
+        del_elem_linked_list_stack_help_func(&stacks->linked_list_stack);
+    clock_t end = clock();
+    reports->data[i].linked_list_stack_del_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / COUNT_FOR_ONE_MEA;
+
+    start = clock();
+    for(int j = 0; j < size_of_stack && j < COUNT_FOR_ONE_MEA; j++)
+        del_elem_static_stack_help_func(&stacks->static_stack);
+    end = clock();
+    reports->data[i].static_stack_del_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / COUNT_FOR_ONE_MEA;
+
+    start = clock();
+    for(int j = 0; j < size_of_stack && j < COUNT_FOR_ONE_MEA; j++)
+        add_elem_linked_list_stack_help_func('a', &stacks->linked_list_stack);
+    end = clock();
+    reports->data[i].linked_list_stack_add_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / COUNT_FOR_ONE_MEA;
+
+    start = clock();
+    for(int j = 0; j < size_of_stack && j < COUNT_FOR_ONE_MEA; j++)
+        add_elem_static_stack_help_func('a', &stacks->static_stack);
+    end = clock();
+    reports->data[i].static_stack_add_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / COUNT_FOR_ONE_MEA;
+
+    start = clock();
+    for(int j = 0; j < COUNT_FOR_ONE_MEA / 10 + 1; j++)
+        is_palindrome_linked_list_stack(&stacks->linked_list_stack);
+    end = clock();
+    reports->data[i].linked_list_stack_pal_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / (COUNT_FOR_ONE_MEA / 10 + 1);
+
+    start = clock();
+    for(int j = 0; j < COUNT_FOR_ONE_MEA / 10 + 1; j++)
+        is_palindrome_static_stack(&stacks->static_stack);
+    end = clock();
+    reports->data[i].static_stack_pal_time += ((double) (end - start)) / CLOCKS_PER_SEC * 1000 / (COUNT_FOR_ONE_MEA / 10 + 1);
+}
+
+void print_reports(reports_t *reports, bool print_add_del_inf)
+{
+    puts("\nRESULT OF THE EXPERIMENT:");
+    puts("MEMORY");
+    puts("Size of stack  | Memory for static stack | Memory for list stack");
+    for(int i = 0; i < reports->count_reports; i++)
+        printf("  %5d                  %lu                     %lu\n", reports->sizes[i], reports->data[i].static_stack_memory, reports->data[i].linked_list_stack_memory);
+
+    puts("\nTIME");
+    if(print_add_del_inf)
+    {
+        puts("Size of stack  | Add static stack | Add list stack | Del static stack | Del list stack");
+        for (int i = 0; i < reports->count_reports; i++)
+            printf("  %5d              %.5f           %.5f         %.5f         %.5f\n", reports->sizes[i],
+                   (double)reports->data[i].static_stack_add_time,
+                   (double)reports->data[i].linked_list_stack_add_time,
+                   (double)reports->data[i].static_stack_del_time,
+                   (double)reports->data[i].linked_list_stack_del_time);
+    }
+
+    puts("\nSize of stack  | Palindrome static stack | Palindrome list stack");
+    for (int i = 0; i < reports->count_reports; i++)
+        printf("  %5d                %.5f               %.5f\n",
+               reports->sizes[i],
+               (double)reports->data[i].static_stack_pal_time,
+               (double)reports->data[i].linked_list_stack_pal_time);
+    printf("\n");
+}
+
+int mode_conduct_research(void)
+{
+    int rc;
+    int count_measurements = 0;
+    printf("\nInput count of measurements that you want to do:");
+    if(INPUT_ONE_ELEM != scanf("%d", &count_measurements) || count_measurements < 0)
+    {
+        puts("Invalid input count");
+        return INVALID_INPUT_ELEM;
+    }
+
+    printf("\nInput all sizes of stack that you want to test:");
+
+    reports_t reports = { count_measurements };
+    reports.sizes = calloc(count_measurements, sizeof(int));
+    reports.data = calloc(count_measurements, sizeof(report_t));
+    for(int i = 0; i < count_measurements; i++)
+    {
+        int size_of_stack;
+        if(INPUT_ONE_ELEM != scanf("%d", &size_of_stack) || size_of_stack < 0)
+        {
+            puts("Invalid size, pass this value");
+            continue;
+        }
+
+        if(size_of_stack > MAX_SIZE_OF_STACK)
+        {
+            puts("Invalid size, size of stack more then max size of sys stack");
+            puts("Аsk a smart programmer to change the program settings");
+            continue;
+        }
+
+        generate_stack(size_of_stack);
+
+        stacks_t stacks;
+        if((rc = fill_static_stack_from_file("../shared/stack.txt", &stacks.static_stack)))
+            return rc;
+
+        if((rc = fill_linked_list_stack_from_file("../shared/stack.txt", &stacks.linked_list_stack)))
+            return rc;
+
+        reports.data[i].linked_list_stack_memory = memory_of_linked_list_stack(&stacks.linked_list_stack);
+        reports.data[i].static_stack_memory = memory_of_static_stack(&stacks.static_stack);
+
+        printf("\nSTART");
+        for(int j = 0; j < COUNT_FOR_IN_REPORT; j++)
+        {
+            if(j - j / PRINT_ * PRINT_ == 0)
+                printf("-");
+            make_measurements(i, size_of_stack, &reports, &stacks);
+        }
+        printf("->END");
+
+        reports.data[i].linked_list_stack_add_time /= COUNT_FOR_IN_REPORT;
+        reports.data[i].linked_list_stack_del_time /= COUNT_FOR_IN_REPORT;
+        reports.data[i].static_stack_add_time /= COUNT_FOR_IN_REPORT;
+        reports.data[i].static_stack_del_time /= COUNT_FOR_IN_REPORT;
+        reports.data[i].static_stack_pal_time /= COUNT_FOR_IN_REPORT;
+        reports.data[i].static_stack_pal_time /= COUNT_FOR_IN_REPORT;
+
+        reports.sizes[i] = size_of_stack;
+
+        printf("\nResearch for size = %d     ----> SUCCESS\n", size_of_stack);
+
+        free_for_node_list(stacks.linked_list_stack.data);
+    }
+    print_reports(&reports, true);
+    free(reports.sizes);
+    free(reports.data);
 
     return EXIT_SUCCESS;
 }
