@@ -125,6 +125,12 @@ int mode_del_elems_from_stacks(bool is_stacks_create, stacks_t *stacks, free_add
         return STACKS_IS_NOT_CREATE;
     }
 
+    if(stacks->static_stack.count_elems == 0)
+    {
+        puts("Stacks empty, nothing to del");
+        return EXIT_SUCCESS;
+    }
+
     int count_to_del;
     puts("How many elems do you want to delete?");
     printf("Input count:");
@@ -147,6 +153,9 @@ int mode_del_elems_from_stacks(bool is_stacks_create, stacks_t *stacks, free_add
         del_elem_from_static_stack(&stacks->static_stack);
         del_elem_from_linked_list_stack(&stacks->linked_list_stack, free_add);
     }
+
+    if(stacks->static_stack.count_elems == 0)
+        puts("\nWARNING : stacks now empty");
 
     return EXIT_FAILURE;
 }
