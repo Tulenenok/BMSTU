@@ -3,3 +3,5 @@
 **2 курс 1 семестр**
 
 *P.S. Слабонервным и беременным к просмотру не рекомендуется*
+
+valgrind --tool=memcheck --leak-check=full ./app.exe
