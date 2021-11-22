@@ -27,7 +27,7 @@ int main()
     int interval = INTERVAL;
 
     times_t t1 = {1, 5 };
-    times_t t2 = {0, 3 };
+    times_t t2 = {0, 1 };
     times_t t3 = {0, 4 };
     times_t t4 = {0, 1 };
 
@@ -43,7 +43,7 @@ int main()
         );
         printf("Input command:");
 
-        if (check_number(&num_command, 0, 4) != EXIT_SUCCESS)
+        if (scanf("%d", &num_command) != 1 || num_command < 0 || num_command > 4)
         {
             fflush(stdin);
             printf("Invalid input command\n");

@@ -34,16 +34,16 @@ void mode_change_time(times_t *t1, times_t *t2, times_t *t3, times_t *t4)
         return ;
     }
 
-    printf("Input left and right borders: ");
-    if (scanf("%lf", &l) != 1)
+    printf("Input left and right borders:");
+    if (scanf("%lf", &l) != 1 || l < 0)
     {
-        printf("Invalid input number\n");
+        printf("Invalid input left border\n");
         return ;
     }
 
-    if (scanf("%lf", &r) != 1)
+    if (scanf("%lf", &r) != 1 || r < 0)
     {
-        printf("Invalid input number");
+        printf("Invalid input right border");
         return ;
     }
 
