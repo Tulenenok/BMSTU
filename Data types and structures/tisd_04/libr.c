@@ -36,7 +36,7 @@ int create_stacks(array_t *arr, list_t *list)
 	}
 	
 	arr->count = len;
-	list->first = malloc(sizeof(list_t));
+	list->first = malloc(sizeof(elem_t));
 	
 	if (!list->first)
 	{
