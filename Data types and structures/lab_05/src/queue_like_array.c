@@ -66,7 +66,6 @@ void process_with_array(int n, int interval, times_t t1, times_t t2, times_t t3,
     double time = 0, time_request_1 = 0, time_request_2 = 0, timereqobr = 0, all_time_queue_1 = 0, all_time_queue_2 = 0;
 
     time_t r_time_1 = clock();
-
     int type_queue = 0;
 
     puts("                                         PROCESS  ---  START");
@@ -168,8 +167,8 @@ void process_with_array(int n, int interval, times_t t1, times_t t2, times_t t3,
     puts("                                         PROCESS  ---  END");
 
     puts("\nRESULT");
-    time_t rtime2 = clock();
-    int timerealall = rtime2 - r_time_1;
+    time_t r_time2 = clock();
+    int timerealall = r_time2 - r_time_1;
 
     double avetime_in1 = (t1.max + t1.min) / 2, avetime_out1 = (t3.max + t3.min) / 2, avetime_in2 = (t2.max + t2.min) / 2;
     double total_avetime_in1 = n * avetime_in1, total_avetime_out1 = n * avetime_out1;
@@ -196,7 +195,7 @@ void process_with_array(int n, int interval, times_t t1, times_t t2, times_t t3,
            avetime_in1, request_in_1, request_out_1, per_in1);
     puts("-------------------------------------------------------------------------------------------------------------------");
     printf("| Queue 2 |  %11lf  |  %17d  |  %18d  |  %16d  |  %16lf%%  |\n",
-           avetime_in2, request_in_2, request_out_2, out_queue2, per_in2);
+           avetime_in2, request_in_2, request_out_2, request_in_2 - request_out_2, per_in2);
     puts("-------------------------------------------------------------------------------------------------------------------");
 
     free(queue_array_1);

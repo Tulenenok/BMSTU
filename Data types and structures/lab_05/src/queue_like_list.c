@@ -310,7 +310,7 @@ void process_list(int n, int interval, times_t t1, times_t t2, times_t t3, times
            avetime_in1, request_in_1, request_out_1, per_in1);
     puts("-------------------------------------------------------------------------------------------------------------------");
     printf("| Queue 2 |  %11lf  |  %17d  |  %18d  |  %16d  |  %16lf%%  |\n",
-           avetime_in2, request_in_2, request_out_2, out_queue2, per_in2);
+           avetime_in2, request_in_2, request_out_2, request_in_2 - request_out_2, per_in2);
     puts("-------------------------------------------------------------------------------------------------------------------");
 
     printf("\nPrint not used addresses? (1 - Yes, 0 - No)\n");

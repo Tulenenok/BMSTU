@@ -66,8 +66,8 @@ void create_report()
     int n = 10;
     for (int i = 0; i < 4; i++, n *= 10)
     {
-        printf("|  %11d  |   %5d   |   %5d   |\n", n, (int) (sizeof(char) * n),
-               (int) ((sizeof(Node_t *) + sizeof(char)) * n));
+        printf("|  %11d  |   %5d   |   %6d  |\n", n, (int) (sizeof(char) * n),
+               (int) ((sizeof(Node_t)) * n));
         puts("-----------------------------------------");
     }
 }
