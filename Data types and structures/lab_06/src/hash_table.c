@@ -1,6 +1,8 @@
 #include "../inc/hash_table.h"
 #include "../inc/tools.h"
 
+#define MAX_COUNT_LOOP 100
+
 int hash_func_1(int n, ...)
 {
     va_list vl;
@@ -131,7 +133,7 @@ double average_count_of_cmp(hash_table_t *table)
 int sum_of_ar_pr(int x)
 {
     int sum = 0;
-    for(int i = 0; i < x; i++)
+    for(int i = 1; i <= x; i++)
         sum += i;
     return sum;
 }
@@ -143,26 +145,18 @@ void print_array(int n, int arr[], char *name)
         printf("%d ", arr[i]);
     printf("\n");
 }
+
 double avg_count_cmp_for_array(int count_indexes, int count_elems, int arr_with_data[], int (*hash_func)(int n, ...))
 {
     int *index_arr = calloc(count_indexes, sizeof(int));
     for(int i = 0; i < count_elems; i++)
-        index_arr[hash_func_1(2, arr_with_data[i], count_indexes)] += i;
-
-    print_array(count_indexes, index_arr, "index arr");
-
-    int *index_sum_arr = calloc(count_indexes, sizeof(int));
-    for(int i = 0; i < count_indexes; i++)
-        index_sum_arr[i] = sum_of_ar_pr(index_arr[i]);
-
-    print_array(count_indexes, index_sum_arr, "index_sum_arr");
+        index_arr[hash_func_1(2, arr_with_data[i], count_indexes)]++;
 
     int sum_cmp = 0;
     for(int i = 0; i < count_indexes; i++)
-        sum_cmp += index_sum_arr[i];
+        sum_cmp += sum_of_ar_pr(index_arr[i]);
 
     free(index_arr);
-    free(index_sum_arr);
 
     return (double)sum_cmp / count_elems;
 }
