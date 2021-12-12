@@ -6,6 +6,7 @@
 
 #define INPUT_ONE_ELEM 1
 #define MAX_LEN_FILE 1000
+#define MAX_COUNT_ELEMS 10000
 
 int cmp_int(int x, int y);
 

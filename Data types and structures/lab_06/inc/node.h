@@ -21,7 +21,7 @@ void free_for_node_list(node_t *head);
 
 void insert_data_to_node_list(node_data_t data, size_t index, node_t *head);
 
-node_t *find_data_in_node_list(node_data_t data, node_t *head);
+node_t *find_data_in_node_list(int *count_cmp, node_data_t data, node_t *head);
 
 void push_back(node_data_t data, node_t **head);
 

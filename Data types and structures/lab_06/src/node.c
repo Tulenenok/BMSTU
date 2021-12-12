@@ -58,10 +58,11 @@ void print_node_list(node_t *head)
     printf("\n");
 }
 
-node_t *find_data_in_node_list(node_data_t data, node_t *head)
+node_t *find_data_in_node_list(int *count_cmp, node_data_t data, node_t *head)
 {
     while(head)
     {
+        (*count_cmp)++;
         if(head->data == data && head->is_data_fill == true)
             return head;
         head = head->next;
