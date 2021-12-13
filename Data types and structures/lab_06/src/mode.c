@@ -1,5 +1,6 @@
 #include "../inc/mode.h"
 #include "../inc/tools.h"
+#include "../inc/time_memory.h"
 
  // дописать динамическое считывание имени файла
  void mode_input(tree_node_t **bin_search_tree, hash_table_t **table, abl_node_t **abl_tree)
@@ -65,9 +66,12 @@ void mode_print(tree_node_t *tree, hash_table_t *table, abl_node_t *abl_tree)
 
 void mode_free(tree_node_t *bin_search_tree, hash_table_t *table, abl_node_t *abl_tree)
 {
-    free_bin_search_tree(bin_search_tree);
-    free_table(table);
-    free_abl_tree(abl_tree);
+    if(bin_search_tree != NULL)
+        free_bin_search_tree(bin_search_tree);
+    if(table != NULL)
+        free_table(table);
+    if(abl_tree != NULL)
+        free_abl_tree(abl_tree);
 }
 
 void mode_insert_elems(tree_node_t **bin_search_tree, hash_table_t **table, abl_node_t **abl_tree)
@@ -155,28 +159,70 @@ void mode_find_elem(tree_node_t *bin_search_tree, hash_table_t *table, abl_node_
     puts("+------------------------------------------------------------------------------------------------+\n");
 }
 
-void mode_change_table(hash_table_t **table)
-{
+void mode_change_table(hash_table_t **table) {
     double count_avg = average_count_of_cmp(*table);
     double new_count_of_avg;
 
     printf("Not average count of cmp in table = %f\n", count_avg);
-    printf("Input new average count of cmp:");
-    if(INPUT_ONE_ELEM != scanf("%lf", &new_count_of_avg))
+    printf("Input new average count of cmp (int):");
+    if (INPUT_ONE_ELEM != scanf("%lf", &new_count_of_avg))
     {
-        printf("Invalid input\n");
+        printf("Invalid input (must be int number)\n");
+        return;
+    }
+
+    if (new_count_of_avg < 1) {
+        printf("Invalid input ---> (int)avg count of arg can't be < 1\n");
+        return;
+    }
+
+    hash_table_t *new_table = change_table((double)(int)new_count_of_avg, *table);
+    if(new_table == NULL)
+    {
+        puts("CHANGE TABLE ---> FAILURE");
         return ;
     }
 
-    if(new_count_of_avg <= 1)
-    {
-        printf("Invalid input ---> avg count of arg can't be < 1");
-        return ;
-    }
-    hash_table_t *new_table = change_table(new_count_of_avg, *table);
     free_table(*table);
     *table = new_table;
 
     print_hash_table(new_table);
     puts("CHANGE TABLE ---> SUCCESS");
+}
+
+void mode_report(void)
+{
+    int count_measurements = 0;
+    printf("Input count of measurements that you want to do:");
+    if(INPUT_ONE_ELEM != scanf("%d", &count_measurements) || count_measurements < 0)
+    {
+        puts("Invalid input count");
+        return ;
+    }
+
+    report_t *report = malloc(sizeof(report_t));
+    report->counts = malloc(count_measurements * sizeof(int));
+
+    printf("Input all count of elems that you want to test:");
+    for(int i = 0, j = 0; i < count_measurements; i++)
+    {
+        if (INPUT_ONE_ELEM != scanf("%d", &report->counts[j]) || &report->counts[j] < 0)
+        {
+            puts("Invalid count, pass this value");
+            count_measurements--;
+            continue;
+        }
+        j++;
+    }
+
+    report->count_measures = count_measurements;
+    for(int i = 0; i < report->count_measures; i++)
+    {
+        char filename[80];
+        sprintf(filename, "..\\shared\\gen_%d.txt", report->counts[i]);
+        printf("%s\n", filename);
+        gen_file_with_int_numbers(report->counts[i], filename);
+    }
+
+    create_report(count_measurements, report->counts);
 }

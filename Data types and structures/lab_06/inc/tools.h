@@ -18,4 +18,6 @@ int is_elem_in_arr(int elem, int l, int r, int arr[]);
 
 int unique_elems_in_file(FILE *f, int arr[]);
 
+void gen_file_with_int_numbers(int count_elems, char *filename);
+
 #endif //LAB_06_TOOLS_H

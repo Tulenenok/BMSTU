@@ -32,4 +32,6 @@ void mode_find_elem(tree_node_t *bin_search_tree, hash_table_t *table, abl_node_
 
 void mode_change_table(hash_table_t **table);
 
+void mode_report(void);
+
 #endif //LAB_06_MODE_H

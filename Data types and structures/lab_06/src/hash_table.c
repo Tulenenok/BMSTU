@@ -1,8 +1,6 @@
 #include "../inc/hash_table.h"
 #include "../inc/tools.h"
 
-#define MAX_COUNT_LOOP 100
-
 int hash_func_1(int n, ...)
 {
     va_list vl;

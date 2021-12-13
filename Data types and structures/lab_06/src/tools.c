@@ -1,4 +1,5 @@
 #include "../inc/tools.h"
+#include <string.h>
 
 int cmp_int(int x, int y)
 {
@@ -40,4 +41,13 @@ int unique_elems_in_file(FILE *f, int arr[])
 
     rewind(f);
     return i;
+}
+
+void gen_file_with_int_numbers(int count_elems, char *filename)
+{
+    char command[100] = "python ..\\generate\\gen.py";
+    char args[500];
+    sprintf(args, " %d %s", count_elems, filename);
+    strcat(command, args);
+    system(command);
 }

@@ -7,7 +7,7 @@ void menu(mode_t mode, tree_node_t **bin_search_tree, hash_table_t **table, abl_
 {
     setbuf(stdin, NULL);
 
-    if((*bin_search_tree == NULL || *table == NULL || *abl_tree == NULL) && mode != INPUT_TREES)
+    if((*bin_search_tree == NULL || *table == NULL || *abl_tree == NULL) && mode != INPUT_TREES && mode != REPORT)
     {
         printf("ERROR : DATA WAS NOT INPUT\nUse commands input(1)\n");
         return ;
@@ -27,6 +27,9 @@ void menu(mode_t mode, tree_node_t **bin_search_tree, hash_table_t **table, abl_
 
     else if(CHANGE_TABLE == mode)
         mode_change_table(table);
+
+    else if(REPORT == mode)
+        mode_report();
 
     else
         puts("Invalid command");
@@ -66,6 +69,7 @@ int main()
             mode_free(bin_search_tree, table, abl_tree);
             break;
         }
+
 
         menu(mode, &bin_search_tree, &table, &abl_tree);
         printf("\n");
