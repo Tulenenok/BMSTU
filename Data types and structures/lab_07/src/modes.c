@@ -130,6 +130,9 @@ void create_time_report(int count_mea, int count_elems[])
     printf("+----------------------------+\n");
     printf("| COUNT TOPS |   USED TIME   |\n");
     printf("+----------------------------+\n");
+
+    FILE *time_report_file = fopen("..\\data\\time_result.txt", "w");
+
     for(int i = 0; i < count_mea; i++)
     {
         generate_matrix(count_elems[i], count_elems[i]);
@@ -160,16 +163,40 @@ void create_time_report(int count_mea, int count_elems[])
         printf("| %10d |  %11lld  |\n", count_elems[i], end - begin);
         printf("+----------------------------+\n");
 
+        fprintf(time_report_file, "%d %lld\n", count_elems[i], end - begin);
+
         free_graph(graph);
         free(dist_array);
         free(tops_array);
         fclose(f);
     }
+
+    fclose(time_report_file);
+}
+
+void create_memory_report(int count_mea, int count_elems[])
+{
+    FILE *memory_report_file = fopen("..\\data\\memory_result.txt", "w");
+
+    printf("\nMEMORY\n");
+    printf("+----------------------------+\n");
+    printf("| COUNT TOPS |  USED MEMORY  |\n");
+    printf("+----------------------------+\n");
+    for(int i = 0; i < count_mea; i++)
+    {
+        long long int t_memory = memory_graph(count_elems[i]);
+        printf("| %10d |  %11lld  |\n", count_elems[i], t_memory);
+        fprintf(memory_report_file, "%d %lld\n", count_elems[i], t_memory);
+    }
+    printf("+----------------------------+\n");
+
+    fclose(memory_report_file);
 }
 
 void mode_report()
 {
     int count_measurements = 0;
+
     printf("Input count of measurements that you want to do:");
     if(INPUT_ONE_ELEM != scanf("%d", &count_measurements) || count_measurements < 0)
     {
@@ -191,14 +218,13 @@ void mode_report()
         j++;
     }
 
-    printf("\nMEMORY\n");
-    printf("+----------------------------+\n");
-    printf("| COUNT TOPS |  USED MEMORY  |\n");
-    printf("+----------------------------+\n");
-    for(int i = 0; i < count_measurements; i++)
-        printf("| %10d |  %11lld  |\n", count_elems[i], memory_graph(count_elems[i]));
-    printf("+----------------------------+\n");
-
+    create_memory_report(count_measurements, count_elems);
     create_time_report(count_measurements, count_elems);
+
     free(count_elems);
+
+    system("python ..\\gen\\statistics_time.py");
+    puts("STATISTIC GRAPH FOR TIME ---> DONE");
+    system("python ..\\gen\\statistics_memory.py");
+    puts("STATISTIC GRAPH FOR MEMORY ---> DONE");
 }
