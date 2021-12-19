@@ -12,7 +12,7 @@ typedef struct
 
 graph_t *create_graph(int n);
 
-graph_t *input_graph_from_file(FILE *f);
+graph_t *input_graph_from_file(FILE *f, int comment);
 
 void free_graph(graph_t *graph);
 

@@ -19,7 +19,7 @@ void mode_input_graph_from_file(graph_t **graph)
         return ;
     }
 
-    *graph = input_graph_from_file(f);
+    *graph = input_graph_from_file(f, 0);
     if(!*graph)
     {
         puts("Error with data in file");
@@ -29,8 +29,22 @@ void mode_input_graph_from_file(graph_t **graph)
 
     fclose(f);
     puts("INPUT GRAPH FROM FILE ---> SUCCESS");
+}
 
-    return ;
+void mode_input_graph_from_stdin(graph_t **graph)
+{
+    if(*graph)               //  если граф существовал, его надо почистить
+        free_graph(*graph);
+
+    *graph = input_graph_from_file(stdin, 1);
+    if(!*graph)
+    {
+        puts("Error with data in file");
+        puts("INPUT GRAPH FROM FILE ---> FAILURE");
+        return ;
+    }
+
+    puts("INPUT GRAPH FROM FILE ---> SUCCESS");
 }
 
 void mode_free(graph_t *graph)
@@ -151,7 +165,7 @@ void create_time_report(int count_mea, int count_elems[])
             return;
         }
 
-        graph_t *graph = input_graph_from_file(f);
+        graph_t *graph = input_graph_from_file(f, 0);
 
         int *dist_array = calloc(graph->n, sizeof(int));
         int *tops_array = calloc(graph->n, sizeof(int));

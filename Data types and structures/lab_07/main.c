@@ -14,6 +14,9 @@ void menu(mode_t mode, graph_t **graph)
     if(INPUT_GRAPH_FROM_FILE == mode)
         mode_input_graph_from_file(graph);
 
+    else if(INPUT_GRAPH_FROM_STDIN == mode)
+        mode_input_graph_from_stdin(graph);
+
     else if(PRINT_GRAPH == mode)
         mode_print_graph(*graph);
 
@@ -38,9 +41,10 @@ int main()
         printf("Menu:\n"
                "    0 - EXIT\n"
                "    1 - input graph from file\n"
-               "    2 - print graph\n"
-               "    3 - find\n"
-               "    4 - report\n");
+               "    2 - input graph from stdin\n"
+               "    3 - find ways\n"
+               "    4 - print graph\n"
+               "    5 - report time&memory\n");
         printf("Input command:");
 
         mode_t mode = EXIT;

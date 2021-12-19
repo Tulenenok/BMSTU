@@ -53,9 +53,12 @@ void free_graph(graph_t *graph)
     free(graph);
 }
 
-graph_t *input_graph_from_file(FILE *f)
+graph_t *input_graph_from_file(FILE *f, int comment)
 {
     int x;
+    if(comment)
+        printf("Input count of roads:");
+
     if(fscanf(f, "%d", &x) != INPUT_ONE_ELEM || x <= 0)
         return NULL;
 
@@ -65,29 +68,46 @@ graph_t *input_graph_from_file(FILE *f)
 
     new_graph->n = x;
 
+    if(comment)
+    {
+        printf("   ");
+        for(int i = 0; i < new_graph->n; i++)
+            printf("x%d ", i + 1);
+        printf("\n");
+    }
+
     for(int i = 0; i < new_graph->n; i++)
-        for(int j = 0; j < new_graph->n; j++)
-        {
-            if (fscanf(f, "%d", &x) != INPUT_ONE_ELEM || x < 0)
-            {
+    {
+        if(comment)
+            printf("x%d:", i + 1);
+        for (int j = 0; j < new_graph->n; j++) {
+            if (fscanf(f, "%d", &x) != INPUT_ONE_ELEM || x < 0) {
                 free_graph(new_graph);
                 return NULL;
             }
             new_graph->data[i][j] = x;
         }
+    }
 
     return new_graph;
 }
 
 void print_graph_like_matrix(graph_t *graph)
 {
-    printf("%d\n", graph->n);
+    printf("Count tops: %d\n", graph->n);
+    printf("\n--Matrix ways--\n| ");
+    for(int i = 0; i < graph->n; i++)
+        printf("x%d ", i+1);
+    printf("|\n");
+
     for(int i = 0; i < graph->n; i++)
     {
-        for (int j = 0; j < graph->n; j++)
-            printf("%d ", graph->data[i][j]);
-        printf("\n");
+        printf("| ");
+        for (int j = 0; j < graph->n - 1; j++)
+            printf("%d  ", graph->data[i][j]);
+        printf("%d  |\n", graph->data[i][graph->n - 1]);
     }
+    printf("---------------\n");
 }
 
 void print_graph_like_dot(FILE *f, graph_t *graph)

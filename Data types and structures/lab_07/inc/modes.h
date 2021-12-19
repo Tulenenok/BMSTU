@@ -9,12 +9,15 @@ typedef enum
 {
     EXIT = 0,
     INPUT_GRAPH_FROM_FILE = 1,
-    PRINT_GRAPH = 2,
+    INPUT_GRAPH_FROM_STDIN = 2,
     FIND = 3,
-    REPORT = 4,
+    PRINT_GRAPH = 4,
+    REPORT = 5,
 } mode_t;
 
 void mode_input_graph_from_file(graph_t **graph);
+
+void mode_input_graph_from_stdin(graph_t **graph);
 
 void mode_free(graph_t *graph);
 
