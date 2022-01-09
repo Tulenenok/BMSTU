@@ -3,95 +3,91 @@
 #include <assert.h>
 #include <string.h>
 
+#define ERROR 100
+
 typedef struct
 {
     int tag;
-    int size;
+    int len;
     int data[];
 } tlv_t;
 
-tlv_t *create_tlv(int tag, int size, int data[])
+tlv_t *create_tlv(int _tag, int _len, int _data[])
 {
-    assert(size != 0);
+    assert(_len > 0);
 
-    tlv_t *new = malloc(sizeof(tlv_t) + size * sizeof(int));
-    if(!new)
+    tlv_t *new_tlv = malloc(sizeof(tlv_t) + _len * sizeof(int));
+    if(!new_tlv)
         return NULL;
 
-    new->tag = tag;
-    new->size = size;
-    memcpy(new->data, data, size * sizeof(int));
+    new_tlv->tag = _tag;
+    new_tlv->len = _len;
 
-    return new;
+    memcpy(new_tlv->data, _data, _len * sizeof(int));
+    return new_tlv;
 }
 
-void free_tlv(tlv_t *p)
+void free_tlv(tlv_t *tlv)
 {
-    free(p);
+    free(tlv);
 }
 
-int write_tlv(FILE *f, tlv_t *tlv)
+void print_tlv(tlv_t *tlv)
 {
-    printf("%llu ", fwrite(tlv, sizeof(*tlv) + tlv->size * sizeof(int), 1, f));
+    printf("Tag: %d\nLength: %d\nArray: ", tlv->tag, tlv->len);
+    for(int i = 0; i < tlv->len; i++)
+        printf("%d ", tlv->data[i]);
+    printf("\n");
+}
+
+int write_to_file(FILE *f, tlv_t *tlv)
+{
+    if(fwrite(tlv, sizeof(tlv_t) + tlv->len * sizeof(int), 1, f) != 1)
+        return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
 
-tlv_t *read_tlv(FILE *f)
+tlv_t *read_from_file(FILE *f)
 {
     tlv_t t;
-
     if(fread(&t, sizeof(tlv_t), 1, f) != 1)
         return NULL;
 
-    tlv_t *n = malloc(sizeof(tlv_t) + t.size * sizeof(int));
-    if(!n)
+    tlv_t *new_tlv = malloc(sizeof(tlv_t) + t.len * sizeof(int));
+    if(!new_tlv)
         return NULL;
 
-    memcpy(n, &t, sizeof(tlv_t));
+    memcpy(new_tlv, &t, sizeof(tlv_t));
 
-    if(fread(n->data, t.size * sizeof(int), 1, f) != 1)
-    {
-        free(n);
+    if(fread(new_tlv->data, new_tlv->len * sizeof(int), 1, f) != 1)
         return NULL;
-    }
 
-    return n;
-}
-
-void print_tlv(tlv_t *t)
-{
-    printf("\n");
-    printf("%d %d\n", t->tag, t->size);
-    for(int i = 0; i < t->size; i++)
-        printf("%d ", t->data[i]);
+    return new_tlv;
 }
 
 int main(void)
 {
-    int a[] = {1, 2, 3, 4, 5, 6};
-    tlv_t *tlv = create_tlv(-1, 6, a);
-    if(tlv == NULL)
-        return 100;
-
-    FILE *f = fopen("..\\tlv.txt", "wb+");
-    if(!f)
-    {
-        free_tlv(tlv);
-        return 200;
-    }
+    int data[] = {1, 2, 3, 4, 5};
+    tlv_t *tlv = create_tlv(10, 5, data);
+    if(!tlv)
+        return ERROR;
 
     print_tlv(tlv);
 
-    write_tlv(f, tlv);
+    FILE *f = fopen("..\\tlv.txt", "wb+");
+    if(!f)
+        return ERROR;
+
+    write_to_file(f, tlv);
+    free_tlv(tlv);
 
     rewind(f);
 
-    tlv_t *new_tlv = read_tlv(f);
-    if(new_tlv != NULL)
+    tlv_t *new_tlv = read_from_file(f);
+    if(new_tlv)
         print_tlv(new_tlv);
-
 
     fclose(f);
     free_tlv(new_tlv);
-    free_tlv(tlv);
+    return 0;
 }
