@@ -1,9 +1,8 @@
+#define _GNU_SOURCE_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define _POSIX_C_SOURCE 200809L
-//#define _GNU_SOURCE_
 
 #define STR "Natasha"
 
@@ -20,13 +19,11 @@ int main(void)
 //    printf("%s", str);
 //    printf("%d", str[strlen(str)] == '\0');
 
-    char *str = strdup(STR);
-    if(!str)
-        return ERROR;
-    printf("%s", str);
-    free(str);
-
-    ///ssize_t getline(char **buf, size_t *n, FILE *f);
+//    char *str = strdup(STR);
+//    if(!str)
+//        return ERROR;
+//    printf("%s", str);
+//    free(str);
 
 //    char *str = NULL;
 //    size_t n = 0;
@@ -46,4 +43,28 @@ int main(void)
 //    printf("%s", str);
 //    free(str);
 //    fclose(f);
+
+//    char *str = NULL;
+//
+//    int n = snprintf(NULL, 0, STR);
+//    if(n > 0)
+//    {
+//        str = calloc(n + 1, sizeof(char));
+//        if(!str)
+//            return 100;
+//
+//        snprintf(str, n + 1, STR);
+//        printf("%s", str);
+//        free(str);
+//    }
+
+    char *str = NULL;
+    int n = asprintf(&str, STR);
+    if(n > 0)
+    {
+        printf("%s", str);
+        free(str);
+    }
+
+    return 0;
 }
