@@ -2,12 +2,18 @@ from tkinter import *
 from tkinter.messagebox import *
 from drawErrors import Check
 from drawControll import controll
+from idlelib.tooltip import Hovertip
+from tools import CreateToolTip
+import pickle
+
+FILE_LAST_VERSION = "shared/lastVersion.bin"
 
 class Window:
     def __init__(self, name, size, color):
         self.__name = name
         self.__size = size
         self.__color = color
+        self.allFrames = {}
         self.create()
 
     def create(self):
@@ -28,6 +34,16 @@ class Window:
 
     def closeWindow(self):
         self.__window.destroy()
+
+    def saveСondition(self, filename=FILE_LAST_VERSION):
+        with open(filename, 'wb') as f:
+            for frame in self.allFrames:
+                pickle.dump(frame, f)
+
+    def readCondition(self, filename=FILE_LAST_VERSION):
+        with open(filename, 'rb') as f:
+            for frame in self.allFrames:
+                frame = pickle.load(f)
 
 class menuFrame:
     def __init__(self, window):
@@ -71,53 +87,93 @@ class auxiliaryFrames:
         label.grid(column=0, row=0, sticky='w')
         return f
 
-
 class pointAddDel():
-    def __init__(self, row, column, color):
+    def __init__(self, window, row, column, color):
+        self.__maindWindow = window
         self.__f = Frame(width=row, height=column, bg=color)
         self.__f.propagate(0)
         self.__widthInput = 18
+
+        self.__add = LabelFrame(self.__f, padx=5, pady=10, width=10, text="Add point", font=('Arial', 11, 'bold'),
+                                bg=color, fg="#f1e4de")
+        self.__xAdd = Entry(self.__add, width=self.__widthInput)
+        self.__yAdd = Entry(self.__add, width=self.__widthInput)
+        self.__buttonAdd = Button(self.__add, text="  Add  ", command=self.__addPointFunc)
+
+        self.__del = LabelFrame(self.__f, padx=5, pady=10, text="Del point", font=('Arial', 11, 'bold'), bg=color, fg="#f1e4de")
+        self.__xDel = Entry(self.__del, width=self.__widthInput)
+        self.__yDel = Entry(self.__del, width=self.__widthInput)
+        self.__buttonDel = Button(self.__del, text="  Del  ", command=self.__delPointFunc)
+
         self.__showAdd(color)
         self.__showDel(color)
 
+    def __onEnter(self, btn):
+        btn.widget['background'] = '#deebf1'
+
+    def __onLeave(self, btn):
+        btn.widget['background'] = 'SystemButtonFace'
 
     def __showAdd(self, color):
-        add = LabelFrame(self.__f, padx=5, pady=10, width=10,
-                         text="Add point",  font=('Arial', 11, 'bold'), bg=color, fg="#f1e4de")
+        self.__add.propagate(0)
 
-        add.propagate(0)
+        Label(self.__add, text="X: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=0)
+        Label(self.__add, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=1)
+        Label(self.__add, text="Y: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=2)
 
-        self.__xAdd = Label(add, text="X: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=0)
-        Label(add, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=1)
-        self.__yAdd = Label(add, text="Y: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=2)
-        Entry(add, width=self.__widthInput).grid(row=0, column=1, sticky=W)
-        Entry(add, width=self.__widthInput).grid(row=2, column=1, sticky=W)
+        self.__xAdd.grid(row=0, column=1, sticky=W)
+        self.__yAdd.grid(row=2, column=1, sticky=W)
 
-        Label(add, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=3)
-        self.buttonAdd = Button(add, text="  Add  ")
-        self.buttonAdd.grid(row=4, column=1, sticky="es")
+        Label(self.__add, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=3)
+        self.__buttonAdd.grid(row=4, column=1, sticky="es")
 
-        add.pack(side=LEFT, anchor="n")
+        self.__add.pack(side=LEFT, anchor="n")
+
+        self.__buttonAdd.bind("<Enter>", self.__onEnter)
+        self.__buttonAdd.bind("<Leave>", self.__onLeave)
 
     def __showDel(self, color):
-        delF = LabelFrame(self.__f, padx=5, pady=10,
-                         text="Del point", font=('Arial', 11, 'bold'), bg=color, fg="#f1e4de")
+        self.__del.propagate(0)
+        Label(self.__del, text="X: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=0)
+        Label(self.__del, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=1)
+        Label(self.__del, text="Y: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=2)
 
-        self.__xDel = Label(delF, text="X: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=0)
-        Label(delF, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=1)
+        self.__xDel.grid(row=0, column=1, sticky=W)
+        self.__yDel.grid(row=2, column=1, sticky=W)
 
-        self.__yDel = Label(delF, text="Y: ", bg=color, font=('Arial', 10, 'bold'), fg="#f1e4de").grid(row=2)
-        Entry(delF, width=self.__widthInput).grid(row=0, column=1, sticky=W)
-        Entry(delF,  width=self.__widthInput ).grid(row=2, column=1, sticky=W)
+        Label(self.__del, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=3)
+        self.__buttonDel.grid(row=4, column=1, sticky="es")
 
-        Label(delF, text=" ", bg=color, font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=3)
-        self.buttonAdd = Button(delF, text="  Del  ")
-        self.buttonAdd.grid(row=4, column=1, sticky="es")
+        self.__del.pack(side=RIGHT, anchor="ne")
 
-        delF.pack(side=RIGHT, anchor="ne")
+        self.__buttonDel.bind("<Enter>", self.__onEnter)
+        self.__buttonDel.bind("<Leave>", self.__onLeave)
 
     def create(self):
         return self.__f
+
+    def __addPointFunc(self):
+        inputX = self.__xAdd.get()
+        inputY = self.__yAdd.get()
+        if Check.isInt(inputX) and Check.isInt(inputY):
+            window.allFrames['pointsFrame'].insert(END, f'({inputX}; {inputY})  ')
+            window.allFrames['fieldCanvas'].createPoint(inputX, inputY)
+            self.__xAdd.delete(0, END)
+            self.__yAdd.delete(0, END)
+        else:
+            showinfo('Error', 'Координаты точки введены неверно')
+
+    def __delPointFunc(self):
+        inputX = self.__xDel.get()
+        inputY = self.__yDel.get()
+        if Check.isInt(inputX) and Check.isInt(inputY):
+            if not window.allFrames['fieldCanvas'].delPoint(inputX, inputY):
+                showinfo('Error', 'Точка с такими координатами на поле отсутствует')
+            else:
+                self.__xDel.delete(0, END)
+                self.__yDel.delete(0, END)
+        else:
+            showinfo('Error', 'Координаты точки введены неверно')
 
 class TextArea:
     def __init__(self, width, height, bg, fg):
@@ -136,6 +192,12 @@ class TextArea:
 
     def get(self):
         return self.__text.get("1.0", "end-1c")
+
+    def replaceText(self, newText):
+        self.__text.configure(state=NORMAL)
+        self.delete_all()
+        self.insert(END, newText)
+        self.__text.configure(state=DISABLED)
 
     def delete_all(self):
         self.__text.delete('1.0', 'end')
@@ -207,7 +269,8 @@ class TextArea:
         field.drawTriangle(minPoints, "#f4d75e")
 
 class Field:
-    def __init__(self, width, height, bg, koefGrid=25, gridColor='grey'):
+    def __init__(self, window, width, height, bg, koefGrid=25, gridColor='grey'):
+        self.__window = window
         self.__width = width
         self.__heigh = height
         self.__step = width // koefGrid
@@ -298,14 +361,37 @@ class Field:
                                                     font=('Arial', 8, 'bold'), justify=CENTER, fill='black')
 
     def createPoint(self, x, y):
-        point = self.__c.create_oval(x - 4, y - 4, x + 4, y + 4,
+        xOnCanvas = int(x) + self.__startGridY
+        yOnCanvas = self.__startGridX - int(y)
+        point = self.__c.create_oval(xOnCanvas - 4, yOnCanvas - 4, xOnCanvas + 4, yOnCanvas + 4,
                              fill='#8eb2ac', outline='#8eb2ac')
         self.points.append(point)
 
-        self.coordsForCanvas.append((x, y))
+        self.coordsForCanvas.append((xOnCanvas, yOnCanvas))
+        self.coordsForPeople.append((x, y))
 
-    def delPoint(self, point):
-        self.__c.delete(point)
+    def delPoint(self, x, y):
+        xOnCanvas = int(x) + self.__startGridY
+        yOnCanvas = self.__startGridX - int(y)
+        for i, point in enumerate(self.coordsForPeople):
+            if (int(x), int(y)) == point or (x, y) == point:
+                self.__c.delete((xOnCanvas, yOnCanvas))
+                self.coordsForPeople.pop(i)
+                self.coordsForCanvas.pop(i)
+                self.__c.delete(self.points[i])
+                self.points.pop(i)
+
+                str = ""
+                for p in self.coordsForPeople:
+                    str += f'({p[0]}; {p[1]})  '
+                window.allFrames['pointsFrame'].replaceText(str)
+
+                return 1
+        return 0
+
+    def clear(self):
+        while len(self.coordsForPeople) != 0:
+            self.delPoint(self.coordsForPeople[0][0], self.coordsForPeople[0][1])
 
     def drawTriangle(self, listPoints, color):
         l1 = self.__c.create_line(listPoints[0][0], listPoints[0][1], listPoints[1][0], listPoints[1][1],
@@ -325,7 +411,8 @@ class Field:
         self.lines = []
 
 class SpecialBtns:
-    def __init__(self, txt, bg, fg, padx, pady, font=('Consolas, 14')):
+    def __init__(self, window, txt, bg, fg, padx, pady, font=('Consolas, 14')):
+        self.__window = window
         self.__txt = txt
         self.__bg = bg
         self.__fg = fg
@@ -334,32 +421,47 @@ class SpecialBtns:
         self.__font = font
         self.__frame = Frame(bg='#7c7b89')
 
-    def __btn(self, text, command, row, column, sticky='NWSE'):
+    def __onEnter(self, btn):
+        btn.widget['background'] = '#deebf1'
+
+    def __onLeave(self, btn):
+        btn.widget['background'] = self.__bg
+
+    def __btn(self, text, command, row, column, sticky='NWSE', name='button'):
         btn = Button(self.__frame, text=text, padx=self.__padx, pady=self.__pady, font=self.__font,
                           bg=self.__bg, fg=self.__fg,
                           command=command)
+        btn.bind("<Enter>", self.__onEnter)
+        btn.bind("<Leave>", self.__onLeave)
+
+        #CreateToolTip(btn, text=name, waittime=0)
+        # Listbox.ToolTip(btn, ['tooltip', name])
+
         btn.grid(row=row, column=column, sticky=sticky)
 
     def create(self):
-        self.__btn('add point', self.__txt.calculate, 0, 0)
-        self.__btn('del point', self.__txt.calculate, 0, 1)
-        self.__btn('clear all', self.__txt.delete_all, 0, 2)
-        self.__btn('calculate', self.__txt.calculate, 0, 3)
+        self.__btn('⏎', self.__txt.calculate, 0, 0, name='back')
+        self.__btn('🗑', self.__window.allFrames['fieldCanvas'].clear, 0, 1, name='clear all')
+        # Label(self.__frame, text=" ", bg='black', font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=0, column=2)
+        # self.__btn('clear all', self.__txt.delete_all, 0, 2, name='отмена')
+        self.__btn('🚀', self.__txt.calculate, 0, 10, name='go')
         return self.__frame
 
 window = Window('Lab 01', '900x580', '#7c7b89')
 menu = menuFrame(window)
 input = TextArea(38, 10, "#f1e4de", "black")
-field = Field(500, 450, "white")
-specBtn = SpecialBtns(input, "#f1e4de", "black", 15, 5)
-addDel = pointAddDel(100, 350, '#7c7b89')
+field = Field(window, 500, 450, "white")
+specBtn = SpecialBtns(window, input, "#f1e4de", "black", 15, 5)
+addDel = pointAddDel(window, 100, 350, '#7c7b89')
+
+window.allFrames = {'addDelFrame' : addDel, 'pointsFrame' : input, 'fieldCanvas': field, 'specialButtons' : specBtn}
 
 window.addMenu()
 window.addFrame(row=0, column=0, frame=auxiliaryFrames.create(10, 20, '#7c7b89'), columnspan=5)
 window.addFrame(row=0, column=0, frame=auxiliaryFrames.create(20, 10, '#7c7b89'), rowspan=5)
 
 #window.addFrame(row=1, column=1, frame=auxiliaryFrames.create(100, 350, '#7c7b89'))            # говно-заглушка надо фиксить
-window.addFrame(row=1, column=1, frame=addDel.create())            # попытка не пытка
+window.addFrame(row=1, column=1, frame=addDel.create())                     # попытка не пытка
 
 window.addFrame(row=2, column=1, frame=auxiliaryFrames.createLabel(10, 10, "Previously entered points", '#f1e4de', '#7c7b89', font=('Arial', 10, 'bold')), columnspan=2)
 
