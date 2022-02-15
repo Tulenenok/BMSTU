@@ -549,7 +549,7 @@ class Field:
         xEnd, yEnd = self.__rightXCoord, model.ByXFindYOnLine(self.__rightXCoord, startLine, endLine)
 
         start, end = self.fromPeopleToCanvas((xStart, yStart)), self.fromPeopleToCanvas((xEnd, yEnd))
-        self.lines.append(self.__c.create_line(start[0], start[1], end[0], end[1]))
+        self.lines.append(self.__c.create_line(start[0], start[1], end[0], end[1], fill='#CCF600', width=2))
 
 class SpecialBtns:
     def __init__(self, window, txt, bg, fg, padx, pady, font=('Consolas, 14')):
