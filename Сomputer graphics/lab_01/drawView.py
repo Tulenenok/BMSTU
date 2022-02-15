@@ -2,11 +2,11 @@ from tkinter import *
 from tkinter.messagebox import *
 from drawErrors import Check
 from drawControll import controll
+from consts import *
+import shutil
 from idlelib.tooltip import Hovertip
 from tools import CreateToolTip
 import pickle
-
-FILE_LAST_VERSION = "shared/lastVersion.bin"
 
 class Window:
     def __init__(self, name, size, color):
@@ -15,6 +15,13 @@ class Window:
         self.__color = color
         self.allFrames = {}
         self.create()
+
+        self.__prevVersionPP = FILE_PREVIOUS_VERSION_P_P
+        self.__prevVersionP = FILE_PREVIOUS_VERSION_P
+        self.__prevVersion = FILE_PREVIOUS_VERSION
+        self.__curVersion = FILE_CURRENT_VERSION
+
+        self.__startingSetting()
 
     def create(self):
         self.__window = Tk()
@@ -35,15 +42,49 @@ class Window:
     def closeWindow(self):
         self.__window.destroy()
 
-    def saveСondition(self, filename=FILE_LAST_VERSION):
-        with open(filename, 'wb') as f:
-            for frame in self.allFrames:
-                pickle.dump(frame, f)
+    def __startingSetting(self):
+        with open(self.__prevVersionPP, 'w') as f:
+            pass
 
-    def readCondition(self, filename=FILE_LAST_VERSION):
-        with open(filename, 'rb') as f:
-            for frame in self.allFrames:
-                frame = pickle.load(f)
+        with open(self.__prevVersionP, 'w') as f:
+            pass
+
+        with open(self.__prevVersion, 'w') as f:
+            pass
+
+        with open(self.__curVersion, 'w') as f:
+            pass
+
+    def __saveShift(self):
+        shutil.copyfile(self.__prevVersionP, self.__prevVersionPP)
+        shutil.copyfile(self.__prevVersion, self.__prevVersionP)
+        shutil.copyfile(self.__curVersion, self.__prevVersion)
+
+    def saveCondition(self):
+        self.__saveShift()
+
+        with open(self.__curVersion, 'wb') as f:
+            self.allFrames[OBJ_ADD_DEL_BTN].saveCondition(f)
+            self.allFrames[OBJ_FIELD].saveCondition(f)
+
+    def __downloadShift(self):
+        shutil.copyfile(self.__prevVersion, self.__curVersion)
+        shutil.copyfile(self.__prevVersionP, self.__prevVersion)
+        shutil.copyfile(self.__prevVersionPP, self.__prevVersionP)
+
+    def downloadPreviousVersion(self):
+        with open(self.__prevVersion, 'rb') as f:
+            try:
+                self.allFrames[OBJ_ADD_DEL_BTN].downloadPreviousVersion(f)
+                self.allFrames[OBJ_FIELD].downloadPreviousVersion(f)
+
+            except:
+                showinfo('Error', 'Возникли неожиданные затруднения. \n\n Если вы еще ничего не успели поменять, не пугайтесь, '
+                                  'оно так и должно работать. \n\n'
+                                  'А вот если успели... зовите фиксиков')
+                return
+
+        self.__downloadShift()
 
 class menuFrame:
     def __init__(self, window):
@@ -156,8 +197,8 @@ class pointAddDel():
         inputX = self.__xAdd.get()
         inputY = self.__yAdd.get()
         if Check.isInt(inputX) and Check.isInt(inputY):
-            window.allFrames['pointsFrame'].insert(END, f'({inputX}; {inputY})  ')
-            window.allFrames['fieldCanvas'].createPoint(inputX, inputY)
+            window.allFrames[OBJ_TEXT_POINTS].insert(END, f'({inputX}; {inputY})  ')
+            window.allFrames[OBJ_FIELD].createPoint(inputX, inputY)
             self.__xAdd.delete(0, END)
             self.__yAdd.delete(0, END)
         else:
@@ -167,13 +208,38 @@ class pointAddDel():
         inputX = self.__xDel.get()
         inputY = self.__yDel.get()
         if Check.isInt(inputX) and Check.isInt(inputY):
-            if not window.allFrames['fieldCanvas'].delPoint(inputX, inputY):
+            if not window.allFrames[OBJ_FIELD].delPoint(inputX, inputY):
                 showinfo('Error', 'Точка с такими координатами на поле отсутствует')
             else:
                 self.__xDel.delete(0, END)
                 self.__yDel.delete(0, END)
         else:
             showinfo('Error', 'Координаты точки введены неверно')
+
+    def startingSettings(self):
+        self.__xAdd.delete(0, END)
+        self.__yAdd.delete(0, END)
+        self.__xDel.delete(0, END)
+        self.__yDel.delete(0, END)
+
+    def saveCondition(self, file):
+        pickle.dump(self.__xAdd.get(), file)
+        pickle.dump(self.__yAdd.get(), file)
+        pickle.dump(self.__xDel.get(), file)
+        pickle.dump(self.__yDel.get(), file)
+
+    def downloadPreviousVersion(self, file):
+        x_add = pickle.load(file)
+        y_add = pickle.load(file)
+        x_del = pickle.load(file)
+        y_del = pickle.load(file)
+
+        self.startingSettings()
+
+        self.__xAdd.insert(0, x_add)
+        self.__yAdd.insert(0, y_add)
+        self.__xDel.insert(0, x_del)
+        self.__yDel.insert(0, y_del)
 
 class TextArea:
     def __init__(self, width, height, bg, fg):
@@ -268,6 +334,9 @@ class TextArea:
             return
         field.drawTriangle(minPoints, "#f4d75e")
 
+    def startingSettings(self):
+        self.replaceText("")
+
 class Field:
     def __init__(self, window, width, height, bg, koefGrid=25, gridColor='grey'):
         self.__window = window
@@ -346,10 +415,12 @@ class Field:
         point = self.__c.create_oval(event.x - 4, event.y - 4, event.x + 4, event.y + 4,
                              fill='#8eb2ac', outline='#8eb2ac')
 
-        input.insert(END, f'({x}; {y})  ')
+        textPoints.insert(END, f'({x}; {y})  ')
         self.points.append(point)
         self.coordsForCanvas.append((event.x, event.y))
         self.coordsForPeople.append((x, y))
+
+        self.__window.saveCondition()
 
     def __showCoords(self, event):
         if self.__showCoordText != 1:
@@ -359,6 +430,12 @@ class Field:
         y = self.__startGridX - event.y
         self.__showCoordText = self.__c.create_text(event.x + 10, event.y - 10, text=str(x) + ", " + str(y),
                                                     font=('Arial', 8, 'bold'), justify=CENTER, fill='black')
+
+    def fillTextFrame(self):
+        str = ""
+        for p in self.coordsForPeople:
+            str += f'({p[0]}; {p[1]})  '
+        window.allFrames[OBJ_TEXT_POINTS].replaceText(str)
 
     def createPoint(self, x, y):
         xOnCanvas = int(x) + self.__startGridY
@@ -381,17 +458,17 @@ class Field:
                 self.__c.delete(self.points[i])
                 self.points.pop(i)
 
-                str = ""
-                for p in self.coordsForPeople:
-                    str += f'({p[0]}; {p[1]})  '
-                window.allFrames['pointsFrame'].replaceText(str)
-
+                self.fillTextFrame()
                 return 1
         return 0
 
     def clear(self):
         while len(self.coordsForPeople) != 0:
             self.delPoint(self.coordsForPeople[0][0], self.coordsForPeople[0][1])
+
+    def clearBtn(self):
+        self.clear()
+        self.__window.saveCondition()
 
     def drawTriangle(self, listPoints, color):
         l1 = self.__c.create_line(listPoints[0][0], listPoints[0][1], listPoints[1][0], listPoints[1][1],
@@ -409,6 +486,35 @@ class Field:
         for i in self.lines:
             self.__c.delete(i)
         self.lines = []
+
+    def update(self):
+        self.clear()
+        for point in self.coordsForPeople:
+            self.createPoint(point[0], point[1])
+
+    def startingSettings(self):
+        self.clear()
+
+    def saveCondition(self, file):
+        pickle.dump(self.coordsForCanvas, file)
+        pickle.dump(self.coordsForPeople, file)
+        pickle.dump(self.points, file)
+
+    def showAllPoints(self):
+        self.points = []
+        for point in self.coordsForCanvas:
+            p = self.__c.create_oval(point[0] - 4, point[1] - 4, point[0] + 4, point[1] + 4,
+                                     fill='#8eb2ac', outline='#8eb2ac')
+            self.points.append(p)
+
+    def downloadPreviousVersion(self, file):
+        self.clear()
+        self.coordsForCanvas = pickle.load(file)
+        self.coordsForPeople = pickle.load(file)
+
+        self.fillTextFrame()
+
+        self.showAllPoints()
 
 class SpecialBtns:
     def __init__(self, window, txt, bg, fg, padx, pady, font=('Consolas, 14')):
@@ -440,8 +546,8 @@ class SpecialBtns:
         btn.grid(row=row, column=column, sticky=sticky)
 
     def create(self):
-        self.__btn('⏎', self.__txt.calculate, 0, 0, name='back')
-        self.__btn('🗑', self.__window.allFrames['fieldCanvas'].clear, 0, 1, name='clear all')
+        self.__btn('⏎', self.__window.downloadPreviousVersion, 0, 0, name='back')
+        self.__btn('🗑', self.__window.allFrames[OBJ_FIELD].clearBtn, 0, 1, name='clear all')
         # Label(self.__frame, text=" ", bg='black', font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=0, column=2)
         # self.__btn('clear all', self.__txt.delete_all, 0, 2, name='отмена')
         self.__btn('🚀', self.__txt.calculate, 0, 10, name='go')
@@ -449,12 +555,13 @@ class SpecialBtns:
 
 window = Window('Lab 01', '900x580', '#7c7b89')
 menu = menuFrame(window)
-input = TextArea(38, 10, "#f1e4de", "black")
+textPoints = TextArea(38, 10, "#f1e4de", "black")
 field = Field(window, 500, 450, "white")
-specBtn = SpecialBtns(window, input, "#f1e4de", "black", 15, 5)
+specBtn = SpecialBtns(window, textPoints, "#f1e4de", "black", 15, 5)
 addDel = pointAddDel(window, 100, 350, '#7c7b89')
 
-window.allFrames = {'addDelFrame' : addDel, 'pointsFrame' : input, 'fieldCanvas': field, 'specialButtons' : specBtn}
+window.allFrames = {OBJ_ADD_DEL_BTN : addDel, OBJ_TEXT_POINTS : textPoints, OBJ_FIELD : field, OBJ_SPC_BTN : specBtn}
+window.saveCondition()
 
 window.addMenu()
 window.addFrame(row=0, column=0, frame=auxiliaryFrames.create(10, 20, '#7c7b89'), columnspan=5)
@@ -465,7 +572,7 @@ window.addFrame(row=1, column=1, frame=addDel.create())                     # п
 
 window.addFrame(row=2, column=1, frame=auxiliaryFrames.createLabel(10, 10, "Previously entered points", '#f1e4de', '#7c7b89', font=('Arial', 10, 'bold')), columnspan=2)
 
-window.addFrame(row=3, column=1, frame=input.create())
+window.addFrame(row=3, column=1, frame=textPoints.create())
 
 window.addFrame(row=1, column=2, frame=auxiliaryFrames.create(32, 50, '#7c7b89'), rowspan=5)
 window.addFrame(row=1, column=3, frame=field.create(), rowspan=5, sticky='S')
