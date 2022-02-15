@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.messagebox import *
 from drawErrors import Check
 from drawControll import controll
+import model
 from consts import *
 import shutil
 from idlelib.tooltip import Hovertip
@@ -350,6 +351,9 @@ class Field:
         self.__startGridY = 25                   # координаната, на которой рисуется ось Y
         self.__startGridX = self.__lenX - 70     # координаната, на которой рисуется ось X
 
+        self.__leftXCoord = 0
+        self.__rightXCoord = self.__width
+
         self.__frame = Frame(bg=bg)
         self.__c = Canvas(self.__frame, width=self.__lenX, height=self.__lenY, bg=bg)
         self.__c.grid(row=0, column=0, sticky='S')
@@ -437,11 +441,11 @@ class Field:
             str += f'({p[0]}; {p[1]})  '
         window.allFrames[OBJ_TEXT_POINTS].replaceText(str)
 
-    def createPoint(self, x, y):
-        xOnCanvas = int(x) + self.__startGridY
-        yOnCanvas = self.__startGridX - int(y)
+    def createPoint(self, x, y, color='#8eb2ac'):
+        xOnCanvas, yOnCanvas = self.fromPeopleToCanvas((x, y))
+
         point = self.__c.create_oval(xOnCanvas - 4, yOnCanvas - 4, xOnCanvas + 4, yOnCanvas + 4,
-                             fill='#8eb2ac', outline='#8eb2ac')
+                             fill=color, outline='#8eb2ac')
         self.points.append(point)
 
         self.coordsForCanvas.append((xOnCanvas, yOnCanvas))
@@ -463,6 +467,10 @@ class Field:
         return 0
 
     def clear(self):
+        for i, line in enumerate(self.lines):
+            self.__c.delete(line)
+            self.lines.pop(i)
+
         while len(self.coordsForPeople) != 0:
             self.delPoint(self.coordsForPeople[0][0], self.coordsForPeople[0][1])
 
@@ -516,6 +524,33 @@ class Field:
 
         self.showAllPoints()
 
+    def fromPeopleToCanvas(self, point):
+        return int(point[0]) + self.__startGridY, self.__startGridX - int(point[1])
+
+    def findLineBetweenPoints(self):
+        rc = model.findLine(self.coordsForPeople)
+        if rc == 0:
+            showinfo("Error", 'Произошла ошибка \n\n Проверьте, что количество введенных точек больше 2')
+            return
+
+        startLine, endLine, rightSet, lineSet, leftSet = model.findLine(self.coordsForPeople)
+        self.clear()
+
+        for point in rightSet:
+            self.createPoint(point[0], point[1], '#E40045')
+
+        for point in leftSet:
+            self.createPoint(point[0], point[1], '#530FAD')
+
+        for point in lineSet:
+            self.createPoint(point[0], point[1], '#CCF600')
+
+        xStart, yStart = self.__leftXCoord, model.ByXFindYOnLine(self.__leftXCoord, startLine, endLine)
+        xEnd, yEnd = self.__rightXCoord, model.ByXFindYOnLine(self.__rightXCoord, startLine, endLine)
+
+        start, end = self.fromPeopleToCanvas((xStart, yStart)), self.fromPeopleToCanvas((xEnd, yEnd))
+        self.lines.append(self.__c.create_line(start[0], start[1], end[0], end[1]))
+
 class SpecialBtns:
     def __init__(self, window, txt, bg, fg, padx, pady, font=('Consolas, 14')):
         self.__window = window
@@ -550,7 +585,7 @@ class SpecialBtns:
         self.__btn('🗑', self.__window.allFrames[OBJ_FIELD].clearBtn, 0, 1, name='clear all')
         # Label(self.__frame, text=" ", bg='black', font=('Arial', 1, 'bold'), fg="#f1e4de").grid(row=0, column=2)
         # self.__btn('clear all', self.__txt.delete_all, 0, 2, name='отмена')
-        self.__btn('🚀', self.__txt.calculate, 0, 10, name='go')
+        self.__btn('🚀', self.__window.allFrames[OBJ_FIELD].findLineBetweenPoints, 0, 10, name='go')
         return self.__frame
 
 window = Window('Lab 01', '900x580', '#7c7b89')
