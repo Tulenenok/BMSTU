@@ -362,7 +362,7 @@ class Field:
         self.coordsForPeople = []
         self.points = []
 
-        self.lines = []
+        self.__obj = []
 
         self.__showCoordText = 1
 
@@ -467,9 +467,10 @@ class Field:
         return 0
 
     def clear(self):
-        for i, line in enumerate(self.lines):
-            self.__c.delete(line)
-            self.lines.pop(i)
+        i = 0
+        while self.__obj != []:
+            self.__c.delete(self.__obj[i])
+            self.__obj.pop(i)
 
         while len(self.coordsForPeople) != 0:
             self.delPoint(self.coordsForPeople[0][0], self.coordsForPeople[0][1])
@@ -486,14 +487,14 @@ class Field:
         l3 = self.__c.create_line(listPoints[1][0], listPoints[1][1],
                                   listPoints[2][0], listPoints[2][1],
                                   fill=color, width=3)
-        self.lines.append(l1)
-        self.lines.append(l2)
-        self.lines.append(l3)
+        self.__obj.append(l1)
+        self.__obj.append(l2)
+        self.__obj.append(l3)
 
     def delTriangle(self):
-        for i in self.lines:
+        for i in self.__obj:
             self.__c.delete(i)
-        self.lines = []
+        self.__obj = []
 
     def update(self):
         self.clear()
@@ -527,6 +528,30 @@ class Field:
     def fromPeopleToCanvas(self, point):
         return int(point[0]) + self.__startGridY, self.__startGridX - int(point[1])
 
+    def drawLine(self, startLine, endLine, color='#CCF600', width=2):
+        xStart, yStart = self.__leftXCoord, model.ByXFindYOnLine(self.__leftXCoord, startLine, endLine)
+        xEnd, yEnd = self.__rightXCoord, model.ByXFindYOnLine(self.__rightXCoord, startLine, endLine)
+
+        start, end = self.fromPeopleToCanvas((xStart, yStart)), self.fromPeopleToCanvas((xEnd, yEnd))
+        self.__obj.append(self.__c.create_line(start[0], start[1], end[0], end[1], fill=color, width=width))
+
+    def drawLeftMinCircle(self, pnts, color='blue'):
+        print('points = ', pnts)
+        center, radius = model.enumMinCircle(pnts)
+        print('center = ', center, 'r ', radius)
+        center = self.fromPeopleToCanvas(center)
+        self.__obj.append(self.__c.create_oval(center[0] - radius, center[1] - radius,
+                                               center[0] + radius, center[1] + radius,
+                                               outline=color, width=2))
+    def drawRightMinCircle(self, p, color='blue'):
+        print('points = ', p)
+        center, radius = model.enumMinCircle(p)
+        print('center = ', center, 'r ', radius)
+        center = self.fromPeopleToCanvas(center)
+        self.__obj.append(self.__c.create_oval(center[0] - radius, center[1] - radius,
+                                               center[0] + radius, center[1] + radius,
+                                               outline=color, width=2))
+
     def findLineBetweenPoints(self):
         rc = model.findLine(self.coordsForPeople)
         if rc == 0:
@@ -545,11 +570,14 @@ class Field:
         for point in lineSet:
             self.createPoint(point[0], point[1], '#CCF600')
 
-        xStart, yStart = self.__leftXCoord, model.ByXFindYOnLine(self.__leftXCoord, startLine, endLine)
-        xEnd, yEnd = self.__rightXCoord, model.ByXFindYOnLine(self.__rightXCoord, startLine, endLine)
+        print('Right ', rightSet)
+        print('Left ', leftSet)
 
-        start, end = self.fromPeopleToCanvas((xStart, yStart)), self.fromPeopleToCanvas((xEnd, yEnd))
-        self.lines.append(self.__c.create_line(start[0], start[1], end[0], end[1], fill='#CCF600', width=2))
+        self.drawLine(startLine, endLine)
+        self.drawRightMinCircle(rightSet, '#E40045')
+        self.drawLeftMinCircle(leftSet, '#530FAD')
+
+        self.fillTextFrame()
 
 class SpecialBtns:
     def __init__(self, window, txt, bg, fg, padx, pady, font=('Consolas, 14')):
