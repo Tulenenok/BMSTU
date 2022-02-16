@@ -163,7 +163,7 @@ def get_circle_center(bx, by, cx, cy):
     B = bx * bx + by * by
     C = cx * cx + cy * cy
     D = bx * cy - by * cx
-    return [(cy * B - by * C) // (2 * D), (bx * C - cx * B) // (2 * D) ]
+    return [(cy * B - by * C) / (2 * D), (bx * C - cx * B) / (2 * D) ]
 
 def circle_from_three( A, B, C):
     I = get_circle_center(B[0] - A[0], B[1] - A[1], C[0] - A[0], C[1] - A[1])
@@ -225,6 +225,9 @@ def minCircle(points):
 # print("Center = { ", mec[0], " } Radius = ", mec[1])                  # Center = {  [1.0, 1.0]  } Radius =  5.0
 
 def enumMinCircle(points):
+    if type(points) == list and type(points[0]) == list:
+        points = points[0]
+
     minCenter, minRadius = -1, -1
     for i in range(len(points) - 1):
         for j in range(i + 1, len(points)):
@@ -233,7 +236,7 @@ def enumMinCircle(points):
                 minCenter, minRadius = circle[0], circle[1]
 
     if minRadius != -1:
-        return minCenter, minRadius
+        return [minCenter, minRadius]
 
     for i in range(len(points) - 2):
         for j in range(i + 1, len(points) - 1):
@@ -242,11 +245,11 @@ def enumMinCircle(points):
                 if is_valid_circle(circle, points) and (minRadius == -1 or minRadius > circle[1]):
                     minCenter, minRadius = circle[0], circle[1]
 
-    return minCenter, minRadius
+    return [minCenter, minRadius]
 
 
-# mec = minCircle([(94, 272), (171, 212), (86, 147), (73, 191)])  # {  (308.5, 255.0)  } Radius =  136.1993024945429
-# print("Center = { ", mec[0], " } Radius = ", mec[1])                  # Center = {  [1.0, 1.0]  } Radius =  5.0
+mec = enumMinCircle([[(178, 77), (113, 124)]])  # {  (308.5, 255.0)  } Radius =  136.1993024945429
+print("Center = { ", mec[0], " } Radius = ", mec[1])                  # Center = {  [1.0, 1.0]  } Radius =  5.0
 
 
 # R1 — радиус первой окружности;
@@ -266,10 +269,13 @@ def intersectionSquare(R1, R2, C1, C2):
 def totalArea(R1, R2, C1, C2):
     S1 = math.pi * R1**2
     S2 = math.pi * R2**2
+    try:
+        intrt = intersectionSquare(R1, R2, C1, C2)
+    except:
+        intrt = 0
+    return S1 + S2 - intrt
 
-    return S1 + S2 - intersectionSquare(R1, R2, C1, C2)
-
-print(intersectionSquare(2, 4, (0, 0), (3, 0)))
+# print(intersectionSquare(2, 4, (0, 0), (3, 0)))
 
 
 

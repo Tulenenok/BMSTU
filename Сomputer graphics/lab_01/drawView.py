@@ -535,22 +535,37 @@ class Field:
         start, end = self.fromPeopleToCanvas((xStart, yStart)), self.fromPeopleToCanvas((xEnd, yEnd))
         self.__obj.append(self.__c.create_line(start[0], start[1], end[0], end[1], fill=color, width=width))
 
-    def drawLeftMinCircle(self, pnts, color='blue'):
+    def drawLeftMinCircle(self, pnts, color='blue', activecolor='blue'):
         print('points = ', pnts)
         center, radius = model.enumMinCircle(pnts)
         print('center = ', center, 'r ', radius)
         center = self.fromPeopleToCanvas(center)
         self.__obj.append(self.__c.create_oval(center[0] - radius, center[1] - radius,
                                                center[0] + radius, center[1] + radius,
-                                               outline=color, width=2))
-    def drawRightMinCircle(self, p, color='blue'):
+                                               outline=color, width=2, activefill=activecolor))
+        return center, radius
+
+    # def oval_func(self, center, radius):
+
+    def drawRightMinCircle(self, p, color='blue', activecolor='blue'):
         print('points = ', p)
         center, radius = model.enumMinCircle(p)
         print('center = ', center, 'r ', radius)
         center = self.fromPeopleToCanvas(center)
-        self.__obj.append(self.__c.create_oval(center[0] - radius, center[1] - radius,
+        oval = self.__c.create_oval(center[0] - radius, center[1] - radius,
                                                center[0] + radius, center[1] + radius,
-                                               outline=color, width=2))
+                                               outline=color, width=2, activefill=activecolor)
+        self.__obj.append(oval)
+
+        self.__obj.append(self.__c.create_oval(center[0] - 4, center[1] - 4, center[0] + 4, center[1] + 4,
+                                               fill='black', outline='black'))
+
+        self.__obj.append(self.__c.create_line(center[0], center[1], center[0] + radius, center[1],
+                                               fill='black', width=2, arrow=LAST))
+
+        # self.__c.tag_bind(oval, '<Motion>', lambda: self.oval_func(center, radius))
+        # oval.bind("<Motion>", oval_func1)
+        return center, radius
 
     def findLineBetweenPoints(self):
         rc = model.findLine(self.coordsForPeople)
@@ -574,10 +589,13 @@ class Field:
         print('Left ', leftSet)
 
         self.drawLine(startLine, endLine)
-        self.drawRightMinCircle(rightSet, '#E40045')
-        self.drawLeftMinCircle(leftSet, '#530FAD')
+        centerR, radiusR = self.drawRightMinCircle(rightSet, '#E40045', '#E40045')
+        centerL, radiusL = self.drawLeftMinCircle(leftSet, '#530FAD')
 
         self.fillTextFrame()
+        showinfo("Result", f"Center red circle - {centerR}, radius - {radiusR}. \n"
+                           f"Center purple circle - {centerL}, radius - {radiusL}. \n\n"
+                           f"Square - {model.totalArea(radiusR, radiusL, centerR, centerL)}")
 
 class SpecialBtns:
     def __init__(self, window, txt, bg, fg, padx, pady, font=('Consolas, 14')):
