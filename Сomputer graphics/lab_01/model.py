@@ -37,6 +37,9 @@ def findLine(points):
     if len(points) < 2:
         return 0
 
+    if len(points) == 3:
+        return points[0], points[1], [points[2]], [points[0], points[1]], []
+
     idealMore, idealEqual, idealLess = findLeftRightSet(points, points[0], points[1])
     idealI, idealJ = 0, 1
 
@@ -225,6 +228,16 @@ def minCircle(points):
 # print("Center = { ", mec[0], " } Radius = ", mec[1])                  # Center = {  [1.0, 1.0]  } Radius =  5.0
 
 def enumMinCircle(points):
+    if len(points) == 0:
+        return (0, 0), 0
+    if len(points) == 1:
+        return points[0], 0
+    if len(points) == 2:
+        print("Two var")
+        return circle_from_two(points[0], points[1])
+    if len(points) == 3:
+        return circle_from_three(points[0], points[1], points[2])
+
     if type(points) == list and type(points[0]) == list:
         points = points[0]
 
@@ -236,7 +249,7 @@ def enumMinCircle(points):
                 minCenter, minRadius = circle[0], circle[1]
 
     if minRadius != -1:
-        return [minCenter, minRadius]
+        return minCenter, minRadius
 
     for i in range(len(points) - 2):
         for j in range(i + 1, len(points) - 1):
@@ -245,7 +258,7 @@ def enumMinCircle(points):
                 if is_valid_circle(circle, points) and (minRadius == -1 or minRadius > circle[1]):
                     minCenter, minRadius = circle[0], circle[1]
 
-    return [minCenter, minRadius]
+    return minCenter, minRadius
 
 
 mec = enumMinCircle([[(178, 77), (113, 124)]])  # {  (308.5, 255.0)  } Radius =  136.1993024945429
@@ -273,7 +286,7 @@ def totalArea(R1, R2, C1, C2):
         intrt = intersectionSquare(R1, R2, C1, C2)
     except:
         intrt = 0
-    return S1 + S2 - intrt
+    return int(S1 + S2 - intrt)
 
 # print(intersectionSquare(2, 4, (0, 0), (3, 0)))
 

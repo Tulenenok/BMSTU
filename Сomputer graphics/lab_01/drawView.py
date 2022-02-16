@@ -29,7 +29,7 @@ class Window:
         self.__window.title(self.__name)
         self.__window.geometry(self.__size)
         self.__window['bg'] = self.__color
-        self.__window.resizable(width=False, height=False)                 # размеры окна не меняются
+        #self.__window.resizable(width=False, height=False)                 # размеры окна не меняются
 
     def addFrame(self, row, column, frame, columnspan=1, rowspan=1, sticky='NWSE'):
         frame.grid(row=row, column=column, columnspan=columnspan, rowspan=rowspan, sticky=sticky)
@@ -199,7 +199,7 @@ class pointAddDel():
         inputY = self.__yAdd.get()
         if Check.isInt(inputX) and Check.isInt(inputY):
             window.allFrames[OBJ_TEXT_POINTS].insert(END, f'({inputX}; {inputY})  ')
-            window.allFrames[OBJ_FIELD].createPoint(inputX, inputY)
+            window.allFrames[OBJ_FIELD].createPoint(int(inputX), int(inputY))
             self.__xAdd.delete(0, END)
             self.__yAdd.delete(0, END)
         else:
@@ -209,10 +209,11 @@ class pointAddDel():
         inputX = self.__xDel.get()
         inputY = self.__yDel.get()
         if Check.isInt(inputX) and Check.isInt(inputY):
-            if not window.allFrames[OBJ_FIELD].delPoint(inputX, inputY):
+            if not window.allFrames[OBJ_FIELD].delPoint(int(inputX), int(inputY)):
                 showinfo('Error', 'Точка с такими координатами на поле отсутствует')
             else:
                 self.__xDel.delete(0, END)
+
                 self.__yDel.delete(0, END)
         else:
             showinfo('Error', 'Координаты точки введены неверно')
@@ -360,6 +361,7 @@ class Field:
 
         self.coordsForCanvas = []
         self.coordsForPeople = []
+        self.__pointTexts = []
         self.points = []
 
         self.__obj = []
@@ -419,6 +421,10 @@ class Field:
         point = self.__c.create_oval(event.x - 4, event.y - 4, event.x + 4, event.y + 4,
                              fill='#8eb2ac', outline='#8eb2ac')
 
+        self.__obj.append(self.__c.create_text(event.x + 7, event.y - 7,
+                                               text=f'{x}, {y}', font=('Arial', 8, 'bold'), justify=CENTER,
+                                               fill='black'))
+
         textPoints.insert(END, f'({x}; {y})  ')
         self.points.append(point)
         self.coordsForCanvas.append((event.x, event.y))
@@ -446,6 +452,10 @@ class Field:
 
         point = self.__c.create_oval(xOnCanvas - 4, yOnCanvas - 4, xOnCanvas + 4, yOnCanvas + 4,
                              fill=color, outline='#8eb2ac')
+
+        self.__pointTexts.append(self.__c.create_text(xOnCanvas + 7, yOnCanvas - 7,
+                                               text=f'{x}, {y}', font=('Arial', 8, 'bold'), justify=CENTER,
+                                               fill='black'))
         self.points.append(point)
 
         self.coordsForCanvas.append((xOnCanvas, yOnCanvas))
@@ -460,6 +470,7 @@ class Field:
                 self.coordsForPeople.pop(i)
                 self.coordsForCanvas.pop(i)
                 self.__c.delete(self.points[i])
+                self.__c.delete(self.points[i])
                 self.points.pop(i)
 
                 self.fillTextFrame()
@@ -471,6 +482,10 @@ class Field:
         while self.__obj != []:
             self.__c.delete(self.__obj[i])
             self.__obj.pop(i)
+
+        while self.__pointTexts != []:
+            self.__c.delete(self.__pointTexts[i])
+            self.__pointTexts.pop(i)
 
         while len(self.coordsForPeople) != 0:
             self.delPoint(self.coordsForPeople[0][0], self.coordsForPeople[0][1])
@@ -521,6 +536,11 @@ class Field:
         self.coordsForCanvas = pickle.load(file)
         self.coordsForPeople = pickle.load(file)
 
+        for i, point in enumerate(self.coordsForCanvas):
+            self.__pointTexts.append(self.__c.create_text(point[0] + 10, point[1] - 10,
+                                               text=f'{self.coordsForPeople[i][0]}, {self.coordsForPeople[i][1]}', font=('Arial', 8, 'bold'), justify=CENTER,
+                                               fill='black'))
+
         self.fillTextFrame()
 
         self.showAllPoints()
@@ -536,6 +556,9 @@ class Field:
         self.__obj.append(self.__c.create_line(start[0], start[1], end[0], end[1], fill=color, width=width))
 
     def drawLeftMinCircle(self, pnts, color='blue', activecolor='blue'):
+        if len(pnts) <= 1:
+            return
+
         print('points = ', pnts)
         center, radius = model.enumMinCircle(pnts)
         print('center = ', center, 'r ', radius)
@@ -543,15 +566,30 @@ class Field:
         self.__obj.append(self.__c.create_oval(center[0] - radius, center[1] - radius,
                                                center[0] + radius, center[1] + radius,
                                                outline=color, width=2, activefill=activecolor))
+
+        self.__obj.append(self.__c.create_oval(center[0] - 4, center[1] - 4, center[0] + 4, center[1] + 4,
+                                               fill='black', outline='black'))
+
+        self.__obj.append(self.__c.create_line(center[0], center[1], center[0] + radius, center[1],
+                                               fill='black', width=2, arrow=LAST))
+
+        self.__pointTexts.append(self.__c.create_text(center[0] + radius / 2, center[1] - 10,
+                                               text=str(int(radius)), font=('Arial', 8, 'bold'), justify=CENTER,
+                                               fill='black'))
         return center, radius
 
     # def oval_func(self, center, radius):
 
     def drawRightMinCircle(self, p, color='blue', activecolor='blue'):
+        if len(p) <= 1:
+            return
+
         print('points = ', p)
         center, radius = model.enumMinCircle(p)
         print('center = ', center, 'r ', radius)
         center = self.fromPeopleToCanvas(center)
+        if center[1] == -1:
+            return
         oval = self.__c.create_oval(center[0] - radius, center[1] - radius,
                                                center[0] + radius, center[1] + radius,
                                                outline=color, width=2, activefill=activecolor)
@@ -562,6 +600,9 @@ class Field:
 
         self.__obj.append(self.__c.create_line(center[0], center[1], center[0] + radius, center[1],
                                                fill='black', width=2, arrow=LAST))
+
+        self.__pointTexts.append(self.__c.create_text(center[0] + radius / 2, center[1] - 10,
+                                               text=str(int(radius)), font=('Arial', 8, 'bold'), justify=CENTER, fill='black'))
 
         # self.__c.tag_bind(oval, '<Motion>', lambda: self.oval_func(center, radius))
         # oval.bind("<Motion>", oval_func1)
@@ -588,14 +629,25 @@ class Field:
         print('Right ', rightSet)
         print('Left ', leftSet)
 
-        self.drawLine(startLine, endLine)
-        centerR, radiusR = self.drawRightMinCircle(rightSet, '#E40045', '#E40045')
-        centerL, radiusL = self.drawLeftMinCircle(leftSet, '#530FAD')
-
         self.fillTextFrame()
-        showinfo("Result", f"Center red circle - {centerR}, radius - {radiusR}. \n"
-                           f"Center purple circle - {centerL}, radius - {radiusL}. \n\n"
-                           f"Square - {model.totalArea(radiusR, radiusL, centerR, centerL)}")
+
+        try:
+            self.drawLine(startLine, endLine)
+        except:
+            print("Error with line")
+
+        try:
+            centerR, radiusR = self.drawRightMinCircle(rightSet, '#E40045', '#E40045')
+        except:
+            print("Error with right")
+
+        try:
+            centerL, radiusL = self.drawLeftMinCircle(leftSet, '#530FAD')
+            showinfo("Result", f"Center red circle - {centerR}, radius - {int(radiusR)}. \n"
+                               f"Center purple circle - {centerL}, radius - {int(radiusL)}. \n\n"
+                               f"Square - {model.totalArea(radiusR, radiusL, centerR, centerL)}")
+        except:
+            pass
 
 class SpecialBtns:
     def __init__(self, window, txt, bg, fg, padx, pady, font=('Consolas, 14')):
