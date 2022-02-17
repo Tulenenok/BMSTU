@@ -53,7 +53,7 @@ if __name__ == '__main__':
                 print("+--------------------------------------------------+'")
 
         elif mode == tools.MODE_INTERPOLATION:
-            interpolationAlgorithms.interpolationNewton(table, 0.6, 4, True)
+            interpolationAlgorithms.allNewtonInter(table, 0.6, 1, 4)
 
         mode = menu()
 

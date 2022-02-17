@@ -1,5 +1,8 @@
 import tools
 import numexpr as ne
+import graph
+import matplotlib.pyplot as plt
+import random
 
 
 def findNearestEntries(table, x, countEntries):
@@ -83,6 +86,26 @@ def interpolationNewton(table, x, degree, printComments=False):
 
     return tableNewton, polStr, pol
 
+
+def allNewtonInter(table, x, startDegree, endDgree):
+    res = []
+
+    plt.figure(figsize=[10, 10])
+    plt.suptitle('NewtonPolinom', fontsize=15, fontweight='bold')
+    plt.grid(True)
+    graph.showGraphUsePoints([table[i][0] for i in range(len(table))], [table[i][1] for i in range(len(table))], plt,
+                             f'start points', 'mo')
+
+    for degree in range(startDegree, endDgree + 1):
+        t, p, val = interpolationNewton(table, x, degree, printComments=False)
+        res.append(val)
+        graph.showGraphUsePol(t, p, plt, f'degree = {degree}', "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
+
+    plt.legend(loc=0)
+    plt.savefig('Newton.svg')
+    plt.show()
+
+    return res
 
 # table = [[0], [0.25], [0.3], [0.5], [0.75], [1]]
 # print(findNearestEntries(table, -0.1, 5))
