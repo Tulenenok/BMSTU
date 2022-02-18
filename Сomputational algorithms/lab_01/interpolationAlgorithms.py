@@ -30,7 +30,7 @@ def findNearestEntries(table, x, countEntries):
     return ansTable
 
 
-def printResultTable(table, name):
+def printResultTable(table, name, flag='Newton'):
     print(name)
     print('-------------------------------------')
     for i in range(len(table)):
@@ -38,6 +38,8 @@ def printResultTable(table, name):
             print(f'X:', end=' ')
         elif i == 1:
             print(f'Y:', end=' ')
+        elif i == 2 and flag == 'Hermite':
+            print(f"Y':", end=' ')
         else:
             print(f'{i}:', end=' ')
         for j in range(len(table[i])):
@@ -87,25 +89,128 @@ def interpolationNewton(table, x, degree, printComments=False):
     return tableNewton, polStr, pol
 
 
-def allNewtonInter(table, x, startDegree, endDgree):
-    res = []
+def dividedDifferenceHermiteTwo(x1, y1, yDerivative1, x2, y2, yDerivative2):
+    if x1 == x2:
+        return yDerivative1
+    else:
+        return (y1 - y2) / (x1 - x2)
 
-    plt.figure(figsize=[10, 10])
-    plt.suptitle('NewtonPolinom', fontsize=15, fontweight='bold')
-    plt.grid(True)
-    graph.showGraphUsePoints([table[i][0] for i in range(len(table))], [table[i][1] for i in range(len(table))], plt,
+
+def dividedDifferenceHermiteThree(x1, y1, yDerivative1, x2, y2, yDerivative2, x3, y3, yDerivative3):
+    return (dividedDifferenceHermiteTwo(x1, y1, yDerivative1, x2, y2, yDerivative2) -
+            dividedDifferenceHermiteTwo(x1, y1, yDerivative1, x3, y3, yDerivative3)) / (x1 - x3)
+
+
+def HermitePolynomial(tableHermite):
+    tableHermite.pop(2)                     # удалили столбец с производной
+    return NewtonPolynomial(tableHermite)
+
+
+def interpolationHermite(table, x, degree, printComments=False):
+    nearestEntries = findNearestEntries(table, x, degree // 2)
+
+    if nearestEntries == tools.NOT_ENOUGH_DATA:
+
+        return tools.NOT_ENOUGH_DATA
+
+    # теперь эту таблицу нужно раздвоить
+    i = 0
+    while len(nearestEntries) != degree + 1:
+        nearestEntries.insert(i, nearestEntries[i])
+        i += 2
+
+    tableHermite = [[i[0] for i in nearestEntries], [i[1] for i in nearestEntries], [i[2] for i in nearestEntries], []]
+
+    # добавили строку y(xi, xj)
+    for i in range(len(tableHermite[-2]) - 1):
+        tableHermite[-1].append(dividedDifferenceHermiteTwo(tableHermite[0][i], tableHermite[1][i], tableHermite[2][i],
+                                                             tableHermite[0][i + 1], tableHermite[1][i + 1], tableHermite[2][i + 1]))
+
+    # работаем дальше также, как в Ньютоне
+    j = 2
+    while len(tableHermite[-1]) != 1:
+        tableHermite.append([(tableHermite[-1][i] - tableHermite[-1][i + 1]) /
+                            (tableHermite[0][i] - tableHermite[0][i + j]) for i in range(len(tableHermite[-1]) - 1)])
+        j += 1
+
+    polStr = HermitePolynomial(tableHermite.copy())
+    pol = ne.evaluate(polStr)
+
+    if printComments:
+        printResultTable(tableHermite, "HERMITE TABLE", 'Hermite')
+        print('H(x) =', polStr)
+        print('-------------------------------------')
+        print('H(%2.3f) = %2.5f' % (x, ne.evaluate(polStr)))
+        print('-------------------------------------')
+
+    return tableHermite, polStr, pol
+
+
+def allNewtonInter(table, x, startDegree=1, endDgree=5, printOwnGraph=False, pltGraph=plt):
+    resX = []
+    allDegree = []
+
+    if printOwnGraph:
+        pltGraph.figure(figsize=[10, 10])
+        pltGraph.suptitle('NewtonPolinom', fontsize=15, fontweight='bold')
+        pltGraph.grid(True)
+
+    pltGraph.grid(True)
+    pltGraph.title.set_text('Newton')
+    graph.showGraphUsePoints([table[i][0] for i in range(len(table))], [table[i][1] for i in range(len(table))], pltGraph,
                              f'start points', 'mo')
 
     for degree in range(startDegree, endDgree + 1):
         t, p, val = interpolationNewton(table, x, degree, printComments=False)
+        resX.append(val)
+        graph.showGraphUsePol(t, p, pltGraph, f'degree = {degree}', "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
+
+        randColor = "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+        pltGraph.plot(x, val, marker='o', label='%d: (%1.3f, %1.3f)' % (degree, x, val), color=randColor)
+        allDegree.append(degree)
+
+    pltGraph.legend(loc=0)
+    if printOwnGraph:
+        pltGraph.legend(loc=0)
+        pltGraph.savefig('Newton.svg')
+        pltGraph.show()
+
+    return allDegree, resX
+
+
+def allHermiteInter(table, x, minCountNodes=1, maxCountNodes=3, printOwnGraph=False, pltGraph=plt):
+    res = []
+    allDegree = []
+
+    if printOwnGraph:
+        pltGraph.figure(figsize=[10, 10])
+        pltGraph.suptitle('HermitePolinom', fontsize=15, fontweight='bold')
+
+    pltGraph.grid(True)
+    pltGraph.title.set_text('Hermite')
+    graph.showGraphUsePoints([table[i][0] for i in range(len(table))], [table[i][1] for i in range(len(table))], pltGraph,
+                             f'start points', 'mo')
+
+    for degree in range(minCountNodes, maxCountNodes + 1):
+        t, p, val = interpolationHermite(table, x, degree * 2 - 1, printComments=False)
         res.append(val)
-        graph.showGraphUsePol(t, p, plt, f'degree = {degree}', "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]))
+        if degree != 1:
+            randColor = "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+            graph.showGraphUsePol(t, p, pltGraph, f'count = {degree}', randColor)
 
-    plt.legend(loc=0)
-    plt.savefig('Newton.svg')
-    plt.show()
+        randColor = "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+        pltGraph.plot(x, val, marker='o', label='%d: (%1.3f, %1.3f)' % (degree, x, val), color=randColor)
+        allDegree.append(degree * 2 - 1)
 
-    return res
+    pltGraph.legend(loc=0)
+    if printOwnGraph:
+        pltGraph.savefig('Hermite.svg')
+        pltGraph.show()
 
+    return allDegree, res
+
+
+
+#
 # table = [[0], [0.25], [0.3], [0.5], [0.75], [1]]
-# print(findNearestEntries(table, -0.1, 5))
+# print(findNearestEntries(table, 0.26, 0))

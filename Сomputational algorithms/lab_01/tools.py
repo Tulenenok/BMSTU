@@ -1,4 +1,4 @@
-FILE_WITH_TABLE = 'newtonData.txt'
+FILE_WITH_TABLE = 'data.txt'
 
 MODE_EXIT = '0'
 MODE_INPUT_FROM_FILE = '1'
