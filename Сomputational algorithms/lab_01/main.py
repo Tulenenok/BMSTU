@@ -50,7 +50,8 @@ def menu():
           "    1 - input table from file\n"
           "    2 - input table from stdin\n"
           "    3 - perform interpolation\n"
-          "    4 - print table with data")
+          "    4 - find roots\n"
+          "    5 - print table with data")
     return input("Input command: ")
 
 
@@ -100,6 +101,9 @@ if __name__ == '__main__':
             # interpolationAlgorithms.interpolationHermite(table, 0.6, 5, True)
             # interpolationAlgorithms.allHermiteInter(table, 0.525, 1, 3)
             Inter(table)
+
+        elif mode == tools.MODE_FIND_ROOTS:
+            interpolationAlgorithms.roots(table)
 
         mode = menu()
 

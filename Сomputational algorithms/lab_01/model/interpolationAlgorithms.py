@@ -210,7 +210,15 @@ def allHermiteInter(table, x, minCountNodes=1, maxCountNodes=3, printOwnGraph=Fa
     return allDegree, res
 
 
+def roots(table, degree=3, printComments=False):
 
+    """ Добавить проверку, что такой корень вообще существует (проход по строкам таблицы с проверкой смены знака)"""
+
+    newTable = [[table[i][1], table[i][0], table[i][2]] for i in range(len(table))]
+
+    tableNewton, polStr, pol = interpolationNewton(newTable, 0, degree, True)
+
+    return tableNewton, polStr, pol
 #
 # table = [[0], [0.25], [0.3], [0.5], [0.75], [1]]
 # print(findNearestEntries(table, 0.26, 0))
