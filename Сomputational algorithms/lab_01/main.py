@@ -1,26 +1,25 @@
-import tools
-import interpolationAlgorithms
+from model import interpolationAlgorithms, tools
 from prettytable import PrettyTable
 import matplotlib.pyplot as plt
 
 
 def Inter(table):
-    # try:
-    #     x = float(input("Input x (float number): "))
-    #     startDegree = int(input(f"Input start degree for Newton interpolation (int from 1 to {len(table) - 1}): "))
-    #     endDegree = int(input(f"Input end degree for Newton interpolation (int from {startDegree} to {len(table) - 1}): "))
-    #
-    #     startCount = int(input(f"Input start count nodes for Hermite interpolation: "))
-    #     endCount = int(input(f"Input end count nodes for Hermite interpolation: "))
-    # except:
-    #     print("Error input")
-    #     return
+    try:
+        x = float(input("Input x (float number): "))
+        startDegree = int(input(f"Input start degree for Newton interpolation (int from 1 to {len(table) - 1}): "))
+        endDegree = int(input(f"Input end degree for Newton interpolation (int from {startDegree} to {len(table) - 1}): "))
 
-    x = 0.525
-    startDegree = 1
-    endDegree = 5
-    startCount = 1
-    endCount = 3
+        startCount = int(input(f"Input start count nodes for Hermite interpolation: "))
+        endCount = int(input(f"Input end count nodes for Hermite interpolation: "))
+    except:
+        print("Error input")
+        return
+
+    # x = 0.525
+    # startDegree = 1
+    # endDegree = 5
+    # startCount = 1
+    # endCount = 3
 
     fig = plt.figure(figsize=(15, 10))
     fig.suptitle('Interpolation', fontsize=15, fontweight='bold')
