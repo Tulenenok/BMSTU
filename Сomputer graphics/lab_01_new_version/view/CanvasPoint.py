@@ -11,26 +11,30 @@ class CanvasPoint(Point):
 
         self.p, self.t = None, None
 
-    def show(self, canva, showText=True):
+    def show(self, field, showText=True):
         try:                                       # Такого метода у канвы может не оказаться
-            x, y = canva.coordinateShift(self)
+            x, y = field.coordinateShift(self)
         except:
             x, y = self.x, self.y
             print("Вы не переводите координаты точки в координаты канвы, могут быть ошибки")
 
-        self.p = canva.create_oval(x - 4, y - 4, x + 4, y + 4, fill=self.color, outline=self.color)
+        self.p = field.canva.create_oval(x - 4, y - 4, x + 4, y + 4, fill=self.color, outline=self.color)
         if showText:
-            self.t = canva.create_text(x + 7, y - 7, text=f'{self.x}, {self.y}', font=self.fontText,
+            self.t = field.canva.create_text(x + 7, y - 7, text=f'{self.x}, {self.y}', font=self.fontText,
                                        fill=self.colorText)
 
-    def hide(self, canva):
+    def hide(self, field):
         if self.p:
-            canva.delete(self.p)
+            field.canva.delete(self.p)
         if self.t:
-            canva.delete(self.t)
+            field.canva.delete(self.t)
         self.p, self.t = None, None
 
     def changeColor(self, canva, newColor):
         self.color = newColor
+        self.hide(canva)
+        self.show(canva)
+
+    def reShow(self, canva):
         self.hide(canva)
         self.show(canva)

@@ -42,3 +42,7 @@ class CanvasCircle(Circle):
         self.pointCenter.hide(canva)
 
         self.c, self.t, self.arrowRadius = None, None, None
+
+    def reShow(self, canva):
+        self.hide(canva)
+        self.show(canva)
