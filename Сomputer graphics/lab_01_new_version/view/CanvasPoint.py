@@ -1,8 +1,9 @@
 from model.Point import Point
+from view.Settings import Settings
 
 
 class CanvasPoint(Point):
-    def __init__(self, x, y, color, fontText=('Arial', 8, 'bold'), colorText='black'):
+    def __init__(self, x, y, color=Settings.COLOR_NEW_POINT, fontText=('Arial', 8, 'bold'), colorText='black'):
         super().__init__(x, y)
         self.color = color
 
@@ -18,16 +19,16 @@ class CanvasPoint(Point):
             x, y = self.x, self.y
             print("Вы не переводите координаты точки в координаты канвы, могут быть ошибки")
 
-        self.p = field.canva.create_oval(x - 4, y - 4, x + 4, y + 4, fill=self.color, outline=self.color)
+        self.p = field.create_oval(x - 4, y - 4, x + 4, y + 4, fill=self.color, outline=self.color)
         if showText:
-            self.t = field.canva.create_text(x + 7, y - 7, text=f'{self.x}, {self.y}', font=self.fontText,
+            self.t = field.create_text(x + 12, y - 12, text=f'{self.x}, {self.y}', font=self.fontText,
                                        fill=self.colorText)
 
     def hide(self, field):
         if self.p:
-            field.canva.delete(self.p)
+            field.delete(self.p)
         if self.t:
-            field.canva.delete(self.t)
+            field.delete(self.t)
         self.p, self.t = None, None
 
     def changeColor(self, canva, newColor):

@@ -37,7 +37,7 @@ class CanvasLine(Line):
         # Линия наклонная, надо посчитать для нее координаты от самого левого края, до самого правого
         else:
             xS, yS = 0, self.findYByX(0)
-            xE, yE = field.widthField, self.findYByX(field.widthField)
+            xE, yE = field.width, self.findYByX(field.width)
             try:
                 xS, yS = field.coordinateShift(CanvasPoint(xS, yS, self.color))
                 xE, yE = field.coordinateShift(CanvasPoint(xE, yE, self.color))
@@ -46,16 +46,16 @@ class CanvasLine(Line):
 
 
         if self.dash and self.arrow:
-            self.l = field.canva.create_line(xS, yS, xE, yE, fill=self.color, width=self.width, dash=self.dash, arrow=self.arrow)
+            self.l = field.create_line(xS, yS, xE, yE, fill=self.color, width=self.width, dash=self.dash, arrow=self.arrow)
         elif self.dash:
-            self.l = field.canva.create_line(xS, yS, xE, yE, fill=self.color, width=self.width, dash=self.dash)
+            self.l = field.create_line(xS, yS, xE, yE, fill=self.color, width=self.width, dash=self.dash)
         elif self.arrow:
-            self.l = field.canva.create_line(xS, yS, xE, yE, fill=self.color, width=self.width, arrow=self.arrow)
+            self.l = field.create_line(xS, yS, xE, yE, fill=self.color, width=self.width, arrow=self.arrow)
         else:
-            self.l = field.canva.create_line(xS, yS, xE, yE, fill=self.color, width=self.width)
+            self.l = field.create_line(xS, yS, xE, yE, fill=self.color, width=self.width)
 
     def hide(self, field):
-        field.canva.delete(self.l)
+        field.delete(self.l)
         self.l = None
 
     def reShow(self, field):
