@@ -165,6 +165,18 @@ class CartesianField(CoordGrid):
         newPoint.show(self)
         self.points.append(newPoint)
 
+    def clear(self):
+        for point in self.points:
+            point.hide(self)
+        for line in self.lines:
+            line.hide(self)
+        for cicle in self.circles:
+            cicle.hide(self)
+
+        self.points.clear()
+        self.lines.clear()
+        self.circles.clear()
+
     def update(self):
         super().update()
 
@@ -173,7 +185,7 @@ class CartesianField(CoordGrid):
 
 
 class WrapCanva:
-    def __init__(self, window, Canva, **kwargs):
+    def __init__(self, window, Canva=CartesianField, **kwargs):
         self.window = window
 
         self.frame = Frame(window)
@@ -187,16 +199,5 @@ class WrapCanva:
     def show(self, x, y, relwidth, relheight):
         self.frame.place(x=x, y=y, relwidth=relwidth, relheight=relheight)
 
-
-def main():
-    root = Tk()
-    root.geometry('900x700')
-    root['bg'] = 'blue'
-    c = WrapCanva(root, Canva=CartesianField, bg='white', highlightthickness=0)
-
-    c.show(10, 10, 0.7, 0.7)
-
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
+    def clear(self):
+        self.canva.clear()
