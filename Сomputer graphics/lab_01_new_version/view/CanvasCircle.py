@@ -21,20 +21,19 @@ class CanvasCircle(Circle):
 
     def show(self, canva, showText=True):
         try:
-            x, y = canva.coordinateShift(self.center)
             xl, xr = canva.XShiftPC(self.center.x - self.r), canva.XShiftPC(self.center.x + self.r)
             yl, yr = canva.YShiftPC(self.center.y - self.r), canva.YShiftPC(self.center.y + self.r)
         except:
-            x, y = self.center.x, self.center.y
             xl, xr, yl, yr = self.center.x - self.r, self.center.x + self.r, self.center.y - self.r, self.center.y + self.r
             print("Вы не переводите координаты точек в координаты канвы, могут быть ошибки")
 
         self.c = canva.create_oval(xl, yl, xr, yr,
                                    outline=self.color, width=self.width, activefill=self.activefill)
         if showText:
+            radX, radY = abs(xr - xl) / 2, abs(yr - yl) / 2
             self.pointCenter.show(canva)
-            self.arrowRadius = canva.create_line(x, y, xr, y, fill='black', width=2, arrow=LAST)
-            self.t = canva.create_text((xr - x) / 2 + x, y + 10, text=str(int(int(self.r))), font=('Arial', 8, 'bold'),
+            self.arrowRadius = canva.create_line(xl + radX, yl - radY, xr, yl - radY, fill='black', width=2, arrow=LAST)
+            self.t = canva.create_text(xr - radX / 2, yr + 10, text=str(int(int(self.r))), font=('Arial', 8, 'bold'),
                                        justify=CENTER, fill='black')
 
     def hide(self, canva):

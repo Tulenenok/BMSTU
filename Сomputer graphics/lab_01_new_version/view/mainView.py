@@ -1,12 +1,15 @@
 from tkinter import *
 from view.CanvasField import WrapCanva
 from view.Btn import WrapButton
+from view.menu import menuFrame
+from view.keyInput import XYForm
 
 from model.SetPoints import SetPoints
 import controll.cn
 from view.CanvasField import WrapCanva
 from view.Settings import Settings
 from model.Tools import Tools
+
 
 def go(field):
     points = SetPoints(field.getPoints())
@@ -36,16 +39,34 @@ def go(field):
     field.canva.changeColorPoints(less, Settings.COLOR_POINT_SECOND_SET)
 
 
+def addPointKey(canva, XYform):
+    print('add')
+
+
+def delPointKey():
+    print('del')
+
+
 def mainView():
     root = Tk()
-    root.geometry('900x700')
+    root.geometry('850x650')
     root['bg'] = Settings.COLOR_MAIN_BG
-    c = WrapCanva(root, bg='white', highlightthickness=0)
-    b = WrapButton(root, txt='⏎', command=c.clear)
-    bcn = WrapButton(root, txt='go', command=lambda: go(c))
 
-    c.show(40, 50, 0.7, 0.7)
-    b.show(posx=0, posy=0)
-    bcn.show(posx=70, posy=0)
+    menu = menuFrame(root)
+    root.config(menu=menu.create())
+
+    c = WrapCanva(root, bg='white', highlightthickness=0)
+    b = WrapButton(root, txt='🗑', command=c.clear)
+    bcn = WrapButton(root, txt='🚀', command=lambda: go(c))
+
+    c.show(200, 85, 0.7, 0.8)
+    b.show(posx=200, posy=19)
+    bcn.show(posx=270, posy=19)
+
+    addXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Add point', 18, lambda: addPointKey(c, addXYForm), '  Add  ')
+    delXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Del point', 18, delPointKey, '  Del  ')
+
+    addXYForm.show(Settings.COLOR_MAIN_BG, 20, 10)
+    delXYForm.show(Settings.COLOR_MAIN_BG, 20, 150)
 
     root.mainloop()
