@@ -21,7 +21,7 @@ class AnalyticalGeometry:
     """ 3. Точки ниже прямой (левее)                """
     @staticmethod
     def findLeftRightSet(setPoints, line):
-        more, less, equal = SetPoints(), SetPoints(), SetPoints()
+        more, less, equal = SetPoints([]), SetPoints([]), SetPoints([])
         for point in setPoints.getAll():
             rc = AnalyticalGeometry.positionPointRelativeLine(point, line)
             if rc > 0:
@@ -72,10 +72,10 @@ class AnalyticalGeometry:
     @staticmethod
     def findMinCircle(setPoints):
         if setPoints.size() == 0:
-            return Point(0, 0), 0
+            return Circle(Point(0, 0), 0)
 
         if setPoints.size() == 1:
-            return setPoints.getPoint(0), 0
+            return Circle(setPoints.getPoint(0), 0)
 
         if setPoints.size() == 2:
             return Circle.circleFromTwo(setPoints.getPoint(0), setPoints.getPoint(1))
@@ -85,6 +85,6 @@ class AnalyticalGeometry:
 
         minCircle = AnalyticalGeometry.__minCircleTwo(setPoints, Circle(Point(0, 0), -1))
         if minCircle.r == -1:
-            minCircle = AnalyticalGeometry.__minCircleThree(setPoints, minCircleTwo)
+            minCircle = AnalyticalGeometry.__minCircleThree(setPoints, minCircle)
 
         return minCircle

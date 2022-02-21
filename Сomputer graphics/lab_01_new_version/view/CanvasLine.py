@@ -15,13 +15,15 @@ class CanvasLine(Line):
         self.l = None
 
     def show(self, field, showText=True):
-        try:                                                   # Такого метода у канвы может не оказаться
-            xStart, yStart = field.coordinateShift(self.start)
+        try:                                                    # Такого метода у канвы может не оказаться
+            xStart, yStart = field.coordinateShift(self.start)  # Точки перевели в понятие канвы
+            xEnd, yEnd = field.coordinateShift(self.end)
         except:
             xStart, yStart = self.start.x, self.start.y
+            xEnd, yEnd = self.end.x, self.end.y
             print("Вы не переводите координаты точек в координаты канвы, могут быть ошибки")
 
-        xS, yS, xE, yE = 0, 0, 0, 0
+        xS, yS, xE, yE = 0, 0, 0, 0      # Точки на канве, по которым будем рисовать
         if self.start.x == self.end.x and self.start.y == self.end.y:
             print("Нельзя строить линию по одной точке")
             return
@@ -36,14 +38,9 @@ class CanvasLine(Line):
 
         # Линия наклонная, надо посчитать для нее координаты от самого левого края, до самого правого
         else:
-            xS, yS = 0, self.findYByX(0)
-            xE, yE = field.width, self.findYByX(field.width)
-            try:
-                xS, yS = field.coordinateShift(CanvasPoint(xS, yS, self.color))
-                xE, yE = field.coordinateShift(CanvasPoint(xE, yE, self.color))
-            except:
-                print("Вы не переводите координаты точек в координаты канвы, могут быть ошибки")
-
+            helpLine = Line(CanvasPoint(xStart, yStart), CanvasPoint(xEnd, yEnd))   # Прямая с коэффициентами канвы
+            xS, yS = 0, helpLine.findYByX(0)
+            xE, yE = field.width, helpLine.findYByX(field.width)
 
         if self.dash and self.arrow:
             self.l = field.create_line(xS, yS, xE, yE, fill=self.color, width=self.width, dash=self.dash, arrow=self.arrow)

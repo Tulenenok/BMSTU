@@ -3,7 +3,7 @@ from model.Tools import Tools
 
 
 class SetPoints:
-    def __init__(self, *points):
+    def __init__(self, points):
         self.__data = []
         for p in points:
             self.addPoint(p)
@@ -44,7 +44,7 @@ class SetPoints:
         print()
 
     def getAll(self):
-        return self.__data.copy()
+        return self.__data
 
     def cleanAll(self):
         self.__data.clear()

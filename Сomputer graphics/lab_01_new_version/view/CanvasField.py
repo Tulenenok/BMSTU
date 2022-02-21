@@ -2,6 +2,7 @@ import math
 
 from view.CanvasPoint import CanvasPoint
 from view.CanvasLine import CanvasLine
+from view.CanvasCircle import CanvasCircle
 from view.Settings import Settings
 
 from tkinter import *
@@ -15,6 +16,7 @@ class ResizingCanvas(Canvas):
 
         self.bind('<1>', lambda event: self.click(event))
         self.bind("<Motion>", lambda event: self.showCoords(event))
+        self.bind("<Leave>", lambda event: self.hideCoords(event))
 
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
@@ -30,6 +32,9 @@ class ResizingCanvas(Canvas):
 
     def showCoords(self, event):
         print('showCoords')
+
+    def hideCoords(self, event):
+        print('delCoods')
 
 
 class CoordGrid(ResizingCanvas):
@@ -66,6 +71,10 @@ class CoordGrid(ResizingCanvas):
     # Перевод координаты Y из представления канвы в представление человека
     def YShiftCP(self, y):
         return self.YEnd - y * abs(self.YEnd - self.YStart) / self.height
+
+    # Перевод длины отрезка из представления человека в представление канвы
+    def XLineShiftPC(self, lenLine):
+        return lenLine * self.width / abs(self.XEnd - self.YStart)
 
     def arrowsShow(self):
         self.XLine = self.create_line(0, self.height / 2, self.width, self.height / 2, fill='black', width=2, arrow=LAST)
@@ -160,6 +169,10 @@ class CartesianField(CoordGrid):
                                   text=str(int(self.XShiftCP(event.x))) + ", " + str(int(self.YShiftCP(event.y))),
                                   font=('Arial', 8, 'bold'), justify=CENTER, fill='black')
 
+    def hideCoords(self, event):
+        if self.t:
+            self.delete(self.t)
+
     def click(self, event):
         newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)), self.colorPoints)
         newPoint.show(self)
@@ -168,20 +181,43 @@ class CartesianField(CoordGrid):
     def clear(self):
         for point in self.points:
             point.hide(self)
+        self.points.clear()
+        self.clearResult()
+
+    def clearResult(self):
         for line in self.lines:
             line.hide(self)
-        for cicle in self.circles:
-            cicle.hide(self)
+        for circle in self.circles:
+            circle.hide(self)
 
-        self.points.clear()
         self.lines.clear()
         self.circles.clear()
+
+    def changeColorPoints(self, points, newColor=Settings.COLOR_POINT_FIRST_SET):
+        for p in points.getAll():
+            p.changeColor(self, newColor)
+
+    def showLine(self, start, end, color=Settings.COLOR_LINE):
+        line = CanvasLine(start, end, color)
+        self.lines.append(line)
+        line.show(self)
+
+    def showCircle(self, center, r, color, width=2, activefill=None):
+        circle = CanvasCircle(center, r, color, width, activefill)
+        self.circles.append(circle)
+        circle.show(self)
 
     def update(self):
         super().update()
 
         for point in self.points:
             point.reShow(self)
+
+        for line in self.lines:
+            line.reShow(self)
+
+        for circle in self.circles:
+            circle.reShow(self)
 
 
 class WrapCanva:
@@ -201,3 +237,6 @@ class WrapCanva:
 
     def clear(self):
         self.canva.clear()
+
+    def getPoints(self):
+        return self.canva.points
