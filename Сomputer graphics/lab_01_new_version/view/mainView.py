@@ -143,6 +143,9 @@ def mainView():
     root.geometry('850x650')
     root['bg'] = Settings.COLOR_MAIN_BG
 
+    root.iconphoto(True, PhotoImage(file=r'C:\projects\Сomputational algorithms\lab_01_new_version\shared\rootIcon.png'))
+    root.title('У меня лапки')
+
     menu = menuFrame(root)
     root.config(menu=menu.create())
 
