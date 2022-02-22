@@ -1,9 +1,12 @@
 import math
+import pickle
 
 from view.CanvasPoint import CanvasPoint
 from view.CanvasLine import CanvasLine
 from view.CanvasCircle import CanvasCircle
 from view.Settings import Settings
+
+from model.Tools import Tools
 
 from tkinter import *
 
@@ -149,9 +152,10 @@ class CoordGrid(ResizingCanvas):
 
 
 class CartesianField(CoordGrid):
-    def __init__(self, window, colorPoints=Settings.COLOR_NEW_POINT,
+    def __init__(self, rootFrame, root, colorPoints=Settings.COLOR_NEW_POINT,
                  XStart=-100, XEnd=100, YStart=-100, YEnd=100, gridCoef=10, **kwargs):
-        super(CartesianField, self).__init__(window, XStart, XEnd, YStart, YEnd, gridCoef, **kwargs)
+        super(CartesianField, self).__init__(rootFrame, XStart, XEnd, YStart, YEnd, gridCoef, **kwargs)
+        self.root = root
 
         self.points = []
         self.lines = []
@@ -177,6 +181,8 @@ class CartesianField(CoordGrid):
         newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)), self.colorPoints)
         newPoint.show(self)
         self.points.append(newPoint)
+
+        self.save()
 
     def clear(self):
         for point in self.points:
@@ -224,13 +230,19 @@ class CartesianField(CoordGrid):
         for circle in self.circles:
             circle.reShow(self)
 
+    def save(self):
+        try:
+            self.root.saveVersion()
+        except:
+            print('Вы не используете сохранение')
+
 
 class WrapCanva:
     def __init__(self, window, Canva=CartesianField, **kwargs):
         self.window = window
 
         self.frame = Frame(window)
-        self.canva = Canva(self.frame, **kwargs)
+        self.canva = Canva(self.frame, self.window, **kwargs)
         self.frame.bind('<Configure>', self.resize)
         self.canva.place(x=0, y=0)
 
@@ -245,3 +257,26 @@ class WrapCanva:
 
     def getPoints(self):
         return self.canva.points
+
+    def saveVersion(self, f):
+        pickle.dump(self.canva.points, f)
+        pickle.dump(self.canva.lines, f)
+        pickle.dump(self.canva.circles, f)
+
+    def loadVersion(self, f):
+        try:
+            points = pickle.load(f)
+            lines = pickle.load(f)
+            circles = pickle.load(f)
+        except:
+            print('Ошибка загрузки данных')
+            return Tools.EXIT_FAILURE
+
+        self.canva.clear()
+        self.canva.points = points
+        self.canva.lines = lines
+        self.canva.circles = circles
+
+        self.canva.update()
+
+        return Tools.EXIT_SUCCESS

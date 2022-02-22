@@ -9,6 +9,9 @@ class Point:
     def print(self, end='\n', sep=' '):
         print(f'({self.x}, {self.y})', end=end, sep=sep)
 
+    def likeStr(self):
+        return f'{self.x} ; {self.y}'
+
     @staticmethod
     def isPointsEqual(pointA, pointB):
         return pointA.x == pointB.x and pointA.y == pointB.y

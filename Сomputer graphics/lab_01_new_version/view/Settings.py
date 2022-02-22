@@ -18,3 +18,6 @@ class Settings:
     STEP_INPUT = 140
 
     WIDTH_INPUT = 18
+
+    DIR_INPUT_POINTS = "../data"
+    DIR_OUTPUT_POINTS = "../data"
