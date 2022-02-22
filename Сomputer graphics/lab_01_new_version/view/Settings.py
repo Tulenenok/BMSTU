@@ -6,3 +6,15 @@ class Settings:
     COLOR_POINT_FIRST_SET = '#530FAD'             # фиолетовый
     COLOR_POINT_SECOND_SET = '#E40045'            # малиновый
     COLOR_LINE = '#CCF600'                        # салатовый
+
+    X_CANVA = 200
+    Y_CANVA = 85
+    REL_X_CANVA = 0.7
+    REL_Y_CANVA = 0.8
+    Y_START_BUTTONS = 19
+    BTN_STEP = 70
+    X_INPUT = 20
+    Y_INPUT = 10
+    STEP_INPUT = 140
+
+    WIDTH_INPUT = 18

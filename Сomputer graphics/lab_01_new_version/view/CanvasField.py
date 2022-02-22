@@ -197,6 +197,11 @@ class CartesianField(CoordGrid):
         for p in points.getAll():
             p.changeColor(self, newColor)
 
+    def showPoint(self, x, y, color=Settings.COLOR_NEW_POINT):
+        point = CanvasPoint(int(x), int(y))
+        self.points.append(point)
+        point.show(self)
+
     def showLine(self, start, end, color=Settings.COLOR_LINE):
         line = CanvasLine(start, end, color)
         self.lines.append(line)

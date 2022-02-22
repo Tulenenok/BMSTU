@@ -13,6 +13,12 @@ class XYForm:
         self.btn.bind("<Enter>", self.onEnter)
         self.btn.bind("<Leave>", self.onLeave)
 
+        self.xEntry.bind("<Return>", lambda event: self.yEntry.focus_set())
+        self.yEntry.bind("<Return>", lambda event: command())
+
+        self.xEntry.bind("<Down>", lambda event: self.yEntry.focus_set())
+        self.yEntry.bind("<Up>", lambda event: self.xEntry.focus_set())
+
     def onEnter(self, btn):
         btn.widget['background'] = '#deebf1'
 
@@ -38,48 +44,7 @@ class XYForm:
     def clear(self):
         self.xEntry.delete(0, END)
         self.yEntry.delete(0, END)
+        self.xEntry.focus_set()
 
-class pointAddDel():
-    def __init__(self, window, row, column, color, addFunc, delFunc, widthInput=18):
-        self.window = window
-        self.f = Frame(width=row, height=column, bg=color)
-        self.f.propagate(0)
-
-        self.addXYForm = XYForm(self.f, color, 'Add point', widthInput, self.__addPointFunc, '  Add  ')
-        self.delXYForm = XYForm(self.f, color, 'Del point', widthInput, self.__addPointFunc, '  Del  ')
-
-        self.addXYForm.show(color, LEFT, 'n')
-        self.delXYForm.show(color, RIGHT, 'ne')
-
-    def create(self):
-        return self.f
-
-    def __addPointFunc(self):
-        inputX = self.addXYForm.xEntry.get()
-        inputY = self.addXYForm.yEntry.get()
-
-        if Tools.isInt(inputX) and Tools.isInt(inputY):
-            window.allFrames[OBJ_TEXT_POINTS].insert(END, f'({inputX}; {inputY})  ')
-            window.allFrames[OBJ_FIELD].createPoint(int(inputX), int(inputY))
-
-            self.addXYForm.xEntry.delete(0, END)
-            self.addXYForm.yEntry.delete(0, END)
-        else:
-            showinfo('Error', 'Координаты точки введены неверно')
-
-    def __delPointFunc(self):
-        inputX = self.__xDel.get()
-        inputY = self.__yDel.get()
-        if Check.isInt(inputX) and Check.isInt(inputY):
-            if not window.allFrames[OBJ_FIELD].delPoint(int(inputX), int(inputY)):
-                showinfo('Error', 'Точка с такими координатами на поле отсутствует')
-            else:
-                self.__xDel.delete(0, END)
-
-                self.__yDel.delete(0, END)
-        else:
-            showinfo('Error', 'Координаты точки введены неверно')
-
-    def startingSettings(self):
-        self.addXYForm.clear()
-        self.delXYForm.clear()
+    def getXY(self):
+        return self.xEntry.get(), self.yEntry.get()

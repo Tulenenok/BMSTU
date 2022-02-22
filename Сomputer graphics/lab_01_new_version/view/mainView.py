@@ -1,14 +1,18 @@
 from tkinter import *
+from tkinter.messagebox import *
+
 from view.CanvasField import WrapCanva
 from view.Btn import WrapButton
 from view.menu import menuFrame
 from view.keyInput import XYForm
+from view.CanvasField import WrapCanva
+from view.CanvasPoint import CanvasPoint
+from view.Settings import Settings
 
 from model.SetPoints import SetPoints
-import controll.cn
-from view.CanvasField import WrapCanva
-from view.Settings import Settings
 from model.Tools import Tools
+
+import controll.cn
 
 
 def go(field):
@@ -40,11 +44,27 @@ def go(field):
 
 
 def addPointKey(canva, XYform):
-    print('add')
+    x, y = XYform.getXY()
+    if not Tools.isInt(x) or not Tools.isInt(y):
+        showinfo('Error', 'Неверно введены координаты точки (должны быть целые числа)')
+        return
+
+    canva.canva.showPoint(int(x), int(y))
+    XYform.clear()
 
 
-def delPointKey():
-    print('del')
+def delPointKey(canva, XYform):
+    x, y = XYform.getXY()
+    print(x, y)
+    if not Tools.isInt(x) or not Tools.isInt(y):
+        showinfo('Error', 'Неверно введены координаты точки (должны быть целые числа)')
+        return
+
+    delPoint = CanvasPoint(int(x), int(y))
+    for point in canva.getPoints():
+        if point.isPointsEqual(delPoint, point):
+            point.hide(canva.canva)
+            XYform.clear()
 
 
 def mainView():
@@ -59,14 +79,16 @@ def mainView():
     b = WrapButton(root, txt='🗑', command=c.clear)
     bcn = WrapButton(root, txt='🚀', command=lambda: go(c))
 
-    c.show(200, 85, 0.7, 0.8)
-    b.show(posx=200, posy=19)
-    bcn.show(posx=270, posy=19)
+    c.show(Settings.X_CANVA, Settings.Y_CANVA, Settings.REL_X_CANVA, Settings.REL_Y_CANVA)
+    b.show(posx=Settings.X_CANVA, posy=Settings.Y_START_BUTTONS)
+    bcn.show(posx=Settings.X_CANVA + Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
 
-    addXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Add point', 18, lambda: addPointKey(c, addXYForm), '  Add  ')
-    delXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Del point', 18, delPointKey, '  Del  ')
+    addXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Add point', Settings.WIDTH_INPUT,
+                       lambda: addPointKey(c, addXYForm), '  Add  ')
+    delXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Del point', Settings.WIDTH_INPUT,
+                       lambda: delPointKey(c, delXYForm), '  Del  ')
 
-    addXYForm.show(Settings.COLOR_MAIN_BG, 20, 10)
-    delXYForm.show(Settings.COLOR_MAIN_BG, 20, 150)
+    addXYForm.show(Settings.COLOR_MAIN_BG, Settings.X_INPUT, Settings.Y_INPUT)
+    delXYForm.show(Settings.COLOR_MAIN_BG, Settings.X_INPUT, Settings.Y_INPUT + Settings.STEP_INPUT)
 
     root.mainloop()
