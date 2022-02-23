@@ -8,7 +8,7 @@ from tkinter import *
 # (-59, 31) (-72, -57) (-46, -42) (-19, 40) (42, 49) (40, -29)
 
 class CanvasCircle(Circle):
-    def __init__(self, center, r, color, width=2, activefill=None):
+    def __init__(self, center, r, color, width=2, activefill=None, showComments=True):
         super().__init__(center, r)
         self.color = color
         self.width = width
@@ -19,7 +19,9 @@ class CanvasCircle(Circle):
         self.pointCenter = CanvasPoint(self.center.x, self.center.y, color='black')
         self.arrowRadius = None
 
-    def show(self, canva, showText=True):
+        self.ShowComments = showComments
+
+    def show(self, canva):
         try:
             xl, xr = canva.XShiftPC(self.center.x - self.r), canva.XShiftPC(self.center.x + self.r)
             yl, yr = canva.YShiftPC(self.center.y - self.r), canva.YShiftPC(self.center.y + self.r)
@@ -30,7 +32,7 @@ class CanvasCircle(Circle):
         self.c = canva.create_oval(xl, yl, xr, yr,
                                    outline=self.color, width=self.width, activefill=self.activefill)
 
-        if showText:
+        if self.ShowComments:
             radX, radY = abs(xr - xl) / 2, abs(yr - yl) / 2
             self.pointCenter.show(canva)
             self.arrowRadius = canva.create_line(xl + radX, yl - radY, xr, yl - radY, fill='black', width=2, arrow=LAST)

@@ -63,9 +63,10 @@ class CoordGrid(ResizingCanvas):
         self.gridCoefX = gridCoef
         self.gridCoefY = gridCoef
 
-    def changeLimits(self, XStart, XEnd, YStart, YEnd):
-        if self.controllCoef(XStart, XEnd, YStart, YEnd):
-            return Tools.EXIT_FAILURE
+    def changeLimits(self, XStart, XEnd, YStart, YEnd, flagChangeCoef=True):
+        if flagChangeCoef:
+            if self.controllCoef(XStart, XEnd, YStart, YEnd):
+                return Tools.EXIT_FAILURE
 
         self.XStart, self.XEnd, self.YStart, self.YEnd = XStart, XEnd, YStart, YEnd
         self.update()
@@ -215,9 +216,19 @@ class CoordGrid(ResizingCanvas):
         stepX = abs(self.XStart - self.XEnd) / self.gridCoefX / 2
         stepY = abs(self.YStart - self.YEnd) / self.gridCoefX / 2
         if event.delta > 0:
-            self.changeLimits(self.XStart + stepX, self.XEnd - stepX, self.YStart + stepY, self.YEnd - stepY)
+            self.changeLimits(self.XStart + stepX, self.XEnd - stepX, self.YStart + stepY, self.YEnd - stepY, True)
         elif event.delta < 0:
-            self.changeLimits(self.XStart - stepX, self.XEnd + stepX, self.YStart - stepY, self.YEnd + stepY)
+            self.changeLimits(self.XStart - stepX, self.XEnd + stepX, self.YStart - stepY, self.YEnd + stepY, True)
+
+    def changeCoef(self, sign, *axis):
+        if sign == '+':
+            self.gridCoefX = self.gridCoefX - 1 if 'X' in axis and self.gridCoefX > 1 else self.gridCoefX
+            self.gridCoefY = self.gridCoefY - 1 if 'Y' in axis and self.gridCoefY > 1 else self.gridCoefY
+        else:
+            self.gridCoefX = self.gridCoefX + 1 if 'X' in axis and self.gridCoefX < 10 else self.gridCoefX
+            self.gridCoefY = self.gridCoefY + 1 if 'Y' in axis and self.gridCoefY < 10 else self.gridCoefY
+
+        self.update()
 
 
 class CartesianField(CoordGrid):
@@ -234,6 +245,8 @@ class CartesianField(CoordGrid):
 
         self.colorPoints = colorPoints
 
+        self.ShowComments = True
+
     def showCoords(self, event):
         if self.t:
             self.delete(self.t)
@@ -247,7 +260,8 @@ class CartesianField(CoordGrid):
             self.delete(self.t)
 
     def click(self, event):
-        newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)), self.colorPoints)
+        newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)),
+                               self.colorPoints, showComments=self.ShowComments)
         newPoint.show(self)
         self.points.append(newPoint)
 
@@ -273,7 +287,7 @@ class CartesianField(CoordGrid):
             p.changeColor(self, newColor)
 
     def showPoint(self, x, y, color=Settings.COLOR_NEW_POINT):
-        point = CanvasPoint(int(x), int(y))
+        point = CanvasPoint(int(x), int(y), showComments=self.ShowComments)
         self.points.append(point)
         point.show(self)
 
@@ -283,12 +297,13 @@ class CartesianField(CoordGrid):
         line.show(self)
 
     def showCircle(self, center, r, color, width=2, activefill=None):
-        circle = CanvasCircle(center, r, color, width, activefill)
+        circle = CanvasCircle(center, r, color, width, activefill, showComments=self.ShowComments)
         self.circles.append(circle)
         circle.show(self)
 
     def update(self):
         super().update()
+        self.updateShowFlags()
 
         for point in self.points:
             point.reShow(self)
@@ -314,6 +329,11 @@ class CartesianField(CoordGrid):
             if point.isClick(self, XEvent, YEvent):
                 point.hide(self)
 
+    def updateShowFlags(self):
+        for point in self.points:
+            point.ShowComments = self.ShowComments
+        for circle in self.circles:
+            circle.ShowComments = self.ShowComments
 
 class WrapCanva:
     def __init__(self, window, Canva=CartesianField, **kwargs):
@@ -334,6 +354,8 @@ class WrapCanva:
         self.window.bind("<Up>", lambda event: self.canva.arrowMoveAcrossField('Y', 'up'))
         self.window.bind("<Down>", lambda event: self.canva.arrowMoveAcrossField('Y', 'down'))
 
+        self.window.bind("<Control-equal>", lambda event: self.canva.changeCoef('+', 'X', 'Y'))
+        self.window.bind("<Control-minus>", lambda event: self.canva.changeCoef('-', 'X', 'Y'))
 
         self.menu = Menu(self.canva, tearoff=0)
         self.menu.add_command(label="Delete", command=lambda: self.canva.rightClick(self.Xevent, self.Yevent))
@@ -385,3 +407,7 @@ class WrapCanva:
         self.canva.update()
 
         return Tools.EXIT_SUCCESS
+
+    def radioShowComments(self):
+        self.canva.ShowComments = not self.canva.ShowComments
+        self.canva.update()

@@ -14,7 +14,9 @@ class CanvasLine(Line):
 
         self.l = None
 
-    def show(self, field, showText=True):
+        self.ShowComments = True
+
+    def show(self, field):
         try:                                                    # Такого метода у канвы может не оказаться
             xStart, yStart = field.coordinateShift(self.start)  # Точки перевели в понятие канвы
             xEnd, yEnd = field.coordinateShift(self.end)

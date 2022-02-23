@@ -62,7 +62,7 @@ class AnalyticalGeometry:
             for j in range(i + 1, setPoints.size()):
                 circle = Circle.circleFromTwo(setPoints.getPoint(i), setPoints.getPoint(j))
 
-                if AnalyticalGeometry.isAllPointsInsideCircle(setPoints, circle) \
+                if AnalyticalGeometry.isRightCircle(setPoints, circle, i, j) \
                         and (minCircle.r == -1 or minCircle.r > circle.r):
                     minCircle = circle
 
@@ -75,7 +75,7 @@ class AnalyticalGeometry:
             for j in range(i + 1, setPoints.size() - 1):
                 for k in range(j + 1, setPoints.size()):
                     circle = Circle.circleFromThree(setPoints.getPoint(i), setPoints.getPoint(j), setPoints.getPoint(k))
-                    if AnalyticalGeometry.isAllPointsInsideCircle(setPoints, circle) \
+                    if AnalyticalGeometry.isRightCircle(setPoints, circle, i, j, k) \
                             and (minCircle.r == -1 or minCircle.r > circle.r):
                         minCircle = circle
 
@@ -93,8 +93,8 @@ class AnalyticalGeometry:
         if setPoints.size() == 2:
             return Circle.circleFromTwo(setPoints.getPoint(0), setPoints.getPoint(1))
 
-        if setPoints.size() == 3:
-            return Circle.circleFromThree(setPoints.getPoint(0), setPoints.getPoint(1), setPoints.getPoint(2))
+        # if setPoints.size() == 3:
+        #     return Circle.circleFromThree(setPoints.getPoint(0), setPoints.getPoint(1), setPoints.getPoint(2))
 
         minCircle = AnalyticalGeometry.__minCircleTwo(setPoints, Circle(Point(0, 0), -1))
         if minCircle.r == -1:

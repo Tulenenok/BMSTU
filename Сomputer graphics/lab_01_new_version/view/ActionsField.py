@@ -2,6 +2,7 @@ from tkinter import *
 from view.Btn import WrapButton
 from view.keyInput import Zoom
 from view.Settings import Settings
+from controll.cn import *
 
 
 class ActionsField:
@@ -10,12 +11,12 @@ class ActionsField:
         self.f = Frame(root, width=180, height=200, bg=bg)
         self.canva = canva
 
-        self.bzoom = WrapButton(self.f, txt='🔎', padx=10, pady=8, command=lambda: self.zoom(), bd=0)
+        self.bzoom = WrapButton(self.f, txt='🔎', padx=10, pady=8, command=lambda: self.zoom(), bd=0, name='Zoom')
 
-        self.bleft = WrapButton(self.f, txt='⬅', padx=10, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'X', 'left'), bd=0)
-        self.bright = WrapButton(self.f, txt='➡', padx=10, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'X', 'right'), bd=0)
-        self.bup = WrapButton(self.f, txt='⬆', padx=14, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'Y', 'up'), bd=0)
-        self.bdown = WrapButton(self.f, txt='⬇', padx=14, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'Y', 'down'), bd=0)
+        self.bleft = WrapButton(self.f, txt='⬅', padx=10, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'X', 'left'), bd=0, name='Left')
+        self.bright = WrapButton(self.f, txt='➡', padx=10, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'X', 'right'), bd=0, name='Right')
+        self.bup = WrapButton(self.f, txt='⬆', padx=14, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'Y', 'up'), bd=0, name='Up')
+        self.bdown = WrapButton(self.f, txt='⬇', padx=14, pady=8, command=lambda: self.arrowMoveAcrossField(self.canva, 'Y', 'down'), bd=0, name='Down')
 
     def zoom(self):
         z = Zoom(self.root, self.canva)
@@ -36,4 +37,9 @@ class ActionsField:
         self.bdown.show(posx=57, posy=105)
 
         self.f.place(x=posx, rely=0.85, anchor=anchor)
+
+
+
+
+
 

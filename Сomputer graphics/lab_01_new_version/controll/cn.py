@@ -1,51 +1,161 @@
-from model.Point import Point
-from model.Line import Line
-from model.Tools import Tools
-from model.AnalyticalGeometry import AnalyticalGeometry
+from tkinter import *
+from tkinter.messagebox import *
+import tkinter.filedialog as fd
+
+from view.Btn import WrapButton
+from view.menu import menuFrame
+from view.keyInput import XYForm, Zoom
+from view.CanvasField import WrapCanva
+from view.CanvasPoint import CanvasPoint
+from view.Settings import Settings
+from view.RootWithVersions import RootWithVersions
+from view.ActionsField import ActionsField
+
 from model.SetPoints import SetPoints
+from model.Tools import Tools
+
+import controll.controllModel
 
 
-def findLine(points):
-    if points.size() < 2:
-        return Tools.EXIT_FAILURE
+def go(field):
+    points = SetPoints(field.getPoints())
 
-    if points.size() == 3:
-        return points.getPoint(0), points.getPoint(1), SetPoints([points.getPoint(2)]), \
-               SetPoints([points.getPoint(0), points.getPoint(1)]), SetPoints([])
+    field.canva.clearResult()
 
-    idealMore, idealEqual, idealLess = AnalyticalGeometry.findLeftRightSet(points, Line(points.getPoint(0), points.getPoint(1)))
-    idealI, idealJ = 0, 1
+    rc = controll.controllModel.findLine(points)
+    if rc == Tools.EXIT_FAILURE:
+        return
 
-    for i in range(points.size() - 1):
-        for j in range(i + 1, points.size()):
-            more, equal, less = AnalyticalGeometry.findLeftRightSet(points, Line(points.getPoint(i), points.getPoint(j)))
-            if abs(more.size() - less.size()) < abs(idealMore.size() - idealLess.size()):
-                idealMore, idealEqual, idealLess = more, equal, less
-                idealI, idealJ = i, j
+    b, e, more, equal, less = rc
+    field.canva.showLine(b, e)
 
-    return points.getPoint(idealI), points.getPoint(idealJ), idealMore, idealEqual, idealLess
+    minCircleFirst = controll.controllModel.minCircle(more)
+    minCircleSecond = controll.controllModel.minCircle(less)
+
+    if minCircleFirst.r != 0:
+        field.canva.showCircle(minCircleFirst.center, minCircleFirst.r, Settings.COLOR_POINT_FIRST_SET)
+
+    if minCircleSecond.r != 0:
+        field.canva.showCircle(minCircleSecond.center, minCircleSecond.r, Settings.COLOR_POINT_SECOND_SET)
+
+    field.canva.changeColorPoints(more, Settings.COLOR_POINT_FIRST_SET)
+    field.canva.changeColorPoints(equal, Settings.COLOR_LINE)
+    field.canva.changeColorPoints(less, Settings.COLOR_POINT_SECOND_SET)
+
+    field.canva.save()
 
 
-def minCircle(points):
-    return AnalyticalGeometry.findMinCircle(points)
+def addPointKey(canva, XYform):
+    x, y = XYform.getXY()
+    if not Tools.isInt(x) or not Tools.isInt(y):
+        showinfo('Error', 'Неверно введены координаты точки (должны быть целые числа)')
+        return
+
+    canva.canva.showPoint(int(x), int(y))
+    XYform.clear()
+
+    canva.canva.save()
 
 
-# s = SetPoints(Point(-2, -1), Point(-1, -8), Point(2, 1), Point(2, -2), Point(3, 4), Point(4, 2))
-# i, j, more, equal, less = findLine(s)
-# i.print()
-# j.print()
+def delPointKey(canva, XYform):
+    x, y = XYform.getXY()
+    print(x, y)
+    if not Tools.isInt(x) or not Tools.isInt(y):
+        showinfo('Error', 'Неверно введены координаты точки (должны быть целые числа)')
+        return
 
-# s = SetPoints(Point(-2, -1), Point(-1, -8), Point(2, 1), Point(2, -2), Point(3, 4), Point(4, 2))
-# c = minCircle(s)
-# c.center.print()
-# print(c.r)
+    delPoint = CanvasPoint(int(x), int(y))
+    flagWasPoint = False
+    for point in canva.getPoints():
+        if point.isPointsEqual(delPoint, point):
+            point.hide(canva.canva)
+            XYform.clear()
+            flagWasPoint = True
 
-# s = SetPoints(Point(178, 77), Point(113, 124))
-# c = minCircle(s)
-# c.center.print()
-# print(c.r)
+    if not flagWasPoint:
+        showinfo('Warning', 'Точки с такими координатами не найдено')
+        return
 
-# s = SetPoints(Point(-10, 5), Point(-8, 12), Point(33, 2), Point(100, 100))
-# c = minCircle(s)
-# c.center.print()
-# print(c.r)
+    canva.canva.save()
+
+
+def inputPointsFromFile(canva):
+    filetypes = (("Текстовый файл", "*.txt"), ("Excel", "*.xlsx"))
+    filename = fd.askopenfilename(title="Открыть файл", initialdir=Settings.DIR_INPUT_POINTS,
+                                  filetypes=filetypes, multiple=False)
+    if filename and filename[-4::] == '.txt':
+        coords = controll.controllModel.inputPointsTXT(filename)
+        if Tools.isInt(coords):
+            showinfo('Ошибка открытия файла' if coords == Tools.INVALID_FILENAME else 'Неверный формат данных',
+                     'Неверно указано название файла' if coords == -1 else f'Произошла ошибка на {coords} строке. \n\n'
+                              'Проверьте, что координаты точек введены в формате x ; y и что каждая точка введена '
+                              'на новой строке')
+            return
+
+    elif filename and filename[-5::] == '.xlsx':
+        coords = controll.controllModel.inputPointsXLSX(filename)
+        if Tools.isInt(coords):
+            if coords == Tools.INVALID_FILENAME:
+                showinfo('Ошибка открытия файла', 'Неверно указано название файла')
+            elif coords == Tools.INVALID_LISTNAME:
+                showinfo('Ошибка названия листа', 'Не удалось найти лист с названием Points')
+            elif coords == Tools.INVALID_HEAD:
+                showinfo('Ошибка заголовка таблицы', 'Проверьте, что заголовок таблицы содержит названия X и Y')
+            elif coords == Tools.INVALID_DATA:
+                showinfo('Ошибка чтения данных', 'Проверьте, что количество х-сов совпадает с количеством y-ков')
+            elif coords == Tools.INVALID_FORMAT_DATA:
+                showinfo('Ошибка чтения данных', 'Формат данных неверный (ожидались вещественные числа)')
+            else:
+                showinfo('Error', 'Непонятная ошибка, но мы работаем над этим')
+            return
+    else:
+        showinfo('Ошибка открытия файла', 'Неверно указано название файла')
+        return
+
+    if coords == []:
+        showinfo('Empty file', 'Выбранный файл не содержит данных, точки не обновлены.')
+        return
+
+    canva.canva.clear()
+    for c in coords:
+        canva.canva.showPoint(c[0], c[1])
+
+    canva.canva.save()
+
+
+def savePointsToFile(canva):
+    new_file = fd.asksaveasfile(title="Сохранить файл", defaultextension=".txt",
+                                filetypes=(("Текстовый файл", "*.txt"), ))
+    if new_file:
+        for point in canva.getPoints():
+            new_file.write(point.likeStr() + '\n')
+        new_file.close()
+
+
+def clearCanva(canva):
+    canva.clear()
+    canva.canva.save()
+
+
+class UpButtons:
+    def __init__(self, root, c):
+        self.root = root
+        self.canva = c
+        self.f = Frame(self.root, width=400, height=60)
+        self.f['bg'] = Settings.COLOR_MAIN_BG
+
+        self.bClear = WrapButton(self.f, txt='🗑', command=lambda: clearCanva(self.canva), name='clear all')
+        self.bGo = WrapButton(self.f, txt='🚀', command=lambda: go(self.canva), name='make a calculation')
+        self.bInput = WrapButton(self.f, txt='📂', command=lambda: inputPointsFromFile(self.canva), name='take points from file')
+        self.bSave = WrapButton(self.f, txt='📋', command=lambda: savePointsToFile(self.canva), name='save points')
+        self.bReturn = WrapButton(self.f, txt='⏎', command=lambda: root.loadVersion(), name='cancel')
+
+    def show(self, posx=Settings.X_CANVA, posy=Settings.Y_INPUT + 9):
+        startX, startY = 0, 0
+        self.bReturn.show(posx=startX, posy=startY)
+        self.bInput.show(posx=startX + 1 * Settings.BTN_STEP, posy=startY)
+        self.bSave.show(posx=startX + 2 * Settings.BTN_STEP, posy=startY)
+        self.bClear.show(posx=startX + 3 * Settings.BTN_STEP, posy=startY)
+        self.bGo.show(posx=startX + 4 * Settings.BTN_STEP, posy=startY)
+
+        self.f.place(x=posx, y=posy)

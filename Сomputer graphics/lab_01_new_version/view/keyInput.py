@@ -160,7 +160,7 @@ class Zoom:
             showinfo('Warning', f'Невозможно расчертить координатную сетку для оси Y при yMax - yMin <= {Settings.MIN_LEN_COORDS}')
             return
 
-        canva.canva.changeLimits(xMin, xMax, yMin, yMax)
+        canva.canva.changeLimits(xMin, xMax, yMin, yMax, True)
         print('Change coords --> correct')
 
         showinfo('Успешно', 'Координаты были успешно изменены.\n\nНовые пределы:\n'

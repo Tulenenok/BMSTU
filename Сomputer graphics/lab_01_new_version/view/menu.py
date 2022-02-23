@@ -4,21 +4,37 @@ from tkinter.messagebox import *
 
 class menuFrame:
     def __init__(self, window):
-        self.__menu = Menu()
-        self.__window = window
+        self.menu = Menu()
+        self.window = window
+
+        self.name = '❌ Комментарии'
+        self.settingMenu = self.__makeDropDown({self.name: self.__showComment})
+        self.field = None
 
     def __makeDropDown(self, dictLabels):
-        newItem = Menu(self.__menu, tearoff=0)
+        newItem = Menu(self.menu, tearoff=0)
         for item in dictLabels:
             newItem.add_command(label=item, command=dictLabels[item])
         return newItem
 
-    def create(self):
-        self.__menu.add_cascade(label='Menu', menu=self.__makeDropDown({'Информация о программе': self.__info_programm,
+    def create(self, field, funcInput, funcLoad, funcClean, funcReturn, funcGo):
+        self.field = field
+        self.menu.add_cascade(label='File', menu=self.__makeDropDown({'Открыть 📂': lambda: funcInput(field),
+                                                                      'Сохранить 📋': lambda: funcLoad(field),
+                                                                      'Отменить ⏎': lambda: funcReturn(),
+                                                                      'Очистить 🗑': lambda: funcClean(field),
+                                                                      }))
+        self.menu.add_cascade(label='Setting', menu=self.settingMenu)
+        self.menu.add_cascade(label='Info', menu=self.__makeDropDown({'Информация о программе': self.__info_programm,
                                                                         'Информация об авторе': self.__info_author,
-                                                                        'Выход': self.__window.destroy
-                                                                        }))
-        return self.__menu
+                                                                      }))
+        self.menu.add_cascade(label='Exit', menu=self.__makeDropDown({'Выход': self.window.destroy}))
+        return self.menu
+
+    def __showComment(self):
+        self.field.radioShowComments()
+        self.name = '✔ Комментарии' if self.name == '❌ Комментарии' else '❌ Комментарии'
+        self.settingMenu.entryconfig(1, label=self.name)
 
     def __info_author(self):
         showinfo('Info', 'Автор: Гурова Наталия ИУ7-44Б')
