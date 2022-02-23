@@ -27,8 +27,6 @@ def go(field):
         return
 
     b, e, more, equal, less = rc
-    b.print()
-    e.print()
     field.canva.showLine(b, e)
 
     minCircleFirst = controll.controllModel.minCircle(more)

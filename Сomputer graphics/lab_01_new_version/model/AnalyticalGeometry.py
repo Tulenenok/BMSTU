@@ -35,12 +35,24 @@ class AnalyticalGeometry:
 
     @staticmethod
     def isPointInsideCircle(point, circle):
-        return Point.dist(circle.center, point) <= circle.r
+        return Point.dist(circle.center, point) <= circle.r + 1
 
     @staticmethod
     def isAllPointsInsideCircle(setPoints, circle):
         for p in setPoints.getAll():
             if not AnalyticalGeometry.isPointInsideCircle(p, circle):
+                return False
+        return True
+
+    @staticmethod
+    def isRightCircle(setPoints, circle, *insteadOf):
+        for i, p in enumerate(setPoints.getAll()):
+            if i in insteadOf:
+                print(i)
+                continue
+            if not AnalyticalGeometry.isPointInsideCircle(p, circle):
+                print('Problem')
+                p.print()
                 return False
         return True
 
@@ -56,6 +68,7 @@ class AnalyticalGeometry:
 
         return minCircle
 
+    """ МОЖНО ПОСТАВИТЬ МЕТОД isRightCircle для большей уверенности, но и так должно работать """
     @staticmethod
     def __minCircleThree(setPoints, minCircle):
         for i in range(setPoints.size() - 2):

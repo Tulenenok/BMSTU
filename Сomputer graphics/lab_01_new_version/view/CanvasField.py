@@ -61,11 +61,11 @@ class CoordGrid(ResizingCanvas):
 
     # Перевод координаты X из представления человека в представление канвы
     def XShiftPC(self, x):
-        return abs(x - self.XStart) * self.width / abs(self.XEnd - self.XStart)
+        return 0 + (x - self.XStart) * self.width / abs(self.XEnd - self.XStart)
 
     # Перевод координаты Y из представления человека в представление канвы
     def YShiftPC(self, y):
-        return self.height - abs(y - self.YStart) * self.height / abs(self.YEnd - self.YStart)
+        return self.height - (y - self.YStart) * self.height / abs(self.YEnd - self.YStart)
 
     # Перевод координаты X из представления канвы в представление человека
     def XShiftCP(self, x):
