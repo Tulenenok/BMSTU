@@ -24,16 +24,7 @@ class ActionsField:
     # Принимает axis как ось (т.е. 'X' или 'Y'), side как сторону, в которую перемещать
     # side = 'left' или 'right' для X, 'up' или 'down' для Y
     def arrowMoveAcrossField(self, canva, axis, side):
-        if axis == 'X':
-            step = abs(canva.canva.XStart - canva.canva.XEnd) / canva.canva.gridCoefX / 2
-            canva.canva.changeLimits(canva.canva.XStart + (step if side == 'right' else -step),
-                                     canva.canva.XEnd + (step if side == 'right' else -step),
-                                     canva.canva.YStart, canva.canva.YEnd)
-        else:
-            step = abs(canva.canva.YStart - canva.canva.YEnd) / canva.canva.gridCoefX / 2
-            canva.canva.changeLimits(canva.canva.XStart, canva.canva.XEnd,
-                                     canva.canva.YStart + (step if side == 'up' else -step),
-                                     canva.canva.YEnd + (step if side == 'up' else -step))
+        canva.canva.arrowMoveAcrossField(axis, side)
 
 
     def show(self, posx, posy, anchor=CENTER):

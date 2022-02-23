@@ -44,6 +44,11 @@ class ResizingCanvas(Canvas):
     def mouseZoom(self, event):
         pass
 
+    def plug(self, event):
+        print('plus')
+
+    def arrowMoveAcrossField(self, axis, side):
+        pass
 
 class CoordGrid(ResizingCanvas):
     def __init__(self, window, XStart=-100, XEnd=100, YStart=-100, YEnd=100, gridCoef=10, **kwargs):
@@ -181,6 +186,17 @@ class CoordGrid(ResizingCanvas):
             self.gridCoefY += 1
             stepY = abs(YStart - YEnd) / 2 / self.gridCoefY
 
+    def arrowMoveAcrossField(self, axis, side):
+        if axis == 'X':
+            step = abs(self.XStart - self.XEnd) / self.gridCoefX / 2
+            self.changeLimits(self.XStart + (step if side == 'right' else -step),
+                              self.XEnd + (step if side == 'right' else -step),
+                              self.YStart, self.YEnd)
+        else:
+            step = abs(self.YStart - self.YEnd) / self.gridCoefX / 2
+            self.changeLimits(self.XStart, self.XEnd, self.YStart + (step if side == 'up' else -step),
+                                     self.YEnd + (step if side == 'up' else -step))
+
     def controllCoef(self, XStart, XEnd, YStart, YEnd):
         if abs(XEnd - XStart) <= Settings.MIN_LEN_COORDS:
             print('Слишком маленький масштаб сетки для X')
@@ -298,6 +314,14 @@ class WrapCanva:
         self.canva = Canva(self.frame, self.window, **kwargs)
         self.frame.bind('<Configure>', self.resize)
         self.canva.place(x=0, y=0)
+
+        self.bind()
+
+    def bind(self):
+        self.window.bind("<Right>", lambda event: self.canva.arrowMoveAcrossField('X', 'right'))
+        self.window.bind("<Left>", lambda event: self.canva.arrowMoveAcrossField('X', 'left'))
+        self.window.bind("<Up>", lambda event: self.canva.arrowMoveAcrossField('Y', 'up'))
+        self.window.bind("<Down>", lambda event: self.canva.arrowMoveAcrossField('Y', 'down'))
 
     def resize(self, event):
         self.canva.resize(event)

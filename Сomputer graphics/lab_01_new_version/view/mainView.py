@@ -162,7 +162,6 @@ def mainView():
     act = ActionsField(root, c)
     act.show(posx=105, posy=300)
 
-
     c.show(Settings.X_CANVA, Settings.Y_CANVA, Settings.REL_X_CANVA, Settings.REL_Y_CANVA)
     breturn.show(posx=Settings.X_CANVA, posy=Settings.Y_START_BUTTONS)
     binput.show(posx=Settings.X_CANVA + 1 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
