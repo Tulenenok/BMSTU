@@ -139,47 +139,25 @@ def clearCanva(canva):
     canva.canva.save()
 
 
-def zoomPlus(root, canva):
-    # z = Toplevel(root)
-    # z.geometry('180x195')
-    # z.title('New limits')
-    # z['bg'] = Settings.COLOR_MAIN_BG
-    # z.resizable(0,0)
-    # headLabel = Label(z, text='Input new limits for grid',bg=Settings.COLOR_MAIN_BG,
-    #             fg=Settings.COLOR_BTN, font=('Arial', 10, 'bold'))
-    #
-    # XSL = Label(z, text='Xmin: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN, font=('Arial', 8, 'bold'))
-    # XEL = Label(z, text='Xmax: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN, font=('Arial', 8, 'bold'))
-    # YSL = Label(z, text='Ymin: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN, font=('Arial', 8, 'bold'))
-    # YEL = Label(z, text='Ymax: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN, font=('Arial', 8, 'bold'))
-    #
-    # xStart = Entry(z, width=18)
-    # yStart = Entry(z, width=18)
-    # xEnd = Entry(z, width=18)
-    # yEnd = Entry(z, width=18)
-    #
-    # btn = WrapButton(z, txt='change', padx=10, pady=3, command=lambda: plug(), font=('Arial', 10, 'bold'))
-    #
-    # headLabel.place(x=10, y=10)
-    #
-    # xstart, ystart, xstep, ystep = 10, 15, 42, 25
-    #
-    # XSL.place(x=xstart, y=ystart + ystep)
-    # xStart.place(x=xstart + xstep, y=ystart + ystep)
-    #
-    # XEL.place(x=xstart, y=ystart + 2 * ystep)
-    # xEnd.place(x=xstart + xstep, y=ystart + 2 * ystep)
-    #
-    # YSL.place(x=xstart, y=ystart + 3 * ystep)
-    # yStart.place(x=xstart + xstep, y=ystart + 3 * ystep)
-    #
-    # YEL.place(x=xstart, y=ystart + 4 * ystep)
-    # yEnd.place(x=xstart + xstep, y=ystart + 4 * ystep)
-    #
-    # btn.show(posx=52, posy=ystart + 5.3 * ystep)
-
+def zoom(root, canva):
     z = Zoom(root, canva)
     z.show()
+
+
+# Принимает axis как ось (т.е. 'X' или 'Y'), side как сторону, в которую перемещать
+# side = 'left' или 'right' для X, 'up' или 'down' для Y
+def arrowMoveAcrossField(canva, axis, side):
+    if axis == 'X':
+        step = abs(canva.canva.XStart - canva.canva.XEnd) / canva.canva.gridCoef / 2
+        canva.canva.changeLimits(canva.canva.XStart + (step if side == 'right' else -step),
+                                 canva.canva.XEnd + (step if side == 'right' else -step),
+                                 canva.canva.YStart, canva.canva.YEnd)
+    else:
+        step = abs(canva.canva.YStart - canva.canva.YEnd) / canva.canva.gridCoef / 2
+        canva.canva.changeLimits(canva.canva.XStart, canva.canva.XEnd,
+                                 canva.canva.YStart + (step if side == 'up' else -step),
+                                 canva.canva.YEnd + (step if side == 'up' else -step))
+
 
 def plug():
     print('plug')
@@ -202,7 +180,13 @@ def mainView():
     binput = WrapButton(root, txt='📂', command=lambda: inputPointsFromFile(c))
     boutput = WrapButton(root, txt='📋', command=lambda: savePointsToFile(c))
     breturn = WrapButton(root, txt='⏎', command=lambda: root.loadVersion())
-    bzoom = WrapButton(root, txt='🔎', command=lambda: zoomPlus(root, c))
+    bzoom = WrapButton(root, txt='🔎', padx=10, pady=8, command=lambda: zoom(root, c))
+
+    bleft = WrapButton(root, txt='⬅', padx=10, pady=8, command=lambda: arrowMoveAcrossField(c, 'X', 'left'))
+    bright = WrapButton(root, txt='➡', padx=10, pady=8, command=lambda: arrowMoveAcrossField(c, 'X', 'right'))
+    bup = WrapButton(root, txt='⬆', padx=14, pady=8, command=lambda: arrowMoveAcrossField(c, 'Y', 'up'))
+    bdown = WrapButton(root, txt='⬇', padx=14, pady=8, command=lambda: arrowMoveAcrossField(c, 'Y', 'down'))
+
 
     c.show(Settings.X_CANVA, Settings.Y_CANVA, Settings.REL_X_CANVA, Settings.REL_Y_CANVA)
     breturn.show(posx=Settings.X_CANVA, posy=Settings.Y_START_BUTTONS)
@@ -210,7 +194,13 @@ def mainView():
     boutput.show(posx=Settings.X_CANVA + 2 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
     b.show(posx=Settings.X_CANVA + 3 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
     bcn.show(posx=Settings.X_CANVA + 4 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
-    bzoom.show(posx=Settings.X_CANVA + 5 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
+
+    bleft.show(posx=Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3 * Settings.STEP_INPUT)
+    bzoom.show(posx=3.8 * Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3 * Settings.STEP_INPUT)
+    bright.show(posx=6.6*Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3 * Settings.STEP_INPUT)
+
+    bup.show(posx=3.8 * Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 2.62 * Settings.STEP_INPUT)
+    bdown.show(posx=3.8 * Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3.38 * Settings.STEP_INPUT)
 
     addXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Add point', Settings.WIDTH_INPUT,
                        lambda: addPointKey(c, addXYForm), '  Add  ')
