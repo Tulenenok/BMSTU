@@ -50,9 +50,13 @@ class CoordGrid(ResizingCanvas):
         self.gridDashes = []
         self.gridText = []
 
-        self.gridCoef = gridCoef
+        self.gridCoefX = gridCoef
+        self.gridCoefY = gridCoef
 
     def changeLimits(self, XStart, XEnd, YStart, YEnd):
+        if self.controllCoef(XStart, XEnd, YStart, YEnd):
+            return Tools.EXIT_FAILURE
+
         self.XStart, self.XEnd, self.YStart, self.YEnd = XStart, XEnd, YStart, YEnd
         self.update()
 
@@ -96,7 +100,7 @@ class CoordGrid(ResizingCanvas):
 
     def gridShow(self):
         # вертикальная сетка (рисуем линии параллельные оси Y)
-        step = self.width / 2 / self.gridCoef
+        step = self.width / 2 / self.gridCoefX
         i = 0
         while i < self.width - step:
             i += step
@@ -108,7 +112,7 @@ class CoordGrid(ResizingCanvas):
             self.gridText.append(self.create_text(i, self.height / 2 - 12, text=str(int(self.XShiftCP(i))), font=('Arial', 8, 'bold'), justify=CENTER, fill='black'))
 
         # горизонтальная сетка (рисуем линии параллельные оси X)
-        step = self.height / 2 / self.gridCoef
+        step = self.height / 2 / self.gridCoefY
         i = 0
         while i < self.height - step:
             i += step
@@ -149,6 +153,43 @@ class CoordGrid(ResizingCanvas):
     def resize(self, event):
         super().resize(event)
         self.update()
+
+    def zoomPlus(self, XStart, XEnd, YStart, YEnd):
+        stepX = abs(XStart - XEnd) / 2 / self.gridCoefX
+        while stepX < 1:
+            self.gridCoefX -= 1
+            stepX = abs(XStart - XEnd) / 2 / self.gridCoefX
+
+        stepY = abs(YStart - YEnd) / 2 / self.gridCoefY
+        while stepY < 1:
+            self.gridCoefY -= 1
+            stepY = abs(YStart - YEnd) / 2 / self.gridCoefY
+
+    def zoomMinus(self, XStart, XEnd, YStart, YEnd):
+        stepX = abs(XStart - XEnd) / 2 / self.gridCoefX
+        while stepX >= 2 and self.gridCoefX < 10:
+            self.gridCoefX += 1
+            stepX = abs(XStart - XEnd) / 2 / self.gridCoefX
+
+        stepY = abs(YStart - YEnd) / 2 / self.gridCoefY
+        while stepY >= 2 and self.gridCoefY < 10:
+            self.gridCoefY += 1
+            stepY = abs(YStart - YEnd) / 2 / self.gridCoefY
+
+    def controllCoef(self, XStart, XEnd, YStart, YEnd):
+        if abs(XEnd - XStart) <= Settings.MIN_LEN_COORDS:
+            print('Слишком маленький масштаб сетки для X')
+            return Tools.EXIT_FAILURE
+
+        if abs(YEnd - YStart) <= Settings.MIN_LEN_COORDS:
+            print('Слишком маленький масштаб сетки для Y')
+            return Tools.EXIT_FAILURE
+
+        self.zoomPlus(XStart, XEnd, YStart, YEnd)
+        self.zoomMinus(XStart, XEnd, YStart, YEnd)
+
+        return Tools.EXIT_SUCCESS
+
 
 
 class CartesianField(CoordGrid):

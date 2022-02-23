@@ -10,6 +10,7 @@ from view.CanvasField import WrapCanva
 from view.CanvasPoint import CanvasPoint
 from view.Settings import Settings
 from view.RootWithVersions import RootWithVersions
+from view.ActionsField import ActionsField
 
 from model.SetPoints import SetPoints
 from model.Tools import Tools
@@ -137,26 +138,6 @@ def clearCanva(canva):
     canva.canva.save()
 
 
-def zoom(root, canva):
-    z = Zoom(root, canva)
-    z.show()
-
-
-# Принимает axis как ось (т.е. 'X' или 'Y'), side как сторону, в которую перемещать
-# side = 'left' или 'right' для X, 'up' или 'down' для Y
-def arrowMoveAcrossField(canva, axis, side):
-    if axis == 'X':
-        step = abs(canva.canva.XStart - canva.canva.XEnd) / canva.canva.gridCoef / 2
-        canva.canva.changeLimits(canva.canva.XStart + (step if side == 'right' else -step),
-                                 canva.canva.XEnd + (step if side == 'right' else -step),
-                                 canva.canva.YStart, canva.canva.YEnd)
-    else:
-        step = abs(canva.canva.YStart - canva.canva.YEnd) / canva.canva.gridCoef / 2
-        canva.canva.changeLimits(canva.canva.XStart, canva.canva.XEnd,
-                                 canva.canva.YStart + (step if side == 'up' else -step),
-                                 canva.canva.YEnd + (step if side == 'up' else -step))
-
-
 def plug():
     print('plug')
 
@@ -178,12 +159,9 @@ def mainView():
     binput = WrapButton(root, txt='📂', command=lambda: inputPointsFromFile(c))
     boutput = WrapButton(root, txt='📋', command=lambda: savePointsToFile(c))
     breturn = WrapButton(root, txt='⏎', command=lambda: root.loadVersion())
-    bzoom = WrapButton(root, txt='🔎', padx=10, pady=8, command=lambda: zoom(root, c))
 
-    bleft = WrapButton(root, txt='⬅', padx=10, pady=8, command=lambda: arrowMoveAcrossField(c, 'X', 'left'))
-    bright = WrapButton(root, txt='➡', padx=10, pady=8, command=lambda: arrowMoveAcrossField(c, 'X', 'right'))
-    bup = WrapButton(root, txt='⬆', padx=14, pady=8, command=lambda: arrowMoveAcrossField(c, 'Y', 'up'))
-    bdown = WrapButton(root, txt='⬇', padx=14, pady=8, command=lambda: arrowMoveAcrossField(c, 'Y', 'down'))
+    act = ActionsField(root, c)
+    act.show(posx=105, posy=300)
 
 
     c.show(Settings.X_CANVA, Settings.Y_CANVA, Settings.REL_X_CANVA, Settings.REL_Y_CANVA)
@@ -192,13 +170,6 @@ def mainView():
     boutput.show(posx=Settings.X_CANVA + 2 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
     b.show(posx=Settings.X_CANVA + 3 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
     bcn.show(posx=Settings.X_CANVA + 4 * Settings.BTN_STEP, posy=Settings.Y_START_BUTTONS)
-
-    bleft.show(posx=Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3 * Settings.STEP_INPUT)
-    bzoom.show(posx=3.8 * Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3 * Settings.STEP_INPUT)
-    bright.show(posx=6.6*Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3 * Settings.STEP_INPUT)
-
-    bup.show(posx=3.8 * Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 2.62 * Settings.STEP_INPUT)
-    bdown.show(posx=3.8 * Settings.X_INPUT - 6, posy=Settings.Y_INPUT + 3.38 * Settings.STEP_INPUT)
 
     addXYForm = XYForm(root, Settings.COLOR_MAIN_BG, 'Add point', Settings.WIDTH_INPUT,
                        lambda: addPointKey(c, addXYForm), '  Add  ')

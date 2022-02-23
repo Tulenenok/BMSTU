@@ -21,3 +21,5 @@ class Settings:
 
     DIR_INPUT_POINTS = "../data"
     DIR_OUTPUT_POINTS = "../data"
+
+    MIN_LEN_COORDS = 1                     # Насколько маленькими может быть разница между минимальной и максимальной координатой на сетке

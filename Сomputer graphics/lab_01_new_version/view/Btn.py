@@ -4,8 +4,8 @@ from view.Settings import Settings
 
 class WrapButton:
     def __init__(self, window, txt, command=None, fg='black', padx=15, pady=5, bg=Settings.COLOR_BTN,
-                 bgHover=Settings.COLOR_HOVER_BTN, font=('Consolas, 14')):
-        self.btn = Button(window, text=txt, padx=padx, pady=pady, font=font, bg=bg, fg=fg, command=command if command else self.plug)
+                 bgHover=Settings.COLOR_HOVER_BTN, font=('Consolas, 14'), bd=2):
+        self.btn = Button(window, text=txt, padx=padx, pady=pady, font=font, bg=bg, fg=fg, command=command if command else self.plug, bd=bd)
         self.bg = bg
         self.bgHover = bgHover
 

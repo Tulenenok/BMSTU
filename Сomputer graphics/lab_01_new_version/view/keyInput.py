@@ -152,6 +152,14 @@ class Zoom:
             showinfo('Error', 'Ввод неверный (yMin >= yMax)')
             return
 
+        if abs(xMin - xMax) <= Settings.MIN_LEN_COORDS:
+            showinfo('Warning', f'Невозможно расчертить координатную сетку для оси X при xMax - xMin <= {Settings.MIN_LEN_COORDS}')
+            return
+
+        if abs(yMin - yMax) <= Settings.MIN_LEN_COORDS:
+            showinfo('Warning', f'Невозможно расчертить координатную сетку для оси Y при yMax - yMin <= {Settings.MIN_LEN_COORDS}')
+            return
+
         canva.canva.changeLimits(xMin, xMax, yMin, yMax)
         print('Change coords --> correct')
 
