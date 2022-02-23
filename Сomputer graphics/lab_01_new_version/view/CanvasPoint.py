@@ -23,7 +23,7 @@ class CanvasPoint(Point):
 
         self.p = field.create_oval(x - 4, y - 4, x + 4, y + 4, fill=self.color, outline=self.color)
         if self.ShowComments:
-            self.t = field.create_text(x + 12, y - 12, text=f'{int(self.x)}, {int(self.y)}', font=self.fontText,
+            self.t = field.create_text(x + 12, y - 12, text='%.1f; %.1f' % (self.x, self.y), font=self.fontText,
                                        fill=self.colorText)
 
     def hide(self, field):

@@ -47,11 +47,11 @@ def go(field):
 
 def addPointKey(canva, XYform):
     x, y = XYform.getXY()
-    if not Tools.isInt(x) or not Tools.isInt(y):
+    if not Tools.isFloat(x) or not Tools.isFloat(y):
         showinfo('Error', 'Неверно введены координаты точки (должны быть целые числа)')
         return
 
-    canva.canva.showPoint(int(x), int(y))
+    canva.canva.showPoint(float(x), float(y))
     XYform.clear()
 
     canva.canva.save()
@@ -60,11 +60,11 @@ def addPointKey(canva, XYform):
 def delPointKey(canva, XYform):
     x, y = XYform.getXY()
     print(x, y)
-    if not Tools.isInt(x) or not Tools.isInt(y):
+    if not Tools.isFloat(x) or not Tools.isFloat(y):
         showinfo('Error', 'Неверно введены координаты точки (должны быть целые числа)')
         return
 
-    delPoint = CanvasPoint(int(x), int(y))
+    delPoint = CanvasPoint(float(x), float(y))
     flagWasPoint = False
     for point in canva.getPoints():
         if point.isPointsEqual(delPoint, point):
@@ -85,7 +85,7 @@ def inputPointsFromFile(canva):
                                   filetypes=filetypes, multiple=False)
     if filename and filename[-4::] == '.txt':
         coords = controll.controllModel.inputPointsTXT(filename)
-        if Tools.isInt(coords):
+        if Tools.isFloat(coords):
             showinfo('Ошибка открытия файла' if coords == Tools.INVALID_FILENAME else 'Неверный формат данных',
                      'Неверно указано название файла' if coords == -1 else f'Произошла ошибка на {coords} строке. \n\n'
                               'Проверьте, что координаты точек введены в формате x ; y и что каждая точка введена '
@@ -108,7 +108,7 @@ def inputPointsFromFile(canva):
             else:
                 showinfo('Error', 'Непонятная ошибка, но мы работаем над этим')
             return
-    else:
+    elif filename:
         showinfo('Ошибка открытия файла', 'Неверно указано название файла')
         return
 

@@ -36,7 +36,7 @@ class CanvasCircle(Circle):
             radX, radY = abs(xr - xl) / 2, abs(yr - yl) / 2
             self.pointCenter.show(canva)
             self.arrowRadius = canva.create_line(xl + radX, yl - radY, xr, yl - radY, fill='black', width=2, arrow=LAST)
-            self.t = canva.create_text(xr - radX / 2, yr + radY * 0.9, text='R = ' + str(int(int(self.r))), font=('Arial', 8, 'bold'),
+            self.t = canva.create_text(xr - radX / 2, yr + radY * 0.9, text='R = ' + '%.1f' % self.r, font=('Arial', 8, 'bold'),
                                        justify=CENTER, fill='black')
 
     def hide(self, canva):

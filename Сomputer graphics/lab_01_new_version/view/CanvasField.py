@@ -287,7 +287,7 @@ class CartesianField(CoordGrid):
             p.changeColor(self, newColor)
 
     def showPoint(self, x, y, color=Settings.COLOR_NEW_POINT):
-        point = CanvasPoint(int(x), int(y), showComments=self.ShowComments)
+        point = CanvasPoint(float(x), float(y), showComments=self.ShowComments)
         self.points.append(point)
         point.show(self)
 
