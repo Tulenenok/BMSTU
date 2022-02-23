@@ -21,6 +21,8 @@ class ResizingCanvas(Canvas):
         self.bind("<Motion>", lambda event: self.showCoords(event))
         self.bind("<Leave>", lambda event: self.hideCoords(event))
 
+        self.bind("<MouseWheel>", self.mouseZoom)
+
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
 
@@ -38,6 +40,9 @@ class ResizingCanvas(Canvas):
 
     def hideCoords(self, event):
         print('delCoods')
+
+    def mouseZoom(self, event):
+        pass
 
 
 class CoordGrid(ResizingCanvas):
@@ -190,6 +195,13 @@ class CoordGrid(ResizingCanvas):
 
         return Tools.EXIT_SUCCESS
 
+    def mouseZoom(self, event):
+        stepX = abs(self.XStart - self.XEnd) / self.gridCoefX / 2
+        stepY = abs(self.YStart - self.YEnd) / self.gridCoefX / 2
+        if event.delta > 0:
+            self.changeLimits(self.XStart + stepX, self.XEnd - stepX, self.YStart + stepY, self.YEnd - stepY)
+        elif event.delta < 0:
+            self.changeLimits(self.XStart - stepX, self.XEnd + stepX, self.YStart - stepY, self.YEnd + stepY)
 
 
 class CartesianField(CoordGrid):

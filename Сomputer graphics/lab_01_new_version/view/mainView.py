@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter.messagebox import *
 import tkinter.filedialog as fd
 
-from view.CanvasField import WrapCanva
 from view.Btn import WrapButton
 from view.menu import menuFrame
 from view.keyInput import XYForm, Zoom
