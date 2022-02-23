@@ -29,6 +29,7 @@ class CanvasCircle(Circle):
 
         self.c = canva.create_oval(xl, yl, xr, yr,
                                    outline=self.color, width=self.width, activefill=self.activefill)
+
         if showText:
             radX, radY = abs(xr - xl) / 2, abs(yr - yl) / 2
             self.pointCenter.show(canva)

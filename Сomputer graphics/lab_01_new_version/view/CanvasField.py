@@ -305,6 +305,15 @@ class CartesianField(CoordGrid):
         except:
             print('Вы не используете сохранение')
 
+    def rightClick(self, XEvent, YEvent):
+        if not XEvent or not YEvent:
+            print('No')
+            return
+
+        for point in self.points:
+            if point.isClick(self, XEvent, YEvent):
+                point.hide(self)
+
 
 class WrapCanva:
     def __init__(self, window, Canva=CartesianField, **kwargs):
@@ -315,6 +324,8 @@ class WrapCanva:
         self.frame.bind('<Configure>', self.resize)
         self.canva.place(x=0, y=0)
 
+        self.menu = None
+        self.Xevent, self.Yevent = None, None
         self.bind()
 
     def bind(self):
@@ -322,6 +333,23 @@ class WrapCanva:
         self.window.bind("<Left>", lambda event: self.canva.arrowMoveAcrossField('X', 'left'))
         self.window.bind("<Up>", lambda event: self.canva.arrowMoveAcrossField('Y', 'up'))
         self.window.bind("<Down>", lambda event: self.canva.arrowMoveAcrossField('Y', 'down'))
+
+
+        self.menu = Menu(self.canva, tearoff=0)
+        self.menu.add_command(label="Delete", command=lambda: self.canva.rightClick(self.Xevent, self.Yevent))
+        self.window.bind("<Button-3>", lambda event: self.rightClick(event))
+
+    def rightClick(self, event):
+        self.Xevent = event.x
+        self.Yevent = event.y
+
+        isPointHere = False
+        for point in self.canva.points:
+            if point.isClick(self.canva, self.Xevent, self.Yevent):
+                isPointHere = True
+
+        if isPointHere:
+            self.menu.post(event.x_root, event.y_root)
 
     def resize(self, event):
         self.canva.resize(event)

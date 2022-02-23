@@ -38,3 +38,15 @@ class CanvasPoint(Point):
     def reShow(self, canva):
         self.hide(canva)
         self.show(canva)
+
+    def isClick(self, field, XEvent, YEvent):
+        try:                                       # Такого метода у канвы может не оказаться
+            x, y = field.coordinateShift(self)
+        except:
+            x, y = self.x, self.y
+            print("Вы не переводите координаты точки в координаты канвы, могут быть ошибки")
+
+        if x - 4 <= XEvent <= x + 4 and y - 4 <= YEvent <= y + 4:
+            return True
+
+        return False
