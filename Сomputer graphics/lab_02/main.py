@@ -12,8 +12,8 @@ def main():
     root.geometry('850x650')
     root['bg'] = Settings.COLOR_MAIN_BG
 
-    root.iconphoto(True, PhotoImage(file=r'shared/rootIcon.png'))
-    root.title('У меня лапки')
+    root.iconphoto(True, PhotoImage(file=r'shared/rootIcon2.png'))
+    root.title('Лось - это призвание (посвящается Оленеву)')
 
     menu = menuFrame(root)
 

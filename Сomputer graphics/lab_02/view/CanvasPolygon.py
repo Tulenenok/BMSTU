@@ -97,11 +97,15 @@ class CanvasPolLine:
         self.show(field)
 
     def delPoint(self, field, delPoint):
+        wasDel = False
         for i, point in enumerate(self.points):
             if Point.isPointsEqual(point, delPoint):
+                point.hide(field)
                 self.points.pop(i)
+                wasDel = True
 
         self.reShow(field)
+        return wasDel
 
     def updateLines(self):
         self.lines.clear()
@@ -113,6 +117,11 @@ class CanvasPolLine:
             if p.isClick(field, X, Y):
                 return True
         return False
+
+    def updateShowFlag(self, newFlag):
+        self.showComments = newFlag
+        for p in self.points:
+            p.ShowComments = self.showComments
 
 
 

@@ -32,17 +32,13 @@ def delPointKey(canva, XYform):
         return
 
     delPoint = CanvasPoint(float(x), float(y))
-    flagWasPoint = False
-    for point in canva.getPoints():
-        if point.isPointsEqual(delPoint, point):
-            point.hide(canva.canva)
-            XYform.clear()
-            flagWasPoint = True
+    flagWasPoint = canva.canva.delPoint(delPoint)
 
     if not flagWasPoint:
         showinfo('Warning', 'Точки с такими координатами не найдено')
         return
 
+    XYform.clear()
     canva.canva.save()
 
 

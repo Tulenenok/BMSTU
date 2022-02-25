@@ -417,7 +417,7 @@ class PolygonField(CartesianField):
     def updateShowFlags(self):
         super(PolygonField, self).updateShowFlags()
         for pol in self.polygons:
-            pol.ShowComments = self.ShowComments
+            pol.updateShowFlag(self.ShowComments)
 
     def rightClick(self, XEvent, YEvent):
         for pol in self.polygons:
@@ -455,6 +455,14 @@ class PolygonField(CartesianField):
     def showPoint(self, x, y, color=Settings.COLOR_NEW_POINT):
         point = CanvasPoint(float(x), float(y), showComments=self.ShowComments)
         self.polygons[-1].addPoint(self, point)
+
+    def delPoint(self, point):
+        wasDel = False
+        for pol in self.polygons:
+            wasDel += pol.delPoint(self, point)
+
+        self.update()
+        return wasDel
 
 
 class WrapCanva:
