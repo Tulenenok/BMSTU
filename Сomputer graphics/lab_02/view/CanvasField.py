@@ -1,6 +1,8 @@
 import math
 import pickle
 
+from PIL import ImageTk, Image
+
 from view.CanvasPoint import CanvasPoint
 from view.CanvasLine import CanvasLine
 from view.CanvasCircle import CanvasCircle
@@ -26,6 +28,15 @@ class ResizingCanvas(Canvas):
 
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
+
+        self.image = None
+
+    def addImage(self, filename):
+        # pilImage = Image.open(r"C:\projects\Сomputer graphics\lab_02\shared\test.png")
+        # image = ImageTk.PhotoImage(pilImage)
+        # self.image = self.create_image(10, 10, image=image)
+        image = ImageTk.PhotoImage(file=r"C:\projects\Сomputer graphics\lab_02\shared\test.png")
+        self.image = self.create_image(10, 10, image=image, anchor=NW)
 
     def resize(self, event):
         self.width = event.width
@@ -378,6 +389,8 @@ class PolygonField(CartesianField):
 
         self.polygons = [CanvasPolLine([])]
 
+        self.addImage('xv')
+
     def click(self, event):
         newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)),
                                self.colorPoints, showComments=self.ShowComments)
@@ -464,7 +477,6 @@ class PolygonField(CartesianField):
         self.update()
         return wasDel
 
-
 class WrapCanva:
     def __init__(self, window, Canva=PolygonField, **kwargs):
         self.window = window
@@ -488,9 +500,9 @@ class WrapCanva:
         self.window.bind("<Control-minus>", lambda event: self.canva.changeCoef('-', 'X', 'Y'))
 
         self.window.bind("<Control-z>", lambda event: self.window.loadVersion())
+        self.window.bind("<Control-s>", lambda event: self.window.loadVersion())
 
         self.window.bind("<Control-space>", lambda event: self.canva.startNewPolygonClose(event))
-        self.window.bind("<Control-Shift-space>", lambda event: self.canva.startNewPolygon(event))
 
         self.menu = Menu(self.canva, tearoff=0)
         self.menu.add_command(label="Delete", command=lambda: self.canva.rightClick(self.Xevent, self.Yevent))

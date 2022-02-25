@@ -26,6 +26,8 @@ def main():
 
     c.show(Settings.X_CANVA, Settings.Y_CANVA, Settings.REL_X_CANVA, Settings.REL_Y_CANVA)
 
+    root.bind("<Control-s>", lambda event: savePointsToFile(c))
+
     upBtns = UpButtons(root, c)
     upBtns.show()
 
@@ -42,3 +44,15 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# from tkinter import *
+# from PIL import ImageTk
+#
+# canvas = Canvas(width = 200, height = 200, bg = 'blue')
+# canvas.pack(expand = YES, fill = BOTH)
+#
+# image = ImageTk.PhotoImage(file = r"C:\projects\Сomputer graphics\lab_02\shared\rootIcon.png")
+# canvas.create_image(10, 10, image = image, anchor = NW)
+#
+# mainloop()
