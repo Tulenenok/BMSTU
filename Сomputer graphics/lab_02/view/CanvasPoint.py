@@ -12,6 +12,8 @@ class CanvasPoint(Point):
 
         self.p, self.t = None, None
 
+        self.r = 2
+
         self.ShowComments = showComments
 
     def show(self, field):
@@ -21,7 +23,7 @@ class CanvasPoint(Point):
             x, y = self.x, self.y
             print("Вы не переводите координаты точки в координаты канвы, могут быть ошибки")
 
-        self.p = field.create_oval(x - 2, y - 2, x + 2, y + 2, fill=self.color, outline=self.color)
+        self.p = field.create_oval(x - self.r, y - self.r, x + self.r, y + self.r, fill=self.color, outline=self.color)
         if self.ShowComments:
             self.t = field.create_text(x + 12, y - 12, text='%.1f; %.1f' % (self.x, self.y), font=self.fontText,
                                        fill=self.colorText)
@@ -51,3 +53,10 @@ class CanvasPoint(Point):
             return True
 
         return False
+
+    def highlight(self, field):
+        self.r = 5
+
+    def hideHightlight(self, field):
+        self.r = 2
+

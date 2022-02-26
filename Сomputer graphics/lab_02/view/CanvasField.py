@@ -389,12 +389,26 @@ class PolygonField(CartesianField):
         self.colorNowPol = Settings.COLOR_LINE
         self.polygons = [CanvasPolLine([], self.colorNowPol)]
 
+        self.fillPoint = None
+
     def click(self, event):
         newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)),
                                self.polygons[-1].colorLine, showComments=self.ShowComments)
         self.polygons[-1].addPoint(self, newPoint)
 
         self.save()
+
+    def showCoords(self, event):
+        super(PolygonField, self).showCoords(event)
+        if event.x and event.y:
+            if self.fillPoint:
+                self.fillPoint.hideHightlight(self)
+
+            self.fillPoint = self.pointInPolWithPoint(float(event.x), float(event.y))
+
+            if self.fillPoint:
+                self.fillPoint.highlight(self)
+            self.update()
 
     def clear(self):
         for pol in self.polygons:
@@ -475,6 +489,13 @@ class PolygonField(CartesianField):
             if pol.isPointOn(self, X, Y):
                 return True
         return False
+
+    def pointInPolWithPoint(self, X, Y):
+        for pol in self.polygons:
+            p = pol.PointOnWithPoint(self, X, Y)
+            if p:
+                return p
+        return None
 
     def showPoint(self, x, y, color=Settings.COLOR_NEW_POINT):
         point = CanvasPoint(float(x), float(y), showComments=self.ShowComments, color=self.colorNowPol)

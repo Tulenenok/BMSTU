@@ -118,6 +118,12 @@ class CanvasPolLine:
                 return True
         return False
 
+    def PointOnWithPoint(self, field, X, Y):
+        for p in self.points:
+            if p.isClick(field, X, Y):
+                return p
+        return None
+
     def updateShowFlag(self, newFlag):
         self.showComments = newFlag
         for p in self.points:
