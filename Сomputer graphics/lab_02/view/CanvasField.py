@@ -8,6 +8,7 @@ from view.CanvasLine import CanvasLine
 from view.CanvasCircle import CanvasCircle
 from view.Settings import Settings
 from view.CanvasPolygon import *
+from view.keyInput import *
 
 from model.Tools import Tools
 
@@ -493,6 +494,7 @@ class PolygonField(CartesianField):
             pol.rotatePol(pointerCenter, alpha)
 
         self.update()
+        self.save()
 
     def shift(self, xShift, yShift):
         for pol in self.polygons:
@@ -500,6 +502,7 @@ class PolygonField(CartesianField):
             pol.shiftPol(xShift, yShift)
 
         self.update()
+        self.save()
 
     def scale(self, k):
         for pol in self.polygons:
@@ -507,6 +510,7 @@ class PolygonField(CartesianField):
             pol.scalePol(k)
 
         self.update()
+        self.save()
 
 class WrapCanva:
     def __init__(self, window, Canva=PolygonField, **kwargs):
@@ -517,7 +521,7 @@ class WrapCanva:
         self.frame.bind('<Configure>', self.resize)
         self.canva.place(x=0, y=0)
 
-        self.menu = None
+        self.pointMenu = None
         self.Xevent, self.Yevent = None, None
         self.bind()
 
@@ -539,11 +543,25 @@ class WrapCanva:
         self.window.bind("<Control-space>", lambda event: self.canva.startNewPolygonClose(event))
         self.window.bind("<Control-Shift-space>", lambda event: self.canva.startNewPolygon(event))
 
-        self.menu = Menu(self.canva, tearoff=0)
-        self.menu.add_command(label="Delete", command=lambda: self.canva.rightClick(self.Xevent, self.Yevent))
-        self.menu.add_command(label="Change color", command=lambda: self.canva.changeColor(self.Xevent, self.Yevent))
-        self.menu.add_command(label="Rotate", command=lambda: self.canva.rotate(Point(0, 0), 90))
+        self.pointMenu = Menu(self.canva, tearoff=0)
+        self.pointMenu.add_command(label="Delete", command=lambda: self.canva.rightClick(self.Xevent, self.Yevent))
+        self.pointMenu.add_command(label="Change color", command=lambda: self.canva.changeColor(self.Xevent, self.Yevent))
+
+        self.mainMenu = Menu(self.canva, tearoff=0)
+        self.mainMenu.add_command(label="Rotate", command=lambda: self.action(RotateFrame))
+        self.mainMenu.add_command(label="Shift", command=lambda: self.action(ShiftFrame))
+        self.mainMenu.add_command(label="Scale", command=lambda: self.action(ScaleFrame))
+
         self.window.bind("<Button-3>", lambda event: self.rightClick(event))
+
+    def action(self, frame):
+        z = Toplevel(self.window)
+        z.geometry('200x200')
+        z.title('')
+        z['bg'] = Settings.COLOR_MAIN_BG
+        z.resizable(0, 0)
+        f = frame(z, 200, 200, self)
+        f.show()
 
     def rightClick(self, event):
         self.Xevent = event.x
@@ -552,7 +570,9 @@ class WrapCanva:
         isPointHere = self.canva.isPointInPol(self.Xevent, self.Yevent)
 
         if isPointHere:
-            self.menu.post(event.x_root, event.y_root)
+            self.pointMenu.post(event.x_root, event.y_root)
+        else:
+            self.mainMenu.post(event.x_root, event.y_root)
 
     def resize(self, event):
         self.canva.resize(event)
@@ -565,6 +585,9 @@ class WrapCanva:
 
     def getPoints(self):
         return [point for p in self.canva.polygons for point in p.points]
+
+    def getPointsForSave(self):
+        return [[point for point in p.points] for p in self.canva.polygons]
 
     def saveVersion(self, f):
         self.canva.saveCanva(f)

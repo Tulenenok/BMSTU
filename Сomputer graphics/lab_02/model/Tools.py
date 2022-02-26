@@ -2,6 +2,7 @@ class Tools:
     EXIT_SUCCESS = 0
     EXIT_FAILURE = 1
     SEPARATOR_COORDS = ' ; '
+    SEPARATOR_POL = '---'
     INVALID_FILENAME = -1
     INVALID_LISTNAME = -2
     INVALID_HEAD = -3

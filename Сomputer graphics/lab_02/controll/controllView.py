@@ -78,13 +78,15 @@ def inputPointsFromFile(canva):
     else:
         return
 
-    if coords == []:
+    if coords == [[]]:
         showinfo('Empty file', 'Выбранный файл не содержит данных, точки не обновлены.')
         return
 
     canva.canva.clear()
     for c in coords:
-        canva.canva.showPoint(c[0], c[1])
+        for p in c:
+            canva.canva.showPoint(p[0], p[1])
+        canva.canva.startNewPolygon('sdfv')
 
     canva.canva.update()
     canva.canva.save()
@@ -94,8 +96,10 @@ def savePointsToFile(canva):
     new_file = fd.asksaveasfile(title="Сохранить файл", defaultextension=".txt",
                                 filetypes=(("Текстовый файл", "*.txt"), ))
     if new_file:
-        for point in canva.getPoints():
-            new_file.write(point.likeStr() + '\n')
+        for pol in canva.getPointsForSave():
+            for p in pol:
+                new_file.write(p.likeStr() + '\n')
+            new_file.write(Tools.SEPARATOR_POL + '\n')
         new_file.close()
 
 

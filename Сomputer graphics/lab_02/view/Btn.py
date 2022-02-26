@@ -24,6 +24,9 @@ class WrapButton:
 
     def onEnter(self, event):
         event.widget['background'] = self.bgHover
+        if self.name == 'btn':
+            return
+
         if self.t:
             self.t.destroy()
 
