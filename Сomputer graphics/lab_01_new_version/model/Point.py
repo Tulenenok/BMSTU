@@ -12,6 +12,9 @@ class Point:
     def likeStr(self):
         return f'{self.x} ; {self.y}'
 
+    def likeFormatStr(self):
+        return '(%.3f; %.3f)' % (self.x, self.y)
+
     @staticmethod
     def isPointsEqual(pointA, pointB):
         return pointA.x == pointB.x and pointA.y == pointB.y

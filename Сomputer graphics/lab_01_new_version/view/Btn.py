@@ -12,7 +12,6 @@ class WrapButton:
 
         self.btn.bind("<Enter>", self.onEnter)
         self.btn.bind("<Leave>", self.onLeave)
-        self.btn.bind("<Motion>", self.motion)
 
         self.name = name
         self.menu = None
@@ -26,18 +25,16 @@ class WrapButton:
     def onEnter(self, event):
         event.widget['background'] = self.bgHover
 
+        if self.t:
+            self.t.destroy()
+        self.t = Label(self.window, text=self.name, bg=Settings.COLOR_HOVER_BTN,
+                       fg='black', font=('Arial', 8, 'bold'), bd=1, relief="ridge")
+        self.t.place(x=self.coordX + self.btn.winfo_width() - 20, y=self.coordY + self.btn.winfo_height() - 10)
+
     def onLeave(self, event):
         event.widget['background'] = self.bg
         if self.t:
             self.t.destroy()
-
-    def motion(self, event):
-        if self.t:
-            self.t.destroy()
-        self.t = Label(self.window, text=self.name, bg=Settings.COLOR_HOVER_BTN,
-                          fg='black', font=('Arial', 8, 'bold'), bd=1, relief="ridge")
-        if self.Pos == 'up':
-            self.t.place(x=event.x / 5, y=event.y / 6)
 
     def show(self, posx=0, posy=0):
         self.coordY = posy

@@ -4,6 +4,7 @@ from model.Line import Line
 from model.SetPoints import SetPoints
 from model.Circle import Circle
 from model.Tools import Tools
+import math
 
 
 class AnalyticalGeometry:
@@ -101,3 +102,28 @@ class AnalyticalGeometry:
             minCircle = AnalyticalGeometry.__minCircleThree(setPoints, minCircle)
 
         return minCircle
+
+    # R1 — радиус первой окружности;
+    # R2 — радиус второй окружности;
+    # D — расстояние между центрами окружностей.
+    @staticmethod
+    def intersectionSquare(R1, R2, C1, C2):
+        D = Point.dist(C1, C2)
+
+        F1 = 2 * math.acos((R1 ** 2 - R2 ** 2 + D ** 2) / (2 * R1 * D))
+        F2 = 2 * math.acos((R2 ** 2 - R1 ** 2 + D ** 2) / (2 * R2 * D))
+
+        S1 = R1 ** 2 * (F1 - math.sin(F1)) / 2
+        S2 = R2 ** 2 * (F2 - math.sin(F2)) / 2
+
+        return S1 + S2
+
+    @staticmethod
+    def totalArea(R1, R2, C1, C2):
+        S1 = math.pi * R1 ** 2
+        S2 = math.pi * R2 ** 2
+        try:
+            intrt = AnalyticalGeometry.intersectionSquare(R1, R2, C1, C2)
+        except:
+            intrt = 0
+        return int(S1 + S2 - intrt)

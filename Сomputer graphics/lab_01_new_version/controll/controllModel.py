@@ -5,6 +5,7 @@ from model.AnalyticalGeometry import AnalyticalGeometry
 from model.SetPoints import SetPoints
 
 import pandas as pd
+import math
 
 
 def findLine(points):
@@ -75,6 +76,13 @@ def inputPointsXLSX(filename):
         return Tools.INVALID_DATA
     except:
         return Tools.OBSCURE_ERROR
+
+
+def findArea(R1, R2, C1, C2):
+    return AnalyticalGeometry.totalArea(R1, R2, C1, C2)
+
+def Square(circle):
+    return math.pi * circle.r ** 2
 
 
 # s = SetPoints(Point(-2, -1), Point(-1, -8), Point(2, 1), Point(2, -2), Point(3, 4), Point(4, 2))

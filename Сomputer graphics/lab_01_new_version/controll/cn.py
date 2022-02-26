@@ -44,6 +44,24 @@ def go(field):
 
     field.canva.save()
 
+    result = "Center purple circle - %s, radius - %.3f. \n" \
+             "Center red circle - %s, radius - %.3f. \n\n" \
+             "Square purple circle - %.3f. \n" \
+             "Square red circle - %.3f. \n\n" \
+             f"Unification - %.3f" % (minCircleFirst.center.likeFormatStr(), minCircleFirst.r,
+                                       minCircleSecond.center.likeFormatStr(), minCircleSecond.r,
+                                       controll.controllModel.Square(minCircleFirst),
+                                       controll.controllModel.Square(minCircleSecond),
+                                       controll.controllModel.findArea(minCircleFirst.r, minCircleSecond.r, minCircleFirst.center, minCircleSecond.center))
+
+    # showinfo("Result", f"Center purple circle - {minCircleFirst.center.likeStr()}, radius - {minCircleFirst.r}. \n"
+    #                    f"Center red circle - {minCircleSecond.center.likeStr()}, radius - {minCircleSecond.r}. \n\n"
+    #                    f"Square purple circle - {controll.controllModel.Square(minCircleFirst)}. \n"
+    #                    f"Square red circle - {controll.controllModel.Square(minCircleSecond)}. \n\n"
+    #                    f"Intersection - {controll.controllModel.findArea(minCircleFirst.r, minCircleSecond.r, minCircleFirst.center, minCircleSecond.center)}")
+
+    showinfo("Result", result)
+
 
 def addPointKey(canva, XYform):
     x, y = XYform.getXY()
@@ -83,6 +101,8 @@ def inputPointsFromFile(canva):
     filetypes = (("Текстовый файл", "*.txt"), ("Excel", "*.xlsx"))
     filename = fd.askopenfilename(title="Открыть файл", initialdir=Settings.DIR_INPUT_POINTS,
                                   filetypes=filetypes, multiple=False)
+
+    coords = []
     if filename and filename[-4::] == '.txt':
         coords = controll.controllModel.inputPointsTXT(filename)
         if Tools.isFloat(coords):
@@ -110,6 +130,8 @@ def inputPointsFromFile(canva):
             return
     elif filename:
         showinfo('Ошибка открытия файла', 'Неверно указано название файла')
+        return
+    else:
         return
 
     if coords == []:
@@ -145,7 +167,7 @@ class UpButtons:
         self.f['bg'] = Settings.COLOR_MAIN_BG
 
         self.bClear = WrapButton(self.f, txt='🗑', command=lambda: clearCanva(self.canva), name='clear all')
-        self.bGo = WrapButton(self.f, txt='🚀', command=lambda: go(self.canva), name='make a calculation')
+        self.bGo = WrapButton(self.f, txt='🚀', command=lambda: go(self.canva), name='make calc')
         self.bInput = WrapButton(self.f, txt='📂', command=lambda: inputPointsFromFile(self.canva), name='take points from file')
         self.bSave = WrapButton(self.f, txt='📋', command=lambda: savePointsToFile(self.canva), name='save points')
         self.bReturn = WrapButton(self.f, txt='⏎', command=lambda: root.loadVersion(), name='cancel')
