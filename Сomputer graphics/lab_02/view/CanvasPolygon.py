@@ -56,11 +56,11 @@ class CanvasPolygon:
 
 
 class CanvasPolLine:
-    def __init__(self, points, colorLine=Settings.COLOR_LINE, colorPoints=Settings.COLOR_LINE, width=2, showComments=True):
+    def __init__(self, points, color=Settings.COLOR_LINE, width=2, showComments=True):
         self.points = points
 
-        self.colorLine = colorLine
-        self.colorPoints = colorPoints
+        self.colorLine = color
+        self.colorPoints = color
         self.width = width
 
         self.lines = []
@@ -123,7 +123,24 @@ class CanvasPolLine:
         for p in self.points:
             p.ShowComments = self.showComments
 
+    def changeColor(self, newColorPoint, newColorLine):
+        self.colorLine = newColorLine
+        self.colorPoints = newColorPoint
 
+        for point in self.points:
+            point.color = self.colorPoints
 
+    def rotatePol(self, pointCenter, alpha):
+        for point in self.points:
+            point.rotate(pointCenter, alpha)
+        self.updateLines()
 
+    def shiftPol(self, xShift, yShift):
+        for point in self.points:
+            point.shift(xShift, yShift)
+        self.updateLines()
 
+    def scalePol(self, k):
+        for point in self.points:
+            point.scale(k)
+        self.updateLines()

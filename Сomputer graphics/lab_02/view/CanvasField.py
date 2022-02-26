@@ -12,6 +12,7 @@ from view.CanvasPolygon import *
 from model.Tools import Tools
 
 from tkinter import *
+from tkinter.colorchooser import askcolor
 
 
 # пример создания  ResizingCanvas(myFrame, width=850, height=400, bg="red", highlightthickness=0)
@@ -31,11 +32,8 @@ class ResizingCanvas(Canvas):
 
         self.image = None
 
-    def addImage(self, filename):
-        # pilImage = Image.open(r"C:\projects\Сomputer graphics\lab_02\shared\test.png")
-        # image = ImageTk.PhotoImage(pilImage)
-        # self.image = self.create_image(10, 10, image=image)
-        image = ImageTk.PhotoImage(file=r"C:\projects\Сomputer graphics\lab_02\shared\test.png")
+    def addImage(self):
+        image = ImageTk.PhotoImage(file=r"/shared/rootIcon4.png")
         self.image = self.create_image(10, 10, image=image, anchor=NW)
 
     def resize(self, event):
@@ -387,13 +385,12 @@ class PolygonField(CartesianField):
     def __init__(self, rootFrame, root, **kwargs):
         super(PolygonField, self).__init__(rootFrame, root, **kwargs)
 
-        self.polygons = [CanvasPolLine([])]
-
-        self.addImage('xv')
+        self.colorNowPol = Settings.COLOR_LINE
+        self.polygons = [CanvasPolLine([], self.colorNowPol)]
 
     def click(self, event):
         newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)),
-                               self.colorPoints, showComments=self.ShowComments)
+                               self.polygons[-1].colorLine, showComments=self.ShowComments)
         self.polygons[-1].addPoint(self, newPoint)
 
         self.save()
@@ -401,7 +398,7 @@ class PolygonField(CartesianField):
     def clear(self):
         for pol in self.polygons:
             pol.hide(self)
-        self.polygons = [CanvasPolLine([])]
+        self.polygons = [CanvasPolLine([], self.colorNowPol)]
 
     def clearResult(self):
         self.clear()
@@ -442,12 +439,25 @@ class PolygonField(CartesianField):
         self.update()
         self.save()
 
+    def changeColor(self, XEvent, YEvent):
+        color = askcolor()[1]
+        if not color:
+            return
+
+        for pol in self.polygons:
+            for i, point in enumerate(pol.points):
+                if point.isClick(self, XEvent, YEvent):
+                    pol.changeColor(color, color)
+
+        self.update()
+        self.save()
+
     def startNewPolygon(self, event):
-        self.polygons.append(CanvasPolLine([]))
+        self.polygons.append(CanvasPolLine([], color=self.colorNowPol))
 
     def startNewPolygonClose(self, event):
         try:
-            lastPoint = CanvasPoint(self.polygons[-1].points[0].x, self.polygons[-1].points[0].y)
+            lastPoint = CanvasPoint(self.polygons[-1].points[0].x, self.polygons[-1].points[0].y, color=self.colorNowPol)
             self.polygons[-1].addPoint(self, lastPoint)
         except:
             pass
@@ -466,7 +476,7 @@ class PolygonField(CartesianField):
         return False
 
     def showPoint(self, x, y, color=Settings.COLOR_NEW_POINT):
-        point = CanvasPoint(float(x), float(y), showComments=self.ShowComments)
+        point = CanvasPoint(float(x), float(y), showComments=self.ShowComments, color=self.colorNowPol)
         self.polygons[-1].addPoint(self, point)
 
     def delPoint(self, point):
@@ -476,6 +486,27 @@ class PolygonField(CartesianField):
 
         self.update()
         return wasDel
+
+    def rotate(self, pointerCenter, alpha):
+        for pol in self.polygons:
+            pol.hide(self)
+            pol.rotatePol(pointerCenter, alpha)
+
+        self.update()
+
+    def shift(self, xShift, yShift):
+        for pol in self.polygons:
+            pol.hide(self)
+            pol.shiftPol(xShift, yShift)
+
+        self.update()
+
+    def scale(self, k):
+        for pol in self.polygons:
+            pol.hide(self)
+            pol.scalePol(k)
+
+        self.update()
 
 class WrapCanva:
     def __init__(self, window, Canva=PolygonField, **kwargs):
@@ -490,6 +521,9 @@ class WrapCanva:
         self.Xevent, self.Yevent = None, None
         self.bind()
 
+        image = ImageTk.PhotoImage(file=r"C:\projects\Сomputer graphics\lab_02\shared\rootIcon4.png")
+        self.canva.create_image(10, 10, image=image, anchor=NW)
+
     def bind(self):
         self.window.bind("<Right>", lambda event: self.canva.arrowMoveAcrossField('X', 'right'))
         self.window.bind("<Left>", lambda event: self.canva.arrowMoveAcrossField('X', 'left'))
@@ -503,9 +537,12 @@ class WrapCanva:
         self.window.bind("<Control-s>", lambda event: self.window.loadVersion())
 
         self.window.bind("<Control-space>", lambda event: self.canva.startNewPolygonClose(event))
+        self.window.bind("<Control-Shift-space>", lambda event: self.canva.startNewPolygon(event))
 
         self.menu = Menu(self.canva, tearoff=0)
         self.menu.add_command(label="Delete", command=lambda: self.canva.rightClick(self.Xevent, self.Yevent))
+        self.menu.add_command(label="Change color", command=lambda: self.canva.changeColor(self.Xevent, self.Yevent))
+        self.menu.add_command(label="Rotate", command=lambda: self.canva.rotate(Point(0, 0), 90))
         self.window.bind("<Button-3>", lambda event: self.rightClick(event))
 
     def rightClick(self, event):
@@ -539,3 +576,13 @@ class WrapCanva:
         self.canva.ShowComments = not self.canva.ShowComments
         self.canva.update()
 
+    def changeColorNewPol(self):
+        color = askcolor()[1]
+        if not color:
+            return
+
+        self.canva.colorNowPol = color
+        self.canva.polygons[-1].changeColor(color, color)
+
+        self.canva.update()
+        self.canva.save()

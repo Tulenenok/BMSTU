@@ -3,6 +3,7 @@ from tkinter.messagebox import *
 from model.Tools import Tools
 from view.Settings import Settings
 from view.Btn import WrapButton
+from view.CanvasPoint import CanvasPoint
 
 
 class XYForm:
@@ -51,7 +52,6 @@ class XYForm:
 
     def getXY(self):
         return self.xEntry.get(), self.yEntry.get()
-
 
 
 class Zoom:
@@ -180,4 +180,265 @@ class Zoom:
         self.xEnd.delete(0, END)
         self.yStart.delete(0, END)
         self.yEnd.delete(0, END)
+
+
+class RotateFrame:
+    def __init__(self, root, width, height, canva, color=Settings.COLOR_MAIN_BG, rootFunc=None):
+        self.root = root
+        self.f = Frame(root, width=width, height=height)
+        self.f['bg'] = color
+        self.canva = canva
+
+        self.rootFunc = rootFunc if rootFunc else self.canva.canva.rotate
+
+        self.headLabel = Label(self.f, text='-------  Rotate  -------', bg=Settings.COLOR_MAIN_BG,
+                               fg=Settings.COLOR_BTN, font=('Arial', 12, 'bold'))
+
+        self.XL = Label(self.f, text='X: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN,
+                        font=('Arial', 11, 'bold'))
+        self.YL = Label(self.f, text='Y: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN,
+                        font=('Arial', 11, 'bold'))
+        self.AL = Label(self.f, text='α°: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN,
+                        font=('Arial', 11, 'bold'))
+        self.XE = Entry(self.f, width=21)
+        self.YE = Entry(self.f, width=21)
+        self.AE = Entry(self.f, width=21)
+
+        self.XE.insert(0, '0')
+        self.YE.insert(0, '0')
+        self.AE.insert(0, '90')
+
+        self.btn = WrapButton(self.f, txt='Rotate', padx=10, pady=3, command=lambda: self.rotate(), font=('Arial', 10, 'bold'))
+
+        self.bindSetting()
+
+    def show(self):
+        self.headLabel.place(x=15, y=10, relwidth=0.8)
+
+        self.XL.place(x=15, y=42)
+        self.YL.place(x=15, y=82)
+        self.AL.place(x=15, y=122)
+
+        self.XE.place(x=45, y=42, height=23)
+        self.YE.place(x=45, y=82, height=23)
+        self.AE.place(x=45, y=122, height=23)
+
+        self.btn.show(posx=65, posy=157)
+
+        self.f.place(x=0, y=0, relwidth=1, relheight=1)
+
+    def hide(self):
+        self.headLabel.place_forget()
+        self.XL.place_forget()
+        self.YL.place_forget()
+        self.AL.place_forget()
+        self.XE.place_forget()
+        self.YE.place_forget()
+        self.AE.place_forget()
+
+    def getText(self):
+        return self.XE.get(), self.YE.get(), self.AE.get()
+
+    def rotate(self):
+        x, y, alpha = self.getText()
+        if not Tools.isFloat(x):
+            showinfo('Error', 'Ввод X неверный')
+
+        elif not Tools.isFloat(y):
+            showinfo('Error', 'Ввод Y неверный')
+
+        elif not Tools.isFloat(alpha):
+            showinfo('Error', 'Ввод alpha неверный')
+
+        else:
+            self.rootFunc(CanvasPoint(float(x), float(y)), float(alpha))
+        return 0
+
+    def bindSetting(self):
+        self.XE.bind("<Return>", lambda event: self.YE.focus_set())
+        self.YE.bind("<Return>", lambda event: self.AE.focus_set())
+        self.AE.bind("<Return>", lambda event: self.rotate())
+
+        self.XE.bind("<Down>", lambda event: self.YE.focus_set())
+        self.YE.bind("<Up>", lambda event: self.XE.focus_set())
+        self.YE.bind("<Down>", lambda event: self.AE.focus_set())
+        self.AE.bind("<Up>", lambda event: self.YE.focus_set())
+
+
+class ShiftFrame:
+    def __init__(self, root, width, height, canva, color=Settings.COLOR_MAIN_BG, rootFunc=None):
+        self.root = root
+        self.f = Frame(root, width=width, height=height)
+        self.f['bg'] = color
+        self.canva = canva
+
+        self.rootFunc = rootFunc if rootFunc else self.canva.canva.shift
+
+        self.headLabel = Label(self.f, text='-------  Shift  -------', bg=Settings.COLOR_MAIN_BG,
+                               fg=Settings.COLOR_BTN, font=('Arial', 12, 'bold'))
+
+        self.XL = Label(self.f, text='X: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN,
+                        font=('Arial', 11, 'bold'))
+        self.YL = Label(self.f, text='Y: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN,
+                        font=('Arial', 11, 'bold'))
+        self.XE = Entry(self.f, width=21)
+        self.YE = Entry(self.f, width=21)
+
+        self.XE.insert(0, '10')
+        self.YE.insert(0, '0')
+
+        self.btn = WrapButton(self.f, txt='Shift', padx=10, pady=3, command=lambda: self.shift(), font=('Arial', 10, 'bold'))
+
+        self.bindSetting()
+
+    def show(self):
+        self.headLabel.place(x=15, y=10, relwidth=0.8)
+
+        self.XL.place(x=15, y=42)
+        self.YL.place(x=15, y=82)
+
+        self.XE.place(x=45, y=42, height=23)
+        self.YE.place(x=45, y=82, height=23)
+
+        self.btn.show(posx=65, posy=120)
+
+        self.f.place(x=0, y=10, relwidth=1, relheight=1)
+
+    def hide(self):
+        self.headLabel.place_forget()
+        self.XL.place_forget()
+        self.YL.place_forget()
+        self.XE.place_forget()
+        self.YE.place_forget()
+
+    def getText(self):
+        return self.XE.get(), self.YE.get()
+
+    def shift(self):
+        x, y = self.getText()
+        if not Tools.isFloat(x):
+            showinfo('Error', 'Ввод X неверный')
+
+        elif not Tools.isFloat(y):
+            showinfo('Error', 'Ввод Y неверный')
+
+        else:
+            self.rootFunc(float(x), float(y))
+        return 0
+
+    def bindSetting(self):
+        self.XE.bind("<Return>", lambda event: self.YE.focus_set())
+        self.YE.bind("<Return>", lambda event: self.shift())
+
+        self.XE.bind("<Down>", lambda event: self.YE.focus_set())
+        self.YE.bind("<Up>", lambda event: self.XE.focus_set())
+
+
+class ScaleFrame:
+    def __init__(self, root, width, height, canva, color=Settings.COLOR_MAIN_BG, rootFunc=None):
+        self.root = root
+        self.f = Frame(root, width=width, height=height)
+        self.f['bg'] = color
+        self.canva = canva
+
+        self.rootFunc = rootFunc if rootFunc else self.canva.canva.scale
+
+        self.headLabel = Label(self.f, text='-------  Scale  -------\n', bg=Settings.COLOR_MAIN_BG,
+                               fg=Settings.COLOR_BTN, font=('Arial', 12, 'bold'))
+
+        self.XL = Label(self.f, text='K: ', bg=Settings.COLOR_MAIN_BG, fg=Settings.COLOR_BTN,
+                        font=('Arial', 11, 'bold'))
+        self.XE = Entry(self.f, width=21)
+
+        self.XE.insert(0, '2')
+
+        self.btn = WrapButton(self.f, txt='Scale', padx=10, pady=3, command=lambda: self.scale(), font=('Arial', 10, 'bold'))
+
+        self.bindSetting()
+
+    def show(self):
+        self.headLabel.place(x=15, y=10, relwidth=0.8)
+
+        self.XL.place(x=15, y=42)
+        self.XE.place(x=45, y=42, height=23)
+
+        self.btn.show(posx=65, posy=80)
+        self.f.place(x=0, y=20, relwidth=1, relheight=1)
+
+    def hide(self):
+        self.headLabel.place_forget()
+        self.XL.place_forget()
+        self.XE.place_forget()
+
+    def getText(self):
+        return self.XE.get()
+
+    def scale(self):
+        x = self.getText()
+        if not Tools.isFloat(x):
+            showinfo('Error', 'Ввод k неверный')
+
+        else:
+            self.rootFunc(float(x))
+        return 0
+
+    def bindSetting(self):
+        self.XE.bind("<Return>", lambda event: self.scale())
+
+
+class ZoomRotateShift:
+    def __init__(self, root, canva):
+        self.root = root
+        self.canva = canva
+
+        self.z = Toplevel(root)
+        self.btnScale = WrapButton(self.z, txt='Scaling', padx=20, pady=3, command=lambda: self.openScale(),
+                              font=('Arial', 10, 'bold'))
+        self.btnShift = WrapButton(self.z, txt='Shift', padx=20, pady=3, command=lambda: self.openShift(),
+                                   font=('Arial', 10, 'bold'))
+        self.btnRotate = WrapButton(self.z, txt='Rotate', padx=20, pady=3, command=lambda: self.openRotate(),
+                                   font=('Arial', 10, 'bold'))
+
+        self.headLabel = None
+
+        self.rotateFrame = RotateFrame(self.z, 200, 200, self.canva)
+        self.shiftFrame = ShiftFrame(self.z, 200, 200, self.canva)
+        self.scaleFrame = ScaleFrame(self.z, 200, 200, self.canva)
+
+    def show(self):
+        self.z.geometry('200x200')
+        self.z.title('')
+        self.z['bg'] = Settings.COLOR_MAIN_BG
+        self.z.resizable(0, 0)
+
+        step = 60
+        start = 21
+        self.btnScale.btn.place(x=10, y=start, relwidth=0.9, relheight=0.2)
+        self.btnShift.btn.place(x=10, y=start + step, relwidth=0.9, relheight=0.2)
+        self.btnRotate.btn.place(x=10, y=start + 2 * step, relwidth=0.9, relheight=0.2)
+
+    def plug(self):
+        pass
+
+    def hideBtns(self):
+        self.btnScale.btn.place_forget()
+        self.btnShift.btn.place_forget()
+        self.btnRotate.btn.place_forget()
+
+    def openRotate(self):
+        self.hideBtns()
+        self.rotateFrame.show()
+
+    def openShift(self):
+        self.hideBtns()
+        self.shiftFrame.show()
+
+    def openScale(self):
+        self.hideBtns()
+        self.scaleFrame.show()
+
+
+
+
+
 

@@ -6,11 +6,9 @@ class menuFrame:
     def __init__(self, window):
         self.menu = Menu()
         self.window = window
-
         self.name = '✔ Комментарии'
         self.gridName = '✔ Оси координат'
-        self.settingMenu = self.__makeDropDown({self.name: self.__showComment, self.gridName: self.__showGrid})
-        self.field = None
+        self.settingMenu = None
 
     def __makeDropDown(self, dictLabels):
         newItem = Menu(self.menu, tearoff=0)
@@ -20,6 +18,9 @@ class menuFrame:
 
     def create(self, field, funcInput, funcLoad, funcClean, funcReturn):
         self.field = field
+        self.settingMenu = self.__makeDropDown({self.name: self.__showComment, self.gridName: self.__showGrid,
+                                                'Изменить цвет': field.changeColorNewPol})
+
         self.menu.add_cascade(label='File', menu=self.__makeDropDown({'Открыть 📂': lambda: funcInput(field),
                                                                       'Сохранить 📋': lambda: funcLoad(field),
                                                                       'Отменить ⏎': lambda: funcReturn(),

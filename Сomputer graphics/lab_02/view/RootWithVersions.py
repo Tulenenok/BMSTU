@@ -4,6 +4,8 @@ from shared.SharedSettings import SharedSettings
 from tkinter import *
 from tkinter.messagebox import *
 
+from PIL import ImageTk, Image
+
 
 class RootWithVersions(Tk):
     def __init__(self):
@@ -78,3 +80,7 @@ class RootWithVersions(Tk):
             print('Файл для считывания данных не найден')
 
         self.loadShift()
+
+    def addPhoto(self, canva, filename):
+        image = ImageTk.PhotoImage(file=r"C:\projects\Сomputer graphics\lab_02\shared\rootIcon.png")
+        canva.canva.create_image(10, 10, image=image, anchor=NW)

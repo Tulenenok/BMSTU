@@ -33,9 +33,8 @@ class CanvasPoint(Point):
             field.delete(self.t)
         self.p, self.t = None, None
 
-    def changeColor(self, canva, newColor):
+    def changeColor(self, newColor):
         self.color = newColor
-        self.reShow(canva)
 
     def reShow(self, canva):
         self.hide(canva)

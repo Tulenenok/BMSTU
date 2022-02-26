@@ -5,6 +5,7 @@ import tkinter.filedialog as fd
 from view.Btn import WrapButton
 from view.CanvasPoint import CanvasPoint
 from view.Settings import Settings
+from view.keyInput import *
 
 from model.Tools import Tools
 
@@ -74,6 +75,8 @@ def inputPointsFromFile(canva):
     elif filename:
         showinfo('Ошибка открытия файла', 'Неверно указано название файла')
         return
+    else:
+        return
 
     if coords == []:
         showinfo('Empty file', 'Выбранный файл не содержит данных, точки не обновлены.')
@@ -100,18 +103,23 @@ def clearCanva(canva):
     canva.clear()
     canva.canva.save()
 
+def scaleShiftRotate(root, canva):
+    z = ZoomRotateShift(root, canva)
+    z.show()
+
 
 class UpButtons:
     def __init__(self, root, c):
         self.root = root
         self.canva = c
-        self.f = Frame(self.root, width=400, height=60)
+        self.f = Frame(self.root, width=500, height=60)
         self.f['bg'] = Settings.COLOR_MAIN_BG
 
         self.bClear = WrapButton(self.f, txt='🗑', command=lambda: clearCanva(self.canva), name='clear all')
         self.bInput = WrapButton(self.f, txt='📂', command=lambda: inputPointsFromFile(self.canva), name='take points from file')
         self.bSave = WrapButton(self.f, txt='📋', command=lambda: savePointsToFile(self.canva), name='save points')
         self.bReturn = WrapButton(self.f, txt='⏎', command=lambda: root.loadVersion(), name='cancel')
+        self.bGo = WrapButton(self.f, txt='🚀', command=lambda: scaleShiftRotate(root, c), name='scale shift rotate')
 
     def show(self, posx=Settings.X_CANVA, posy=Settings.Y_INPUT + 9):
         startX, startY = 0, 0
@@ -119,5 +127,6 @@ class UpButtons:
         self.bInput.show(posx=startX + 1 * Settings.BTN_STEP, posy=startY)
         self.bSave.show(posx=startX + 2 * Settings.BTN_STEP, posy=startY)
         self.bClear.show(posx=startX + 3 * Settings.BTN_STEP, posy=startY)
+        self.bGo.show(posx=startX + 4 * Settings.BTN_STEP, posy=startY)
 
         self.f.place(x=posx, y=posy)
