@@ -146,7 +146,7 @@ class CanvasPolLine:
             point.shift(xShift, yShift)
         self.updateLines()
 
-    def scalePol(self, k):
+    def scalePol(self, kx, ky):
         for point in self.points:
-            point.scale(k)
+            point.scale(kx, ky)
         self.updateLines()

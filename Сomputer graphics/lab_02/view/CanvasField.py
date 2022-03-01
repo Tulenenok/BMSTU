@@ -22,16 +22,32 @@ class ResizingCanvas(Canvas):
         Canvas.__init__(self, parent, **kwargs)
         self.bind("<Configure>", self.resize)
 
-        self.bind('<1>', lambda event: self.click(event))
-        self.bind("<Motion>", lambda event: self.showCoords(event))
-        self.bind("<Leave>", lambda event: self.hideCoords(event))
+        self.bind('<1>', lambda event: self.click(event), '+')
+        self.bind("<Motion>", lambda event: self.showCoords(event), '+')
+        self.bind("<Leave>", lambda event: self.hideCoords(event), '+')
 
-        self.bind("<MouseWheel>", self.mouseZoom)
+        self.bind("<MouseWheel>", self.mouseZoom, '+')
+
+        self.bind("<Shift-Down>", lambda event: self.shift(0, 10), '+')
+        self.bind("<Shift-Left>", lambda event: self.shift(-10, 0), '+')
+        self.bind("<Shift-Up>", lambda event: self.shift(0, -10), '+')
+        self.bind("<Shift-Right>", lambda event: self.shift(10, 0), '+')
+
+        # self.bind("<Right>", lambda event: self.arrowMoveAcrossField('X', 'right'), '+')
+        # self.bind("<Left>", lambda event: self.arrowMoveAcrossField('X', 'left'), '+')
+        # self.bind("<Up>", lambda event: self.arrowMoveAcrossField('Y', 'up'), '+')
+        # self.bind("<Down>", lambda event: self.arrowMoveAcrossField('Y', 'down'), '+')
 
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
 
         self.image = None
+
+    def mouseRotate(self, mode):
+        pass
+
+    def shift(self, xShift, yShift):
+        pass
 
     def addImage(self):
         image = ImageTk.PhotoImage(file=r"/shared/rootIcon4.png")
@@ -391,6 +407,8 @@ class PolygonField(CartesianField):
 
         self.fillPoint = None
 
+        self.rotatePoint = CanvasPoint(0, 0)
+
     def click(self, event):
         newPoint = CanvasPoint(int(self.XShiftCP(event.x)), int(self.YShiftCP(event.y)),
                                self.polygons[-1].colorLine, showComments=self.ShowComments)
@@ -422,6 +440,9 @@ class PolygonField(CartesianField):
         super(PolygonField, self).update()
         for pol in self.polygons:
             pol.reShow(self)
+
+        ''' РАСКОММЕНТИРОВАТЬ ЭТУ СТРОКУ ДЛЯ ПОКАЗА ТОЧКИ ПОВОРОТА '''
+        # self.rotatePoint.reShow(self)
 
     def saveCanva(self, f):
         pickle.dump(self.polygons, f)
@@ -514,6 +535,7 @@ class PolygonField(CartesianField):
             pol.hide(self)
             pol.rotatePol(pointerCenter, alpha)
 
+        self.rotatePoint = pointerCenter
         self.update()
         self.save()
 
@@ -525,13 +547,19 @@ class PolygonField(CartesianField):
         self.update()
         self.save()
 
-    def scale(self, k):
+    def scale(self, kx, ky):
         for pol in self.polygons:
             pol.hide(self)
-            pol.scalePol(k)
+            pol.scalePol(kx, ky)
 
         self.update()
         self.save()
+
+    def mouseRotate(self, mode):
+        if mode == 'r':
+            self.rotate(self.rotatePoint, -15)
+        elif mode == 'l':
+            self.rotate(self.rotatePoint, 15)
 
 class WrapCanva:
     def __init__(self, window, Canva=PolygonField, **kwargs):
@@ -539,7 +567,7 @@ class WrapCanva:
 
         self.frame = Frame(window)
         self.canva = Canva(self.frame, self.window, showArrows=False, **kwargs)
-        self.frame.bind('<Configure>', self.resize)
+        self.frame.bind('<Configure>', self.resize, '+')
         self.canva.place(x=0, y=0)
 
         self.pointMenu = None
@@ -550,30 +578,46 @@ class WrapCanva:
         self.canva.create_image(10, 10, image=image, anchor=NW)
 
     def bind(self):
-        self.window.bind("<Right>", lambda event: self.canva.arrowMoveAcrossField('X', 'right'))
-        self.window.bind("<Left>", lambda event: self.canva.arrowMoveAcrossField('X', 'left'))
-        self.window.bind("<Up>", lambda event: self.canva.arrowMoveAcrossField('Y', 'up'))
-        self.window.bind("<Down>", lambda event: self.canva.arrowMoveAcrossField('Y', 'down'))
+        self.window.bind("<Right>", lambda event: self.canva.arrowMoveAcrossField('X', 'right'), '+')
+        self.window.bind("<Left>", lambda event: self.canva.arrowMoveAcrossField('X', 'left'), '+')
+        self.window.bind("<Up>", lambda event: self.canva.arrowMoveAcrossField('Y', 'up'), '+')
+        self.window.bind("<Down>", lambda event: self.canva.arrowMoveAcrossField('Y', 'down'), '+')
 
-        self.window.bind("<Control-equal>", lambda event: self.canva.changeCoef('+', 'X', 'Y'))
-        self.window.bind("<Control-minus>", lambda event: self.canva.changeCoef('-', 'X', 'Y'))
+        # self.window.bind("<Control-equal>", lambda event: self.canva.changeCoef('+', 'X', 'Y'))
+        # self.window.bind("<Control-minus>", lambda event: self.canva.changeCoef('-', 'X', 'Y'))
 
-        self.window.bind("<Control-z>", lambda event: self.window.loadVersion())
-        self.window.bind("<Control-s>", lambda event: self.window.loadVersion())
+        self.window.bind("<Control-equal>", lambda event: self.canva.scale(2, 2), '+')
+        self.window.bind("<Control-minus>", lambda event: self.canva.scale(0.5, 0.5), '+')
 
-        self.window.bind("<Control-space>", lambda event: self.canva.startNewPolygonClose(event))
-        self.window.bind("<Control-Shift-space>", lambda event: self.canva.startNewPolygon(event))
+        self.window.bind("<Control-z>", lambda event: self.window.loadVersion(), '+')
+        self.window.bind("<Control-s>", lambda event: self.window.loadVersion(), '+')
+        self.window.bind("<Control-p>", lambda event: self.canva.mouseRotate('r'), '+')
+        self.window.bind("<Control-o>", lambda event: self.canva.mouseRotate('l'), '+')
+
+        self.window.bind("<Control-space>", lambda event: self.canva.startNewPolygonClose(event), '+')
+        self.window.bind("<Control-Shift-space>", lambda event: self.canva.startNewPolygon(event), '+')
 
         self.pointMenu = Menu(self.canva, tearoff=0)
         self.pointMenu.add_command(label="Delete", command=lambda: self.canva.rightClick(self.Xevent, self.Yevent))
         self.pointMenu.add_command(label="Change color", command=lambda: self.canva.changeColor(self.Xevent, self.Yevent))
+        self.pointMenu.add_command(label="Set rotate point", command=lambda: self.changeRotatePoint())
 
         self.mainMenu = Menu(self.canva, tearoff=0)
         self.mainMenu.add_command(label="Rotate", command=lambda: self.action(RotateFrame))
         self.mainMenu.add_command(label="Shift", command=lambda: self.action(ShiftFrame))
-        self.mainMenu.add_command(label="Scale", command=lambda: self.action(ScaleFrame))
+        self.mainMenu.add_command(label="Scale", command=lambda: self.action(ScaleFrameSecondVersion))
+        self.mainMenu.add_command(label="Set rotate point", command=lambda: self.changeRotatePoint())
 
-        self.window.bind("<Button-3>", lambda event: self.rightClick(event))
+        self.window.bind("<Button-3>", lambda event: self.rightClick(event), '+')
+
+    def changeRotatePoint(self):
+        x = int(self.canva.XShiftCP(self.Xevent))
+        y = int(self.canva.YShiftCP(self.Yevent))
+        self.canva.rotatePoint = CanvasPoint(x, y,
+                               self.canva.colorPoints, showComments=self.canva.ShowComments)
+        showinfo('Info', 'Новый центр поворота установлен успешно.\n\n'
+                         f'X: {x}\n'
+                         f'Y: {y}\n')
 
     def action(self, frame):
         z = Toplevel(self.window)

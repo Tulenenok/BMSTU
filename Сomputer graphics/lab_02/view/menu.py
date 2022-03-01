@@ -10,6 +10,14 @@ class menuFrame:
         self.gridName = '✔ Оси координат'
         self.settingMenu = None
 
+        self.sp = 'Горячие клавиши:\n\n' \
+                  '  - Cntrl-Space -- начать новую фигуру, замкнув старую\n' \
+                  '  - Cntrl-Shift-Space -- начать новую, не замыкая старую\n' \
+                  '  - Cntrl-plus -- масштабирование х2\n' \
+                  '  - Cntrl-minus -- масштабирование х0.5\n' \
+                  '  - Cntrl-p -- поворот по часовой стрелке на 15 градусов\n' \
+                  '  - Cntrl-o -- поворот против часовой стрелки на 15 градусов'
+
     def __makeDropDown(self, dictLabels):
         newItem = Menu(self.menu, tearoff=0)
         for item in dictLabels:
@@ -28,7 +36,8 @@ class menuFrame:
                                                                       }))
         self.menu.add_cascade(label='Setting', menu=self.settingMenu)
         self.menu.add_cascade(label='Info', menu=self.__makeDropDown({'Информация о программе': self.__info_programm,
-                                                                        'Информация об авторе': self.__info_author,
+                                                                      'Информация об авторе': self.__info_author,
+                                                                      'Справка': lambda : showinfo('Info', self.sp)
                                                                       }))
         self.menu.add_cascade(label='Exit', menu=self.__makeDropDown({'Выход': self.window.destroy}))
         return self.menu
@@ -48,5 +57,5 @@ class menuFrame:
         showinfo('Info', 'Автор: Гурова Наталия ИУ7-44Б')
 
     def __info_programm(self):
-        showinfo('Info', 'Программа была создана 13.02.22 \n\n'
+        showinfo('Info', 'Программа не была создана 13.02.22, 14.02.22 и даже 28.02.22 \n\n'
                          'Задание: в час ночи нарисуйте лося. Просто нарисуйте')

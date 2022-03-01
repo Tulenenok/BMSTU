@@ -28,7 +28,7 @@ def main():
     # image = ImageTk.PhotoImage(file=r"C:\projects\Сomputer graphics\lab_02\data\lica.jpg", size=0.5)
     # c.canva.create_image(0, 0, image=image, anchor=NW)
 
-    root.bind("<Control-s>", lambda event: savePointsToFile(c))
+    root.bind("<Control-s>", lambda event: savePointsToFile(c), '+')
 
     upBtns = UpButtons(root, c)
     upBtns.show()

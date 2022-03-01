@@ -39,6 +39,6 @@ class Point:
         self.x += xShift
         self.y += yShift
 
-    def scale(self, k):
-        self.x *= k
-        self.y *= k
+    def scale(self, kx, ky):
+        self.x *= kx
+        self.y *= ky
