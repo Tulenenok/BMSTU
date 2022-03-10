@@ -34,7 +34,7 @@ def NewtonPolynomial(tableNewton):
             elif tableNewton[0][i] > 0:
                 pol += ' * (x - %2.3f)' % tableNewton[0][i]
             else:
-                pol += ' * (x + %2.3f)' % tableNewton[0][i]
+                pol += ' * (x + %2.3f)' % abs(tableNewton[0][i])
         pol += ')'
     return pol
 
