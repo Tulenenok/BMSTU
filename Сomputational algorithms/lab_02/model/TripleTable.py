@@ -36,7 +36,7 @@ class TripleTable:
 
         # теперь последняя интерполяция по z и ZTable
         tableForNewton = [[self.z[i] for i in range(indZStart, indZEnd)], ZTable]
-        tableNewton, polStr, pol = interpolationNewton(tableForNewton, y)
+        tableNewton, polStr, pol = interpolationNewton(tableForNewton, z)
         return pol
 
 # t = TripleTable()
