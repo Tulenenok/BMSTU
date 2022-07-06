@@ -7,3 +7,5 @@
 valgrind --tool=memcheck --leak-check=full ./app.exe
 
 git checkout -b название ветки хэш коммита
+
+sudo apt autoremove <приложение>   удаление ненужных зависимостей
